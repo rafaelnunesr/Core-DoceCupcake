@@ -20,8 +20,10 @@ struct SignInController: RouteCollection {
         let model = try JSONDecoder().decode(SignInModel.self, from: bodyData)
 
         if areSignInInfoValid(model) {
+            invalidatePreviousSection()
+
             do {
-                let data = try getSectionModel()
+                let data = try getSectionModel(userEmail: model.email)
                 return Response(status: .accepted, body: .init(data: data))
             } catch {
                 return Response(status: .internalServerError)
@@ -40,7 +42,14 @@ struct SignInController: RouteCollection {
         return sectionTokenGenerator.getToken()
     }
 
-    private func getSectionModel() throws -> Data {
-        return try JSONEncoder().encode(ResponseSectionModel(userId: "1", sectionToken: getSectionToken()))
+    private func getSectionModel(userEmail: String) throws -> Data {
+        let userId = getUserId(userEmail)
+        let sectionToken = getSectionToken()
+
+        return try JSONEncoder().encode(ResponseSectionModel(userId: userId, sectionToken: sectionToken))
     }
+
+    private func invalidatePreviousSection() {}
+
+    private func getUserId(_ userEmail: String) -> String { "1" }
 }
