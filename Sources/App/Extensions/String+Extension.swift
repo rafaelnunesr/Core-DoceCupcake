@@ -1,5 +1,19 @@
+import Foundation
+
 extension String {
     static var empty: String {
         return ""
+    }
+
+    @inlinable var isValidEmail: Bool {
+        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegex)
+        return emailPred.evaluate(with: self)
+    }
+
+    @inlinable var isValidPassword: Bool {
+        let passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
+        let passwordPred = NSPredicate(format:"SELF MATCHES %@", passwordRegex)
+        return passwordPred.evaluate(with: self)
     }
 }

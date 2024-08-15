@@ -32,7 +32,7 @@ struct SignInController: RouteCollection {
     }
 
     private func areSignInInfoValid(_ model: SignInModel) -> Bool {
-        !model.userName.isEmpty && !model.password.isEmpty
+        model.email.isValidEmail && model.password.isValidPassword
     }
 
     private func getSectionToken() -> String {
