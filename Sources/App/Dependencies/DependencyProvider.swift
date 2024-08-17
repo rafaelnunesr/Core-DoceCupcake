@@ -1,14 +1,11 @@
 import Fluent
-import FluentMySQLDriver
+import FluentPostgresDriver
 import Vapor
 
 final class DependencyProvider: DependencyProviderProtocol {
 
     @MainActor
     static let shared = DependencyProvider()
-
-    @MainActor
-    static var app: Application?
 
     private init() {}
 
@@ -18,23 +15,26 @@ final class DependencyProvider: DependencyProviderProtocol {
         nil //MySQLDriver()
     }
 
-    @MainActor 
-    private func setupDatabase() {
-        guard let app = DependencyProvider.app else { return }
-
-        // Allow connection without SSL certificate involved
-        // That's suitable for local connection and should not be done in production
-        var tls = TLSConfiguration.makeClientConfiguration()
-        tls.certificateVerification = .none
-
+    func setupDatabase(app: Application) {
         app.databases.use(
-            .mysql(hostname: Constants.dbHostname,
-                   username: Constants.dbUserName,
-                   password: Constants.dbPassword,
-                   database: Constants.dbName,
-                   tlsConfiguration: tls),
-            as: .mysql
+            .postgres(
+                configuration: .init(
+                    hostname: "localhost",
+                    username: "rafaelrios",
+                    password: "vapor",
+                    database: "docecupcakedb",
+                    tls: .disable
+                )
+            ),
+            as: .psql
         )
+
+        addMigrations(app: app)
+    }
+
+    private func addMigrations(app: Application) {
+        app.migrations.add(CreateUsersDatabase())
+        app.migrations.add(CreateSectionDatabase())
     }
 
     // MARK: - SECTIONTOKEN
