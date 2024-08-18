@@ -6,9 +6,9 @@ struct CreateSectionDatabase: AsyncMigration {
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)
             .id()
-            .field("created_at", .string, .required)
-            .field("expiry_date", .string, .required)
-            .field("user_id", .uuid, .required, .references("users", "id"))
+            .field("created_at", .datetime)
+            .field("expiry_date", .datetime)
+            .field("user_id", .uuid, .required, .references("person", "id"))
             .field("token", .string, .required)
             .unique(on: "token")
             .create()

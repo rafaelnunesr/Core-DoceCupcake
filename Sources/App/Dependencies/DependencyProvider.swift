@@ -33,7 +33,7 @@ final class DependencyProvider: DependencyProviderProtocol {
     }
 
     private func addMigrations(app: Application) {
-        app.migrations.add(CreateUsersDatabase())
+        app.migrations.add(CreateUserDatabase())
         app.migrations.add(CreateSectionDatabase())
     }
 

@@ -1,12 +1,16 @@
+import FluentPostgresDriver
 import Foundation
 import Vapor
 
 struct SignInController: RouteCollection {
     private let dependencyProvider: DependencyProviderProtocol
+    private let database: Database
 
     @MainActor
-    init(dependencyProvider: DependencyProviderProtocol = DependencyProvider.shared) {
+    init(dependencyProvider: DependencyProviderProtocol = DependencyProvider.shared,
+         database: Database) {
         self.dependencyProvider = dependencyProvider
+        self.database = database
     }
 
     func boot(routes: RoutesBuilder) throws {
@@ -19,37 +23,41 @@ struct SignInController: RouteCollection {
         guard let bodyData = req.body.data else { return Response(status: .badRequest) }
         let model = try JSONDecoder().decode(SignInModel.self, from: bodyData)
 
-        if areSignInInfoValid(model) {
-            invalidatePreviousSection()
-
-            do {
-                let data = try getSectionModel(userEmail: model.email)
-                return Response(status: .accepted, body: .init(data: data))
-            } catch {
-                return Response(status: .internalServerError)
-            }
+        guard let userId = try await getUserId(model) else {
+            return Response(status: .badRequest)
         }
 
-        return Response(status: .badRequest)
+        let data = try await createSectionForUser(email: model.email, userId: userId)
+        return Response(status: .accepted, body: .init(data: data))
     }
 
-    private func areSignInInfoValid(_ model: SignInModel) -> Bool {
-        model.email.isValidEmail && model.password.isValidPassword
+    private func getUserId(_ model: SignInModel) async throws -> UUID? {
+        let result = try await Person.query(on: database)
+                .filter(\.$email == model.email)
+                .first()
+
+        if result?.password == model.password {
+            return result?.id
+        }
+
+        return nil
+    }
+
+    private func createSectionForUser(email: String, userId: UUID) async throws -> Data {
+        let sectionToken = getSectionToken()
+        let sectionModel = InternalSectionModel(userId: userId,
+                                                token: sectionToken)
+
+
+
+        let _ = try await sectionModel.save(on: database)
+
+        return try JSONEncoder().encode(ResponseSectionModel(userId: String(userId), 
+                                                             sectionToken: sectionToken))
     }
 
     private func getSectionToken() -> String {
         let sectionTokenGenerator = dependencyProvider.getSectionTokenGeneratorInstance()
         return sectionTokenGenerator.getToken()
     }
-
-    private func getSectionModel(userEmail: String) throws -> Data {
-        let userId = getUserId(userEmail)
-        let sectionToken = getSectionToken()
-
-        return try JSONEncoder().encode(ResponseSectionModel(userId: userId, sectionToken: sectionToken))
-    }
-
-    private func invalidatePreviousSection() {}
-
-    private func getUserId(_ userEmail: String) -> String { "1" }
 }
