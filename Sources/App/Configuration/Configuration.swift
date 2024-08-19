@@ -8,13 +8,8 @@ final class Configuration: ConfigurationProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let app: Application
 
-    init(dependencyProvider: DependencyProviderProtocol? = nil, app: Application) {
-        if let dependencyProvider {
-            self.dependencyProvider = dependencyProvider
-        } else {
-            self.dependencyProvider = DependencyProvider(app: app)
-        }
-
+    init(dependencyProvider: DependencyProviderProtocol, app: Application) {
+        self.dependencyProvider = dependencyProvider
         self.app = app
     }
 
