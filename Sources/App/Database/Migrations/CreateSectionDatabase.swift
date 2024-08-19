@@ -8,7 +8,7 @@ struct CreateSectionDatabase: AsyncMigration {
             .id()
             .field("created_at", .datetime)
             .field("expiry_date", .datetime)
-            .field("user_id", .uuid, .required, .references("person", "id"))
+            .field("user_id", .uuid, .required, .references("user_info", "id"))
             .field("token", .string, .required)
             .unique(on: "token")
             .create()

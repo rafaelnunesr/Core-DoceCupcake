@@ -6,9 +6,7 @@ struct SignInController: RouteCollection {
     private let dependencyProvider: DependencyProviderProtocol
     private let database: Database
 
-    @MainActor
-    init(dependencyProvider: DependencyProviderProtocol = DependencyProvider.shared,
-         database: Database) {
+    init(dependencyProvider: DependencyProviderProtocol, database: Database) {
         self.dependencyProvider = dependencyProvider
         self.database = database
     }
@@ -18,7 +16,6 @@ struct SignInController: RouteCollection {
         signInRoutes.post(use: signIn)
     }
 
-    @Sendable
     func signIn(req: Request) async throws -> Response {
         guard let bodyData = req.body.data else { return Response(status: .badRequest) }
         let model = try JSONDecoder().decode(SignInModel.self, from: bodyData)
@@ -32,7 +29,7 @@ struct SignInController: RouteCollection {
     }
 
     private func getUserId(_ model: SignInModel) async throws -> UUID? {
-        let result = try await Person.query(on: database)
+        let result = try await UserInfo.query(on: database)
                 .filter(\.$email == model.email)
                 .first()
 
@@ -45,12 +42,18 @@ struct SignInController: RouteCollection {
 
     private func createSectionForUser(email: String, userId: UUID) async throws -> Data {
         let sectionToken = getSectionToken()
-        let sectionModel = InternalSectionModel(userId: userId,
-                                                token: sectionToken)
+        let sectionModel = InternalSectionModel(userId: userId, token: sectionToken)
 
+        do {
+            if let previousSection = try await getPreviousSection(userId: userId) {
+                let _ = try await previousSection.delete(on: database)
+            }
 
-
-        let _ = try await sectionModel.save(on: database)
+            let _ = try await sectionModel.create(on: database)
+        } catch {
+            //app.logger.report(error: error)
+            throw error
+        }
 
         return try JSONEncoder().encode(ResponseSectionModel(userId: String(userId), 
                                                              sectionToken: sectionToken))
@@ -59,5 +62,11 @@ struct SignInController: RouteCollection {
     private func getSectionToken() -> String {
         let sectionTokenGenerator = dependencyProvider.getSectionTokenGeneratorInstance()
         return sectionTokenGenerator.getToken()
+    }
+
+    private func getPreviousSection(userId: UUID) async throws -> InternalSectionModel? {
+        return try await InternalSectionModel.query(on: database)
+            .filter(\.$userId == userId)
+            .first()
     }
 }

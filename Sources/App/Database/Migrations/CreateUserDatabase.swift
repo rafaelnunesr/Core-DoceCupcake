@@ -1,7 +1,7 @@
 import Fluent
 
 struct CreateUserDatabase: AsyncMigration {
-    private let databaseName = "person"
+    private let databaseName = "user_info"
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)

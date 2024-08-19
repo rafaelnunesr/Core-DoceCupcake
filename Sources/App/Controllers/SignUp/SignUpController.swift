@@ -33,7 +33,7 @@ struct SignUpController: RouteCollection {
     }
 
     private func isUserAlreadyRegistered(with email: String) async throws -> Bool {
-        return try await Person.query(on: database)
+        return try await UserInfo.query(on: database)
             .filter(\.$email == email)
             .first() != nil
     }
@@ -43,14 +43,7 @@ struct SignUpController: RouteCollection {
     }
 
     private func createUser(with model: SignUpModel) {
-        let userModel = Person(userName: model.userName,
-                               email: model.email,
-                               password: model.password,
-                               state: model.state,
-                               city: model.city,
-                               address: model.address,
-                               addressComplement: model.addressComplement)
-
+        let userModel = UserInfo(from: model)
         let _ = userModel.create(on: database)
     }
 }
