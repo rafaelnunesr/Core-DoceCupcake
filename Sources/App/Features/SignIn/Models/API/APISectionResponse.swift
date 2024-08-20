@@ -1,7 +1,7 @@
-import Foundation
+import Vapor
 
-struct ResponseSectionModel: Codable {
-    let userId: String
+struct APISectionResponse: Content {
+    let userId: UUID
     let sectionToken: String
 
     enum CodingKeys: String, CodingKey {

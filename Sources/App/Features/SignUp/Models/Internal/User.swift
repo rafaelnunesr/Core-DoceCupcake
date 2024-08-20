@@ -1,8 +1,8 @@
 import Fluent
 import Vapor
 
-final class UserInfo: Model {
-    static let schema = "user_info"
+final class User: Model {
+    static let schema = "users"
 
     @ID(key: .id)
     var id: UUID?
@@ -54,8 +54,8 @@ final class UserInfo: Model {
     }
 }
 
-extension UserInfo {
-    convenience init(from model: SignUpModel) {
+extension User {
+    convenience init(from model: APISignUpModel) {
         self.init(userName: model.userName,
                   email: model.email,
                   password: model.password,

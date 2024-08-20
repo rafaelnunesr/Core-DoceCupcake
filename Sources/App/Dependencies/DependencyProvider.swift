@@ -2,10 +2,17 @@ import Fluent
 import FluentPostgresDriver
 import Vapor
 
-final class DependencyProvider: DependencyProviderProtocol {
-    private let app: Application
+protocol DependencyProviderProtocol {
+    func getSectionTokenGeneratorInstance() -> SectionTokenGeneratorProtocol
+    func getDatabaseInstance() -> Database
+    func getAppInstance() -> ApplicationProtocol
+}
 
-    init(app: Application) {
+
+final class DependencyProvider: DependencyProviderProtocol {
+    private let app: ApplicationProtocol
+
+    init(app: ApplicationProtocol) {
         self.app = app
     }
 
@@ -13,5 +20,13 @@ final class DependencyProvider: DependencyProviderProtocol {
 
     func getSectionTokenGeneratorInstance() -> SectionTokenGeneratorProtocol {
         SectionTokenGenerator()
+    }
+
+    func getDatabaseInstance() -> any Database {
+        app.db
+    }
+
+    func getAppInstance() -> ApplicationProtocol {
+        app
     }
 }

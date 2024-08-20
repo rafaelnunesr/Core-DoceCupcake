@@ -1,4 +1,4 @@
-struct SignInModel: Codable {
+struct APISignInModel: Codable {
     let email: String
     let password: String
 }

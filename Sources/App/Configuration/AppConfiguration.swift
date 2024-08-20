@@ -1,16 +1,16 @@
 import Vapor
 
-protocol ConfigurationProtocol {
+protocol AppConfigurationProtocol {
     func initialSetup() async throws
 }
 
-final class Configuration: ConfigurationProtocol {
+final class AppConfiguration: AppConfigurationProtocol {
     private let dependencyProvider: DependencyProviderProtocol
-    private let app: Application
+    private let app: ApplicationProtocol
 
-    init(dependencyProvider: DependencyProviderProtocol, app: Application) {
+    init(dependencyProvider: DependencyProviderProtocol) {
         self.dependencyProvider = dependencyProvider
-        self.app = app
+        self.app = dependencyProvider.getAppInstance()
     }
 
     func initialSetup() async throws {
@@ -43,7 +43,7 @@ final class Configuration: ConfigurationProtocol {
     }
 
     private func addMigrations() {
-        app.migrations.add(CreateUserDatabase())
+        app.migrations.add(CreateUsersDatabase())
         app.migrations.add(CreateSectionDatabase())
     }
 
@@ -53,12 +53,15 @@ final class Configuration: ConfigurationProtocol {
     }
 
     private func registerSignInController() throws {
-        try app.register(collection: SignInController(dependencyProvider: dependencyProvider,
-                                                      database: app.db))
+        let respository = SignInRepository(dependencyProvider: dependencyProvider)
+        let controller = SignInController(dependencyProvider: dependencyProvider, repository: respository)
+        try app.register(collection: controller)
     }
 
     private func registerSignUpController() async throws {
-        try app.register(collection: SignUpController(database: app.db))
+        let repository = SignUpRepository(dependencyProvider: dependencyProvider)
+        try app.register(collection: SignUpController(dependencyProvider: dependencyProvider,
+                                                      repository: repository))
     }
 
     enum Constants {

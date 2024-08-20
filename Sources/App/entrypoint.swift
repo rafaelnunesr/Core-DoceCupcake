@@ -19,8 +19,7 @@ enum Entrypoint {
         // app.logger.debug("Tried to install SwiftNIO's EventLoopGroup as Swift's global concurrency executor", metadata: ["success": .stringConvertible(executorTakeoverSuccess)])
         
         let dependencyProvider = DependencyProvider(app: app)
-        let configuration = Configuration(dependencyProvider: dependencyProvider, app: app)
-
+        let configuration = AppConfiguration(dependencyProvider: dependencyProvider)
         try await configuration.initialSetup()
         try await app.execute()
         try await app.asyncShutdown()
