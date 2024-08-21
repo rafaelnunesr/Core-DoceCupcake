@@ -17,7 +17,7 @@ final class AppConfiguration: AppConfigurationProtocol {
         setupDatabase()
         
         do {
-            try await self.registerControllers()
+            try self.registerControllers()
         } catch {
             app.logger.report(error: error)
             try? await app.asyncShutdown()
@@ -45,11 +45,14 @@ final class AppConfiguration: AppConfigurationProtocol {
     private func addMigrations() {
         app.migrations.add(CreateUsersDatabase())
         app.migrations.add(CreateSectionDatabase())
+        app.migrations.add(CreateProductDatabase())
     }
 
-    private func registerControllers() async throws {
+    private func registerControllers() throws {
         try registerSignInController()
-        try await registerSignUpController()
+        try registerSignUpController()
+        try registerProductController()
+        try registerProductTagsController()
     }
 
     private func registerSignInController() throws {
@@ -58,10 +61,22 @@ final class AppConfiguration: AppConfigurationProtocol {
         try app.register(collection: controller)
     }
 
-    private func registerSignUpController() async throws {
+    private func registerSignUpController() throws {
         let repository = SignUpRepository(dependencyProvider: dependencyProvider)
         try app.register(collection: SignUpController(dependencyProvider: dependencyProvider,
                                                       repository: repository))
+    }
+
+    private func registerProductController() throws {
+        let repository = ProductRepository(dependencyProvider: dependencyProvider)
+        try app.register(collection: ProductController(dependencyProvider: dependencyProvider,
+                                                       repository: repository))
+    }
+
+    private func registerProductTagsController() throws {
+        let repository = ProductTagsRepository(dependencyProvider: dependencyProvider)
+        try app.register(collection: ProductTagsController(dependencyProvider: dependencyProvider,
+                                                           repository: repository))
     }
 
     enum Constants {
