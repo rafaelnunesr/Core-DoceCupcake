@@ -45,14 +45,15 @@ final class AppConfiguration: AppConfigurationProtocol {
     private func addMigrations() {
         app.migrations.add(CreateUsersDatabase())
         app.migrations.add(CreateSectionDatabase())
-        app.migrations.add(CreateProductDatabase())
+        app.migrations.add(CreateProductTagDatabase())
+        //app.migrations.add(CreateProductDatabase())
     }
 
     private func registerControllers() throws {
         try registerSignInController()
         try registerSignUpController()
-        try registerProductController()
         try registerProductTagsController()
+        //try registerProductController()
     }
 
     private func registerSignInController() throws {

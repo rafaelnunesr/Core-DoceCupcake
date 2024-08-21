@@ -21,3 +21,11 @@ final class InternalProductTagModel: Model, Content {
         self.description = description
     }
 }
+
+extension InternalProductTagModel {
+    convenience init(from model: APIProductTagModel) {
+        self.init(code: model.code,
+                  description: model.description
+        )
+    }
+}

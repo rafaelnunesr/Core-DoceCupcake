@@ -15,9 +15,32 @@ struct ProductController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let productRoutes = routes.grouped("productList")
         productRoutes.get(use: getProductList)
+        productRoutes.get(":id", use: getProduct)
+        productRoutes.post(use: createNewProduct)
+        productRoutes.put(use: updateProduct)
+        productRoutes.delete(use: deleteProduct)
     }
 
-    func getProductList(req: Request) async throws -> APIProductResponse {
+    private func getProductList(req: Request) async throws -> APIProductResponse {
         return APIProductResponse(id: "1", name: "Chocolate", description: "Super", originalPrice: 1.99, currentPrice: 1.99, currentDiscount: 0, stockCount: 10, launchDate: "10/08/2023", tags: [], allergicTags: [], nutritionalInformations: [])
+    }
+
+    private func getProduct(req: Request) async throws -> String {
+        .empty
+    }
+
+    private func createNewProduct(req: Request) async throws -> String {
+        // check user privilegies
+        .empty
+    }
+
+    private func updateProduct(req: Request) async throws -> String {
+        // check user privilegies
+        .empty
+    }
+
+    private func deleteProduct(req: Request) async throws -> String {
+        // check user privilegies
+        .empty
     }
 }

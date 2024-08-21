@@ -7,7 +7,7 @@ struct APIProductResponse: Content {
     let originalPrice: Double
     let currentPrice: Double
     let currentDiscount: Double
-    let stockCount: Int
+    let stockCount: Double
     let launchDate: String
     let tags: [APIProductTagResponse]
     let allergicTags: [APIProductTagResponse]

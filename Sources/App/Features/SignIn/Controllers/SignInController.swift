@@ -18,10 +18,7 @@ struct SignInController: RouteCollection {
     }
 
     func signIn(req: Request) async throws -> APISectionResponse {
-        guard let bodyData = req.body.data else {
-            throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
-        }
-        let model = try JSONDecoder().decode(APISignInModel.self, from: bodyData)
+        let model: APISignInModel = try convertRequestDataToModel(req: req)
 
         guard let userId = try await getUserId(model) else {
             throw Abort(.unauthorized, reason: APIErrorMessage.Credentials.invalidCredentials)

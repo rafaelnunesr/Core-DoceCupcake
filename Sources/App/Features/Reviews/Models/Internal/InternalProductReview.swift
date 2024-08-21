@@ -1,0 +1,62 @@
+import Fluent
+import Vapor
+
+final class InternalProductReview: Model, Content {
+    static let schema = "product_review"
+
+    @ID(key: .id)
+    var id: UUID?
+
+    @Timestamp(key: "created_at", on: .create)
+    var createdAt: Date?
+
+    @Field(key: "order_id")
+    var orderId: UUID
+
+    @Field(key: "user_id")
+    var userId: UUID
+
+    @Field(key: "product_id")
+    var productId: UUID
+
+    @Field(key: "rate")
+    var rate: Int
+
+    @Field(key: "title")
+    var title: String
+
+    @Field(key: "text")
+    var text: String
+
+    internal init() {}
+
+    init(id: UUID? = nil,
+         createdAt: Date? = nil,
+         orderId: UUID,
+         userId: UUID,
+         productId: UUID,
+         rate: Int,
+         title: String,
+         text: String) {
+        self.id = id
+        self.createdAt = createdAt
+        self.orderId = orderId
+        self.userId = userId
+        self.productId = productId
+        self.rate = rate
+        self.title = title
+        self.text = text
+    }
+
+}
+
+extension InternalProductReview {
+    convenience init(from review: APICreateReviewModel) {
+        self.init(orderId: review.orderId,
+                  userId: UUID(), // change
+                  productId: review.productId,
+                  rate: review.rate,
+                  title: review.title,
+                  text: review.text)
+    }
+}

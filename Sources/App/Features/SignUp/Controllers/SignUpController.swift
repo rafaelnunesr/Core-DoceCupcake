@@ -17,28 +17,26 @@ struct SignUpController: RouteCollection {
     }
 
     @Sendable
-    func signUp(req: Request) async throws -> APICreateUserResponse {
-        guard let bodyData = req.body.data else {
-            throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
-        }
-        let model = try JSONDecoder().decode(APISignUpModel.self, from: bodyData)
+    func signUp(req: Request) async throws -> APIGenericMessageResponse {
+        let model: APISignUpModel = try convertRequestDataToModel(req: req)
 
-        let userId = try await repository.getUserId(with: model.email)
-
-        guard userId == nil else {
+        guard try await repository.getUserId(with: model.email) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Credentials.userAlreadyRegistered)
         }
 
         if !areCredentialsValid(model) {
             throw Abort(.badRequest, reason: APIErrorMessage.Credentials.invalidCredentials)
         }
-        
-        let newUser = User(from: model)
 
-        return APICreateUserResponse(message: "Welcome")
+        try await repository.createUser(with: User(from: model))
+        return APIGenericMessageResponse(message: Constants.welcomeMessage)
     }
 
     private func areCredentialsValid(_ model: APISignUpModel) -> Bool {
         model.email.isValidEmail && model.password.isValidPassword
+    }
+
+    private enum Constants {
+        static let welcomeMessage = "Account created with success"
     }
 }
