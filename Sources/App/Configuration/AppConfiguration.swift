@@ -46,14 +46,16 @@ final class AppConfiguration: AppConfigurationProtocol {
         app.migrations.add(CreateUsersDatabase())
         app.migrations.add(CreateSectionDatabase())
         app.migrations.add(CreateProductTagDatabase())
-        //app.migrations.add(CreateProductDatabase())
+        app.migrations.add(CreateProductDatabase())
+        app.migrations.add(CreateProductReviewDatabase())
     }
 
     private func registerControllers() throws {
         try registerSignInController()
         try registerSignUpController()
+        try registerProductController()
         try registerProductTagsController()
-        //try registerProductController()
+        try registerProductReviewController()
     }
 
     private func registerSignInController() throws {
@@ -64,20 +66,37 @@ final class AppConfiguration: AppConfigurationProtocol {
 
     private func registerSignUpController() throws {
         let repository = SignUpRepository(dependencyProvider: dependencyProvider)
-        try app.register(collection: SignUpController(dependencyProvider: dependencyProvider,
-                                                      repository: repository))
+        let controller = SignUpController(dependencyProvider: dependencyProvider,
+                                          repository: repository)
+        try app.register(collection: controller)
     }
 
     private func registerProductController() throws {
-        let repository = ProductRepository(dependencyProvider: dependencyProvider)
-        try app.register(collection: ProductController(dependencyProvider: dependencyProvider,
-                                                       repository: repository))
+        let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
+        let tagRepository = ProductTagsRepository(dependencyProvider: dependencyProvider)
+
+        let controller = ProductController(dependencyProvider: dependencyProvider,
+                                           productRepository: productRepository,
+                                           tagsRepository: tagRepository)
+        try app.register(collection: controller)
     }
 
     private func registerProductTagsController() throws {
         let repository = ProductTagsRepository(dependencyProvider: dependencyProvider)
-        try app.register(collection: ProductTagsController(dependencyProvider: dependencyProvider,
-                                                           repository: repository))
+        let controller = ProductTagsController(dependencyProvider: dependencyProvider,
+                                               repository: repository)
+        try app.register(collection: controller)
+    }
+
+    private func registerProductReviewController() throws {
+        let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
+        let reviewRepository = ReviewRepository(dependencyProvider: dependencyProvider)
+
+        let controller = ReviewController(dependencyProvider: dependencyProvider,
+                                          productRepository: productRepository,
+                                          reviewRepository: reviewRepository)
+
+        try app.register(collection: controller)
     }
 
     enum Constants {

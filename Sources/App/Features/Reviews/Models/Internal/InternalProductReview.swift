@@ -11,13 +11,13 @@ final class InternalProductReview: Model, Content {
     var createdAt: Date?
 
     @Field(key: "order_id")
-    var orderId: UUID
+    var orderId: String
 
     @Field(key: "user_id")
-    var userId: UUID
+    var userId: String
 
     @Field(key: "product_id")
-    var productId: UUID
+    var productId: String
 
     @Field(key: "rate")
     var rate: Int
@@ -32,9 +32,9 @@ final class InternalProductReview: Model, Content {
 
     init(id: UUID? = nil,
          createdAt: Date? = nil,
-         orderId: UUID,
-         userId: UUID,
-         productId: UUID,
+         orderId: String,
+         userId: String,
+         productId: String,
          rate: Int,
          title: String,
          text: String) {
@@ -53,7 +53,7 @@ final class InternalProductReview: Model, Content {
 extension InternalProductReview {
     convenience init(from review: APICreateReviewModel) {
         self.init(orderId: review.orderId,
-                  userId: UUID(), // change
+                  userId: review.userId,
                   productId: review.productId,
                   rate: review.rate,
                   title: review.title,

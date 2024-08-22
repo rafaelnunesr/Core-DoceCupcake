@@ -8,6 +8,7 @@ struct CreateProductTagDatabase: AsyncMigration {
             .id()
             .field("code", .string, .required)
             .field("description", .string, .required)
+            .unique(on: "code")
             .create()
     }
 

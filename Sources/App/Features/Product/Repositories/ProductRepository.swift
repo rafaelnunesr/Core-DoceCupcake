@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Vapor
 
 protocol ProductRepositoryProtocol {
-    func getProduct(with id: UUID) async throws -> InternalProductModel?
+    func getProduct(with id: String) async throws -> InternalProductModel?
     func getProductList() async throws -> [InternalProductModel]
     func createProduct(_ product: InternalProductModel) async throws
     func updateProduct(_ product: InternalProductModel) async throws
@@ -18,9 +18,9 @@ final class ProductRepository: ProductRepositoryProtocol {
         database = dependencyProvider.getDatabaseInstance()
     }
 
-    func getProduct(with id: UUID) async throws -> InternalProductModel? {
+    func getProduct(with id: String) async throws -> InternalProductModel? {
         try await InternalProductModel.query(on: database)
-            .filter(\.$id == id)
+            .filter(\.$productId == id)
             .first()
     }
 

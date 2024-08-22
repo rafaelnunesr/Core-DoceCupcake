@@ -1,14 +1,14 @@
 import Vapor
 
 struct APIProductResponse: Content {
-    let id: String
+    var id: String
     let name: String
     let description: String
-    let originalPrice: Double
+    var originalPrice: Double?
     let currentPrice: Double
-    let currentDiscount: Double
+    var currentDiscount: Double?
     let stockCount: Double
-    let launchDate: String
+    let launchDate: Date?
     let tags: [APIProductTagResponse]
     let allergicTags: [APIProductTagResponse]
     let nutritionalInformations: [APINutritionalInformation]
@@ -25,5 +25,21 @@ struct APIProductResponse: Content {
         case tags
         case allergicTags = "allergic_tags"
         case nutritionalInformations = "nutritional_informations"
+    }
+}
+
+extension APIProductResponse {
+    init(from product: InternalProductModel) {
+        id = product.productId
+        name = product.name
+        description = product.description
+        originalPrice = product.originalPrice
+        currentPrice = product.currentPrice
+        currentDiscount = product.currentDiscount
+        stockCount = product.stockCount
+        launchDate = product.launchDate
+        tags = [] // fix this
+        allergicTags = [] // fix this
+        nutritionalInformations = [] // fix this
     }
 }

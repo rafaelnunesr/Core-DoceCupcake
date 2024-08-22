@@ -2,9 +2,9 @@ import Vapor
 
 struct APIReviewResponse: Content {
     let createdAt: Date?
-    let orderId: UUID
-    let userId: UUID
-    let productId: UUID
+    let orderId: String
+    let userId: String
+    let productId: String
     let rate: Int
     let title: String
     let text: String
