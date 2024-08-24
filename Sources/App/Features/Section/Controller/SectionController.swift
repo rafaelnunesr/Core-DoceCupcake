@@ -8,7 +8,6 @@ protocol SectionControllerProtocol {
     func deleteSection(for userId: UUID) async throws
 }
 
-
 struct SectionController: SectionControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: SectionRepositoryProtocol

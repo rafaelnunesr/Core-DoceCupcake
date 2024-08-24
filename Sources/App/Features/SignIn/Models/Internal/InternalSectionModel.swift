@@ -19,17 +19,22 @@ final class InternalSectionModel: Model, Content {
     @Field(key: "token")
     var token: String
 
+    @Field(key: "is_manager")
+    var isManager: Bool
+
     internal init() { }
 
     init(id: UUID? = nil, 
          createdAt: Date? = nil,
          expiryDate: Date? = nil,
          userId: UUID,
-         token: String) {
+         token: String,
+         isManager: Bool) {
         self.id = id
         self.createdAt = createdAt
         self.expiryDate = expiryDate
         self.userId = userId
         self.token = token
+        self.isManager = isManager
     }
 }

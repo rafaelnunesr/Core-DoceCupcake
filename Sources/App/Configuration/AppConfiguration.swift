@@ -51,6 +51,7 @@ final class AppConfiguration: AppConfigurationProtocol {
     private func addUserMidrations() {
         app.migrations.add(CreateUsersMigration())
         app.migrations.add(CreateSectionMigration())
+        app.migrations.add(CreateManagerMigration())
     }
 
     private func addProductMigrations() {
@@ -61,7 +62,7 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     private func registerControllers() throws {
-        //try registerUserGroupControllers()
+        try registerUserGroupControllers()
         try registerProductGroupControllers()
     }
 

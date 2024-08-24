@@ -10,6 +10,7 @@ struct CreateSectionMigration: AsyncMigration {
             .field("expiry_date", .datetime)
             .field("user_id", .uuid, .required, .references("users", "id"))
             .field("token", .string, .required)
+            .field("is_manager", .bool, .required)
             .unique(on: "token")
             .create()
     }
