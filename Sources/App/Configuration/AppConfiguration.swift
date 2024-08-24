@@ -91,15 +91,17 @@ final class AppConfiguration: AppConfigurationProtocol {
 
     private func registerProductController() throws {
         let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
-        let tagRepository = ProductTagsRepository(dependencyProvider: dependencyProvider)
         let nutritionalRepository = NutritionalRepository(dependencyProvider: dependencyProvider)
+
+        let tagRepository = ProductTagsRepository(dependencyProvider: dependencyProvider)
+        let tagController = ProductTagsController(dependencyProvider: dependencyProvider, repository: tagRepository)
 
         let nutritionalController = NutritionalController(dependencyProvider: dependencyProvider,
                                                           repository: nutritionalRepository)
 
         let controller = ProductController(dependencyProvider: dependencyProvider,
                                            productRepository: productRepository,
-                                           tagsRepository: tagRepository,
+                                           tagsController: tagController,
                                            nutritionalController: nutritionalController)
 
         try app.register(collection: controller)

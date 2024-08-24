@@ -2,7 +2,12 @@ import FluentPostgresDriver
 import Foundation
 import Vapor
 
-struct ProductTagsController: RouteCollection {
+protocol ProductTagsControllerProtocol: RouteCollection {
+    func areTagCodesValid(_ tagCodeList: [String]) async throws -> Bool
+    func getTagsFor(_ tagCodeList: [String]) async throws -> [InternalProductTagModel]
+}
+
+struct ProductTagsController: ProductTagsControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: ProductTagsRepositoryProtocol
 
@@ -49,6 +54,28 @@ struct ProductTagsController: RouteCollection {
         try await repository.deleteTag(tagModel)
 
         return APIGenericMessageResponse(message: Constants.tagDeleted)
+    }
+
+    func areTagCodesValid(_ tagCodeList: [String]) async throws -> Bool {
+        for code in tagCodeList {
+            guard try await repository.getTag(with: code) != nil else {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    func getTagsFor(_ tagCodeList: [String]) async throws -> [InternalProductTagModel] {
+        var tagModels = [InternalProductTagModel]()
+
+        for code in tagCodeList {
+            if let result = try await repository.getTag(with: code) {
+                tagModels.append(result)
+            }
+        }
+
+        return tagModels
     }
 
     private enum Constants {

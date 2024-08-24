@@ -9,9 +9,9 @@ struct APIProductResponse: Content {
     var currentDiscount: Double?
     let stockCount: Double
     let launchDate: Date?
-    let tags: [APIProductTagModel]
-    let allergicTags: [APIProductTagModel]
-    let nutritionalInformations: [APINutritionalInformation]
+    var tags: [APIProductTagModel]
+    var allergicTags: [APIProductTagModel]
+    var nutritionalInformations: [APINutritionalInformation]
 
     enum CodingKeys: String, CodingKey {
         case id
