@@ -11,3 +11,11 @@ struct APINutritionalInformation: Content, Codable {
         case dailyRepresentation = "daily_representation"
     }
 }
+
+extension APINutritionalInformation {
+    init(from model: InternalNutritionalModel) {
+        name = model.name
+        quantityDescription = model.quantityDescription
+        dailyRepresentation = model.dailyRepresentation
+    }
+}

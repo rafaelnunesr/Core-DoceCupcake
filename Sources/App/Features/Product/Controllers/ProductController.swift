@@ -60,6 +60,7 @@ struct ProductController: RouteCollection {
         var productResponse = APIProductResponse(from: product)
         productResponse.tags = tagsModels.map { APIProductTagModel(from: $0) }
         productResponse.allergicTags = allergicModels.map { APIProductTagModel(from: $0) }
+        productResponse.nutritionalInformations = nutritionalModel.map { APINutritionalInformation(from: $0) }
 
         return productResponse
     }
