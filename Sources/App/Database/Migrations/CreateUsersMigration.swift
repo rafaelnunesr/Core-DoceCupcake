@@ -1,6 +1,6 @@
 import Fluent
 
-struct CreateUsersDatabase: AsyncMigration {
+struct CreateUsersMigration: AsyncMigration {
     private let databaseName = "users"
 
     func prepare(on database: Database) async throws {

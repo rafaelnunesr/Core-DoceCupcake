@@ -1,6 +1,6 @@
 import Fluent
 
-struct CreateProductTagDatabase: AsyncMigration {
+struct CreateProductTagMigration: AsyncMigration {
     private let databaseName = "product_tag"
 
     func prepare(on database: Database) async throws {

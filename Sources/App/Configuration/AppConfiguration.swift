@@ -48,15 +48,15 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     private func addUserMidrations() {
-        app.migrations.add(CreateUsersDatabase())
-        app.migrations.add(CreateSectionDatabase())
+        app.migrations.add(CreateUsersMigration())
+        app.migrations.add(CreateSectionMigration())
     }
 
     private func addProductMigrations() {
-        app.migrations.add(CreateNutritionalDatabase())
-        app.migrations.add(CreateProductTagDatabase())
-        app.migrations.add(CreateProductDatabase())
-        //app.migrations.add(CreateProductReviewDatabase())
+        app.migrations.add(CreateNutritionalMigration())
+        app.migrations.add(CreateProductTagMigration())
+        app.migrations.add(CreateProductMigration())
+        //app.migrations.add(CreateProductReviewMigration())
     }
 
     private func registerControllers() throws {
