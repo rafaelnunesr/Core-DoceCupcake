@@ -1,13 +1,13 @@
 import Vapor
 
-struct APIProductTagResponse: Content {
+struct APIProductTagModel: Content, Codable {
     let code: String
     let description: String
 }
 
-extension APIProductTagResponse {
-    init(from tag: InternalProductTagModel) {
-        code = tag.code
-        description = tag.description
+extension APIProductTagModel{
+    init(from model: InternalProductTagModel) {
+        code = model.code
+        description = model.description
     }
 }

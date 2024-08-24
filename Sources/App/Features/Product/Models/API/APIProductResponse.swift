@@ -9,8 +9,8 @@ struct APIProductResponse: Content {
     var currentDiscount: Double?
     let stockCount: Double
     let launchDate: Date?
-    let tags: [APIProductTagResponse]
-    let allergicTags: [APIProductTagResponse]
+    let tags: [APIProductTagModel]
+    let allergicTags: [APIProductTagModel]
     let nutritionalInformations: [APINutritionalInformation]
 
     enum CodingKeys: String, CodingKey {

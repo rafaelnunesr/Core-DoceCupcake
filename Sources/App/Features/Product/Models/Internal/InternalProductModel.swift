@@ -4,7 +4,8 @@ import Vapor
 final class InternalProductModel: Model {
     static let schema = "product"
 
-    var id: String?
+    @ID(key: .id)
+    var id: UUID?
 
     @Field(key: "product_id")
     var productId: String
@@ -42,55 +43,55 @@ final class InternalProductModel: Model {
     @Field(key: "allergic_tags")
     var allergicTags: [String]
 
-    @Field(key: "nutritional_informations")
-    var nutritionalInformations: String // update this
+    @Field(key: "nutritional_ids")
+    var nutritionalIds: [UUID]
 
     internal init() { }
 
-    init(id: String? = nil,
+    init(id: UUID? = nil,
          productId: String,
          code: String,
-         createdAt: Date,
+         createdAt: Date? = nil,
          name: String,
          description: String,
          currentPrice: Double,
          originalPrice: Double?,
          currentDiscount: Double?,
          stockCount: Double,
-         launchDate: Date,
+         launchDate: Date?,
          tags: [String],
          allergicTags: [String],
-         nutritionalInformations: String) {
+         nutritionalIds: [UUID]) {
         self.id = id
         self.productId = productId
         self.code = code
         self.createdAt = createdAt
         self.name = name
         self.description = description
+        self.currentPrice = currentPrice
         self.originalPrice = originalPrice
         self.currentDiscount = currentDiscount
         self.stockCount = stockCount
         self.launchDate = launchDate
         self.tags = tags
         self.allergicTags = allergicTags
-        self.nutritionalInformations = nutritionalInformations
+        self.nutritionalIds = nutritionalIds
     }
 }
 
 extension InternalProductModel {
-    convenience init(from product: APIProductModel) {
+    convenience init(from product: APIProductModel, nutritionalIds: [UUID]) {
         self.init(productId: product.id,
                   code: product.code,
-                  createdAt: Date(), // review this
                   name: product.name,
                   description: product.description,
                   currentPrice: product.currentPrice,
-                  originalPrice: product.currentPrice,
+                  originalPrice: product.originalPrice,
                   currentDiscount: product.currentDiscount,
                   stockCount: product.stockCount,
-                  launchDate: Date(), // review this,
-                  tags: product.tags,
-                  allergicTags: product.allergicTags,
-                  nutritionalInformations: product.nutritionalInformations)
+                  launchDate: product.launchDate.dateValue,
+                  tags: product.tags.map { $0.code },
+                  allergicTags: product.allergicTags.map { $0.code },
+                  nutritionalIds: nutritionalIds)
     }
 }

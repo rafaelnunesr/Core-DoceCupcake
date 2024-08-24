@@ -16,4 +16,11 @@ extension String {
         let passwordPred = NSPredicate(format:"SELF MATCHES %@", passwordRegex)
         return passwordPred.evaluate(with: self)
     }
+
+    @inlinable var dateValue: Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/dd/yyyy"
+        return dateFormatter.date(from: self)
+    }
 }
+

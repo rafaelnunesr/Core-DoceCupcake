@@ -21,7 +21,7 @@ struct ProductTagsController: RouteCollection {
 
     private func getProductTagsList(req: Request) async throws -> APIProductTagListResponse {
         let result = try await repository.getAllTags()
-        let tags = result.map { APIProductTagResponse(from: $0) }
+        let tags = result.map { APIProductTagModel(from: $0) }
         return APIProductTagListResponse(count: tags.count, tags: tags)
     }
 

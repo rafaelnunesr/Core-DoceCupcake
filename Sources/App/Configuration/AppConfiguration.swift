@@ -43,20 +43,38 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     private func addMigrations() {
+        //addUserMidrations()
+        addProductMigrations()
+    }
+
+    private func addUserMidrations() {
         app.migrations.add(CreateUsersDatabase())
         app.migrations.add(CreateSectionDatabase())
+    }
+
+    private func addProductMigrations() {
+        app.migrations.add(CreateNutritionalDatabase())
         app.migrations.add(CreateProductTagDatabase())
         app.migrations.add(CreateProductDatabase())
-        app.migrations.add(CreateProductReviewDatabase())
+        //app.migrations.add(CreateProductReviewDatabase())
     }
 
     private func registerControllers() throws {
+        //try registerUserGroupControllers()
+        try registerProductGroupControllers()
+    }
+
+    private func registerUserGroupControllers() throws {
         try registerSignInController()
         try registerSignUpController()
+    }
+    
+    private func registerProductGroupControllers() throws {
         try registerProductController()
         try registerProductTagsController()
         try registerProductReviewController()
     }
+
 
     private func registerSignInController() throws {
         let respository = SignInRepository(dependencyProvider: dependencyProvider)
@@ -74,10 +92,16 @@ final class AppConfiguration: AppConfigurationProtocol {
     private func registerProductController() throws {
         let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
         let tagRepository = ProductTagsRepository(dependencyProvider: dependencyProvider)
+        let nutritionalRepository = NutritionalRepository(dependencyProvider: dependencyProvider)
+
+        let nutritionalController = NutritionalController(dependencyProvider: dependencyProvider,
+                                                          repository: nutritionalRepository)
 
         let controller = ProductController(dependencyProvider: dependencyProvider,
                                            productRepository: productRepository,
-                                           tagsRepository: tagRepository)
+                                           tagsRepository: tagRepository,
+                                           nutritionalController: nutritionalController)
+
         try app.register(collection: controller)
     }
 

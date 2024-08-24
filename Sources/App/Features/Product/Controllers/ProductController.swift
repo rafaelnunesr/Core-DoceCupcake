@@ -6,13 +6,16 @@ struct ProductController: RouteCollection {
     private let dependencyProvider: DependencyProviderProtocol
     private let productRepository: ProductRepositoryProtocol
     private let tagsRepository: ProductTagsRepositoryProtocol
+    private let nutritionalController: NutritionalControllerProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
          productRepository: ProductRepositoryProtocol,
-         tagsRepository: ProductTagsRepositoryProtocol) {
+         tagsRepository: ProductTagsRepositoryProtocol,
+         nutritionalController: NutritionalControllerProtocol) {
         self.dependencyProvider = dependencyProvider
         self.productRepository = productRepository
         self.tagsRepository = tagsRepository
+        self.nutritionalController = nutritionalController
     }
 
     func boot(routes: RoutesBuilder) throws {
@@ -50,19 +53,28 @@ struct ProductController: RouteCollection {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
-        for tagCode in model.tags {
-            guard try await tagsRepository.getTag(with: tagCode) != nil else {
-                throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
+        for tag in model.tags {
+            guard try await tagsRepository.getTag(with: tag.code) != nil else {
+                throw Abort(.badRequest, reason: APIErrorMessage.Product.invalidProductTag)
             }
         }
 
-        for allergicTagCode in model.allergicTags {
-            guard try await tagsRepository.getTag(with: allergicTagCode) != nil else {
-                throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
+        for tag in model.allergicTags {
+            guard try await tagsRepository.getTag(with: tag.code) != nil else {
+                throw Abort(.badRequest, reason: APIErrorMessage.Product.invalidProductTag)
             }
         }
 
-        try await productRepository.createProduct(InternalProductModel(from: model))
+        var nutritionalIds = [UUID]()
+        for nutritionalModel in model.nutritionalInformations {
+            let result = try await nutritionalController.saveNutritionalModel(InternalNutritionalModel(from: nutritionalModel))
+            if let id = result.id {
+                nutritionalIds.append(id)
+            }
+        }
+
+        let internalProduct = InternalProductModel(from: model, nutritionalIds: nutritionalIds)
+        try await productRepository.createProduct(internalProduct)
 
         return APIGenericMessageResponse(message: Constants.productCreated)
     }

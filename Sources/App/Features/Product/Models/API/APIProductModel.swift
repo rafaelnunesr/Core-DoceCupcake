@@ -9,8 +9,23 @@ struct APIProductModel: Codable {
     let currentPrice: Double
     var currentDiscount: Double?
     let stockCount: Double
-    var launchDate: Date?
-    var tags: [String]
-    var allergicTags: [String]
-    var nutritionalInformations: String
+    var launchDate: String
+    var tags: [APITagModel]
+    var allergicTags: [APITagModel]
+    var nutritionalInformations: [APINutritionalInformation]
+
+    enum CodingKeys: String, CodingKey {
+        case id = "product_id"
+        case code
+        case name
+        case description
+        case originalPrice = "original_price"
+        case currentPrice = "current_price"
+        case currentDiscount = "current_discount"
+        case stockCount = "stock_count"
+        case launchDate = "launch_date"
+        case tags
+        case allergicTags = "allergic_tags"
+        case nutritionalInformations = "nutritional_informations"
+    }
 }
