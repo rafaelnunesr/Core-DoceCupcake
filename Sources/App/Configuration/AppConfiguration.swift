@@ -4,6 +4,7 @@ protocol AppConfigurationProtocol {
     func initialSetup() async throws
 }
 
+
 final class AppConfiguration: AppConfigurationProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let app: ApplicationProtocol
