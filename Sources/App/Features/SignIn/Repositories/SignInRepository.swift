@@ -27,7 +27,7 @@ final class SignInRepository: SignInRepositoryProtocol {
         }
 
         let sectionToken = getSectionToken()
-        let sectionModel = InternalSectionModel(userId: userId, token: sectionToken)
+        let sectionModel = InternalSectionModel(userId: userId, token: sectionToken, isManager: false) // change this
         try await sectionModel.create(on: database)
 
         return sectionModel
@@ -48,4 +48,3 @@ final class SignInRepository: SignInRepositoryProtocol {
         return sectionTokenGenerator.getToken()
     }
 }
-

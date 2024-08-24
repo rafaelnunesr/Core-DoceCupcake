@@ -28,7 +28,7 @@ final class SectionRepository: SectionRepositoryProtocol {
         }
 
         let sectionToken = "" // todo
-        let sectionModel = InternalSectionModel(userId: userId, token: sectionToken)
+        let sectionModel = InternalSectionModel(userId: userId, token: sectionToken, isManager: false) // change this
         try await sectionModel.create(on: database)
 
         return sectionModel
