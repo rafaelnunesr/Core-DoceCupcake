@@ -44,7 +44,7 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     private func addMigrations() {
-        //addUserMidrations()
+        addUserMidrations()
         addProductMigrations()
     }
 
@@ -58,7 +58,8 @@ final class AppConfiguration: AppConfigurationProtocol {
         app.migrations.add(CreateNutritionalMigration())
         app.migrations.add(CreateProductTagMigration())
         app.migrations.add(CreateProductMigration())
-        //app.migrations.add(CreateProductReviewMigration())
+        app.migrations.add(CreateVoucherMigration())
+        app.migrations.add(CreateProductReviewMigration())
     }
 
     private func registerControllers() throws {
@@ -75,8 +76,8 @@ final class AppConfiguration: AppConfigurationProtocol {
         try registerProductController()
         try registerProductTagsController()
         try registerProductReviewController()
+        try registerVoucherController()
     }
-
 
     private func registerSignInController() throws {
         let respository = SignInRepository(dependencyProvider: dependencyProvider)
@@ -85,9 +86,9 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     private func registerSignUpController() throws {
-        let repository = SignUpRepository(dependencyProvider: dependencyProvider)
-        let controller = SignUpController(dependencyProvider: dependencyProvider,
-                                          repository: repository)
+        let repository = SignUpUserRepository(dependencyProvider: dependencyProvider)
+        let controller = SignUpUserController(dependencyProvider: dependencyProvider,
+                                              repository: repository)
         try app.register(collection: controller)
     }
 
@@ -123,6 +124,15 @@ final class AppConfiguration: AppConfigurationProtocol {
         let controller = ReviewController(dependencyProvider: dependencyProvider,
                                           productRepository: productRepository,
                                           reviewRepository: reviewRepository)
+
+        try app.register(collection: controller)
+    }
+
+    private func registerVoucherController() throws {
+        let respository = VouchersRepository(dependencyProvider: dependencyProvider)
+
+        let controller = VouchersController(dependencyProvider: dependencyProvider,
+                                            repository: respository)
 
         try app.register(collection: controller)
     }

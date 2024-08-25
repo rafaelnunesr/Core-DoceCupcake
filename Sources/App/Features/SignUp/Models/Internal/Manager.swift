@@ -33,3 +33,9 @@ final class Manager: Model {
         self.password = password
     }
 }
+
+extension Manager {
+    convenience init(from manager: APISignUpManagerModel) {
+        self.init(userName: manager.userName, email: manager.email, password: manager.email)
+    }
+}

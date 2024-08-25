@@ -25,6 +25,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     }
 
     private func getProductTagsList(req: Request) async throws -> APIProductTagListResponse {
+        // check user privilegies
         let result = try await repository.getAllTags()
         let tags = result.map { APIProductTagModel(from: $0) }
         return APIProductTagListResponse(count: tags.count, tags: tags)
