@@ -7,10 +7,10 @@ protocol VouchersControllerProtocol: RouteCollection {
 
 struct VouchersController: VouchersControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
-    private let repository: VouchersRepositoryProtocol
+    private let repository: RepositoryProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
-         repository: VouchersRepositoryProtocol) {
+         repository: RepositoryProtocol) {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
     }
@@ -24,7 +24,7 @@ struct VouchersController: VouchersControllerProtocol {
 
     private func getVouchersList(req: Request) async throws -> APIVoucherModelList {
         // check user privilegies
-        let result = try await repository.getAllVouchers()
+        let result: [InternalVoucherModel] = try await repository.getAllResults()
         let vouchers = result.map { APIVoucherModel(from: $0) }
         return APIVoucherModelList(count: vouchers.count, vouchers: vouchers)
     }
@@ -37,7 +37,7 @@ struct VouchersController: VouchersControllerProtocol {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
-        try await repository.createVoucher(InternalVoucherModel(from: model))
+        try await repository.create(InternalVoucherModel(from: model))
 
         return APIGenericMessageResponse(message: Constants.voucherCreated)
     }
@@ -50,14 +50,14 @@ struct VouchersController: VouchersControllerProtocol {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
 
-        try await repository.deleteVoucher(voucher)
+        try await repository.delete(voucher)
 
         return APIGenericMessageResponse(message: Constants.voucherDeleted)
     }
 
 
     func getVoucher(with code: String) async throws -> InternalVoucherModel? {
-        try await repository.getVoucherByCode(code)
+        try await repository.getModelByCode(code)
     }
 
 

@@ -1,26 +1,17 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol NutritionalRepositoryProtocol {
-    func getNutritionalById(_ id: UUID) async throws -> InternalNutritionalModel?
+protocol NutritionalRepositoryProtocol: RepositoryProtocol {
     func getNutritionalByAllFields(_ model: InternalNutritionalModel) async throws -> InternalNutritionalModel?
-    func saveNutritionalModel(_ model: InternalNutritionalModel) async throws
-    func deleteNutritionalModel(_ model: InternalNutritionalModel) async throws
 }
 
 final class NutritionalRepository: NutritionalRepositoryProtocol {
     private let dependencyProvider: DependencyProviderProtocol
-    private let database: Database
+    let database: Database
 
     init(dependencyProvider: DependencyProviderProtocol) {
         self.dependencyProvider = dependencyProvider
         database = dependencyProvider.getDatabaseInstance()
-    }
-
-    func getNutritionalById(_ id: UUID) async throws -> InternalNutritionalModel? {
-        try await InternalNutritionalModel.query(on: database)
-            .filter(\.$id == id)
-            .first()
     }
 
     func getNutritionalByAllFields(_ model: InternalNutritionalModel) async throws -> InternalNutritionalModel? {
@@ -31,11 +22,28 @@ final class NutritionalRepository: NutritionalRepositoryProtocol {
             .first()
     }
 
-    func saveNutritionalModel(_ model: InternalNutritionalModel) async throws {
+    func getAllResults<T: DatabaseModelProtocol>() async throws -> [T] {
+        try await T.query(on: database)
+            .all()
+    }
+
+    func getModelById<T: DatabaseModelProtocol>(_ id: UUID) async throws -> T? {
+        try await T.query(on: database)
+            .filter(T.idKey == id)
+            .first()
+    }
+
+    func getModelByCode<T: DatabaseModelProtocol>(_ code: String) async throws -> T? {
+        try await T.query(on: database)
+            .filter(T.codeKey == code)
+            .first()
+    }
+
+    func create<T: DatabaseModelProtocol>(_ model: T) async throws {
         try await model.create(on: database)
     }
 
-    func deleteNutritionalModel(_ model: InternalNutritionalModel) async throws {
+    func delete<T: DatabaseModelProtocol>(_ model: T) async throws {
         try await model.delete(on: database)
     }
 }

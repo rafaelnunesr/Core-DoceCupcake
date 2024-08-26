@@ -96,7 +96,7 @@ final class AppConfiguration: AppConfigurationProtocol {
         let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
         let nutritionalRepository = NutritionalRepository(dependencyProvider: dependencyProvider)
 
-        let tagRepository = ProductTagsRepository(dependencyProvider: dependencyProvider)
+        let tagRepository = Repository(dependencyProvider: dependencyProvider)
         let tagController = ProductTagsController(dependencyProvider: dependencyProvider, repository: tagRepository)
 
         let nutritionalController = NutritionalController(dependencyProvider: dependencyProvider,
@@ -111,7 +111,7 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     private func registerProductTagsController() throws {
-        let repository = ProductTagsRepository(dependencyProvider: dependencyProvider)
+        let repository = Repository(dependencyProvider: dependencyProvider)
         let controller = ProductTagsController(dependencyProvider: dependencyProvider,
                                                repository: repository)
         try app.register(collection: controller)
@@ -129,7 +129,7 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     private func registerVoucherController() throws {
-        let respository = VouchersRepository(dependencyProvider: dependencyProvider)
+        let respository = Repository(dependencyProvider: dependencyProvider)
 
         let controller = VouchersController(dependencyProvider: dependencyProvider,
                                             repository: respository)

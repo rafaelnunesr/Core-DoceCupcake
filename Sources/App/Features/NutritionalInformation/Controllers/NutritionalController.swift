@@ -26,7 +26,7 @@ struct NutritionalController: NutritionalControllerProtocol {
         var nutritionalList = [InternalNutritionalModel]()
 
         for id in idList {
-            if let result = try await repository.getNutritionalById(id) {
+            if let result: InternalNutritionalModel = try await repository.getModelById(id) {
                 nutritionalList.append(result)
             }
         }
@@ -41,7 +41,7 @@ struct NutritionalController: NutritionalControllerProtocol {
             return result
         }
 
-        try await repository.saveNutritionalModel(model)
+        try await repository.create(model)
 
         let savedResult = try await repository.getNutritionalByAllFields(model)
 
@@ -53,7 +53,7 @@ struct NutritionalController: NutritionalControllerProtocol {
     }
 
     func deleteNutritionalModel(_ model: InternalNutritionalModel) async throws {
-        try await repository.deleteNutritionalModel(model)
+        try await repository.delete(model)
     }
 }
 

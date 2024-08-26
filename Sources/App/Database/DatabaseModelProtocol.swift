@@ -1,20 +1,9 @@
 import FluentPostgresDriver
 import Vapor
 
-//extension Model {
-//    var code: String { get }
-//
-//    // Key paths for id and code
-//    static var idKey: KeyPath<Self, FieldProperty<Self, UUID?>> { get }
-//    static var codeKey: KeyPath<Self, FieldProperty<Self, String>> { get }
-//}
-
-
-protocol DatabaseModelProtocol: Model {
-    var id: UUID? { get }
+protocol DatabaseModelProtocol: Codable, Model where IDValue == UUID {
     var code: String { get }
 
-    // Key paths for id and code
-    static var idKey: KeyPath<Self, FieldProperty<Self, UUID?>> { get }
-    static var codeKey: KeyPath<Self, FieldProperty<Self, String>> { get }
+    static var idKey: KeyPath<Self, IDProperty<Self, UUID>> { get }
+    static var codeKey: KeyPath<Self, Field<String>> { get }
 }

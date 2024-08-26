@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol AppDatabaseProtocol {
+protocol RepositoryProtocol {
     func getAllResults<T: DatabaseModelProtocol>() async throws -> [T]
     func getModelById<T: DatabaseModelProtocol>(_ id: UUID) async throws -> T?
     func getModelByCode<T: DatabaseModelProtocol>(_ code: String) async throws -> T?
@@ -9,9 +9,9 @@ protocol AppDatabaseProtocol {
     func delete<T: DatabaseModelProtocol>(_ model: T) async throws
 }
 
-final class AppDatabase: AppDatabaseProtocol {
+final class Repository: RepositoryProtocol {
     private let dependencyProvider: DependencyProviderProtocol
-    private let database: Database
+    let database: Database
 
     init(dependencyProvider: DependencyProviderProtocol) {
         self.dependencyProvider = dependencyProvider

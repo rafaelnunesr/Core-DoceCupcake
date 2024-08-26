@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-final class InternalVoucherModel: Model, Content {
+final class InternalVoucherModel: DatabaseModelProtocol {
     static let schema = "voucher"
 
     @ID(key: .id)
@@ -41,6 +41,16 @@ final class InternalVoucherModel: Model, Content {
         self.percentageDiscount = percentageDiscount
         self.monetaryDiscount = monetaryDiscount
         self.availabilityCount = availabilityCount
+    }
+}
+
+extension InternalVoucherModel {
+    static var codeKey: KeyPath<InternalVoucherModel, Field<String>> {
+        \InternalVoucherModel.$code
+    }
+
+    static var idKey: KeyPath<InternalVoucherModel, IDProperty<InternalVoucherModel, UUID>> {
+        \InternalVoucherModel.$id
     }
 }
 

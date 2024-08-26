@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-final class InternalPackageModel: Model, Content {
+final class InternalPackageModel: DatabaseModelProtocol {
     static let schema = "package"
 
     @ID(key: .id)
@@ -56,6 +56,16 @@ final class InternalPackageModel: Model, Content {
         self.length = length
         self.price = price
         self.stockCount = stockCount
+    }
+}
+
+extension InternalPackageModel {
+    static var codeKey: KeyPath<InternalPackageModel, Field<String>> {
+        \InternalPackageModel.$code
+    }
+
+    static var idKey: KeyPath<InternalPackageModel, IDProperty<InternalPackageModel, UUID>> {
+        \InternalPackageModel.$id
     }
 }
 

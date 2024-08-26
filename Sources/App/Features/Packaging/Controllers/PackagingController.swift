@@ -7,10 +7,10 @@ protocol PackagingControllerProtocol: RouteCollection {
 
 struct PackagingController: PackagingControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
-    private let repository: PackagingRepositoryProtocol
+    private let repository: RepositoryProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
-         repository: PackagingRepositoryProtocol) {
+         repository: RepositoryProtocol) {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
     }
@@ -24,7 +24,7 @@ struct PackagingController: PackagingControllerProtocol {
 
     private func getPackageList(req: Request) async throws -> APIPackageList {
         // check user privilegies
-        let result = try await repository.getAllPackages()
+        let result: [InternalPackageModel] = try await repository.getAllResults()
         let packages = result.map { APIPackage(from: $0) }
         return APIPackageList(count: packages.count, package: packages)
     }
@@ -37,7 +37,7 @@ struct PackagingController: PackagingControllerProtocol {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
-        try await repository.createPackage(InternalPackageModel(from: model))
+        try await repository.create(InternalPackageModel(from: model))
 
         return APIGenericMessageResponse(message: Constants.packageCreated)
     }
@@ -50,14 +50,15 @@ struct PackagingController: PackagingControllerProtocol {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
 
-        try await repository.deletePackage(package)
+        try await repository.delete(package)
 
         return APIGenericMessageResponse(message: Constants.packageDeleted)
     }
 
 
     func getPackage(with code: String) async throws -> InternalPackageModel? {
-        try await repository.getPackageByCode(code)
+        let result: InternalPackageModel? = try await repository.getModelByCode(code)
+        return result
     }
 
 

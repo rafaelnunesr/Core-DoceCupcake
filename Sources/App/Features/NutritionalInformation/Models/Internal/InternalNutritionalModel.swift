@@ -1,11 +1,14 @@
 import Fluent
 import Vapor
 
-final class InternalNutritionalModel: Model {
+final class InternalNutritionalModel: DatabaseModelProtocol {
     static let schema = "nutritional"
 
     @ID(key: .id)
     var id: UUID?
+
+    @Field(key: "code")
+    var code: String
 
     @Field(key: "name")
     var name: String
@@ -19,10 +22,12 @@ final class InternalNutritionalModel: Model {
     internal init() { }
 
     init(id: UUID? = nil,
+         code: String,
          name: String,
          quantityDescription: String,
          dailyRepresentation: String) {
         self.id = id
+        self.code = code
         self.name = name
         self.quantityDescription = quantityDescription
         self.dailyRepresentation = dailyRepresentation
@@ -30,8 +35,19 @@ final class InternalNutritionalModel: Model {
 }
 
 extension InternalNutritionalModel {
+    static var codeKey: KeyPath<InternalNutritionalModel, Field<String>> {
+        \InternalNutritionalModel.$code
+    }
+
+    static var idKey: KeyPath<InternalNutritionalModel, IDProperty<InternalNutritionalModel, UUID>> {
+        \InternalNutritionalModel.$id
+    }
+}
+
+extension InternalNutritionalModel {
     convenience init(from model: APINutritionalInformation) {
-        self.init(name: model.name,
+        self.init(code: model.code,
+                  name: model.name,
                   quantityDescription: model.quantityDescription,
                   dailyRepresentation: model.dailyRepresentation)
     }
