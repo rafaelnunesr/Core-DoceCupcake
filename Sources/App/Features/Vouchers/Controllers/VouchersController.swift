@@ -24,7 +24,7 @@ struct VouchersController: VouchersControllerProtocol {
 
     private func getVouchersList(req: Request) async throws -> APIVoucherModelList {
         // check user privilegies
-        let result: [InternalVoucherModel] = try await repository.getAllResults()
+        let result: [InternalVoucherModel] = try await repository.fetchAllResults()
         let vouchers = result.map { APIVoucherModel(from: $0) }
         return APIVoucherModelList(count: vouchers.count, vouchers: vouchers)
     }
@@ -57,7 +57,7 @@ struct VouchersController: VouchersControllerProtocol {
 
 
     func getVoucher(with code: String) async throws -> InternalVoucherModel? {
-        try await repository.getModelByCode(code)
+        try await repository.fetchModelByCode(code)
     }
 
 

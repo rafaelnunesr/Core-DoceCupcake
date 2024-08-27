@@ -22,18 +22,18 @@ final class NutritionalRepository: NutritionalRepositoryProtocol {
             .first()
     }
 
-    func getAllResults<T: DatabaseModelProtocol>() async throws -> [T] {
+    func fetchAllResults<T: DatabaseModelProtocol>() async throws -> [T] {
         try await T.query(on: database)
             .all()
     }
 
-    func getModelById<T: DatabaseModelProtocol>(_ id: UUID) async throws -> T? {
+    func fetchModelById<T: DatabaseModelProtocol>(_ id: UUID) async throws -> T? {
         try await T.query(on: database)
             .filter(T.idKey == id)
             .first()
     }
 
-    func getModelByCode<T: DatabaseModelProtocol>(_ code: String) async throws -> T? {
+    func fetchModelByCode<T: DatabaseModelProtocol>(_ code: String) async throws -> T? {
         try await T.query(on: database)
             .filter(T.codeKey == code)
             .first()

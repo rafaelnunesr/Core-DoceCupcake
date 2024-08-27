@@ -26,7 +26,7 @@ struct NutritionalController: NutritionalControllerProtocol {
         var nutritionalList = [InternalNutritionalModel]()
 
         for id in idList {
-            if let result: InternalNutritionalModel = try await repository.getModelById(id) {
+            if let result: InternalNutritionalModel = try await repository.fetchModelById(id) {
                 nutritionalList.append(result)
             }
         }

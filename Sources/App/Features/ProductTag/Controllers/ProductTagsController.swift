@@ -26,7 +26,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
 
     private func getProductTagsList(req: Request) async throws -> APIProductTagListResponse {
         // check user privilegies
-        let result: [InternalProductTagModel] = try await repository.getAllResults()
+        let result: [InternalProductTagModel] = try await repository.fetchAllResults()
         let tags = result.map { APIProductTagModel(from: $0) }
         return APIProductTagListResponse(count: tags.count, tags: tags)
     }
@@ -58,7 +58,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     }
 
     private func getTag(with code: String) async throws -> InternalProductTagModel? {
-        let result: InternalProductTagModel? = try await repository.getModelByCode(code)
+        let result: InternalProductTagModel? = try await repository.fetchModelByCode(code)
         return result
     }
 

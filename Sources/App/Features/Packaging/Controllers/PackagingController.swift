@@ -24,9 +24,9 @@ struct PackagingController: PackagingControllerProtocol {
 
     private func getPackageList(req: Request) async throws -> APIPackageList {
         // check user privilegies
-        let result: [InternalPackageModel] = try await repository.getAllResults()
+        let result: [InternalPackageModel] = try await repository.fetchAllResults()
         let packages = result.map { APIPackage(from: $0) }
-        return APIPackageList(count: packages.count, package: packages)
+        return await APIPackageList(count: packages.count, package: packages)
     }
 
     private func createPackage(req: Request) async throws -> APIGenericMessageResponse {
@@ -57,7 +57,7 @@ struct PackagingController: PackagingControllerProtocol {
 
 
     func getPackage(with code: String) async throws -> InternalPackageModel? {
-        let result: InternalPackageModel? = try await repository.getModelByCode(code)
+        let result: InternalPackageModel? = try await repository.fetchModelByCode(code)
         return result
     }
 
