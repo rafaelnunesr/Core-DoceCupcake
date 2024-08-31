@@ -10,11 +10,14 @@ protocol ProductTagsControllerProtocol: RouteCollection {
 struct ProductTagsController: ProductTagsControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: RepositoryProtocol
+    private let sectionController: SectionControllerProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
-         repository: RepositoryProtocol) {
+         repository: RepositoryProtocol,
+         sectionController: SectionControllerProtocol) {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
+        self.sectionController = sectionController
     }
 
     func boot(routes: RoutesBuilder) throws {
@@ -26,6 +29,10 @@ struct ProductTagsController: ProductTagsControllerProtocol {
 
     private func getProductTagsList(req: Request) async throws -> APIProductTagListResponse {
         // check user privilegies
+        guard let section = try await sectionController.validateSection(req: req) else {
+            throw Abort(.unauthorized, reason: "unauthorized")
+        }
+        
         let result: [InternalProductTagModel] = try await repository.fetchAllResults()
         let tags = result.map { APIProductTagModel(from: $0) }
         return APIProductTagListResponse(count: tags.count, tags: tags)

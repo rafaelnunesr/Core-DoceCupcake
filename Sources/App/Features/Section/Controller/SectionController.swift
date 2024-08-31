@@ -3,8 +3,8 @@ import Foundation
 import Vapor
 
 protocol SectionControllerProtocol {
-    func getSection(for userId: UUID) async throws -> InternalSectionModel?
-    func createSection(for userId: UUID) async throws -> InternalSectionModel
+    func validateSection(req: Request) async throws -> InternalSectionModel?
+    func createSection(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSectionModel? // improve this
     func deleteSection(for userId: UUID) async throws
 }
 
@@ -18,12 +18,20 @@ struct SectionController: SectionControllerProtocol {
         self.repository = repository
     }
 
-    func getSection(for userId: UUID) async throws -> InternalSectionModel? {
-        try await repository.getSection(for: userId)
+    func validateSection(req: Request) async throws -> InternalSectionModel? {
+        let payload = try await req.jwt.verify(as: SessionToken.self)
+        return try await repository.getSection(for: payload.userId)
     }
 
-    func createSection(for userId: UUID) async throws -> InternalSectionModel {
-        try await repository.createSection(for: userId)
+    func createSection(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSectionModel? {
+        try await deleteSection(for: userId)
+        
+        let sectionToken = createSectionToken(for: userId)
+        let token = try await req.jwt.sign(sectionToken)
+        let section = InternalSectionModel(expiryDate: sectionToken.expiration.value, userId: sectionToken.userId, token: token, isAdmin: isAdmin)
+        try await repository.createSection(for: section)
+        
+        return try await repository.getSection(for: userId)
     }
 
     func deleteSection(for userId: UUID) async throws {
@@ -32,5 +40,9 @@ struct SectionController: SectionControllerProtocol {
         }
 
         try await repository.deleteSection(for: section)
+    }
+    
+    private func createSectionToken(for userId: UUID) -> SessionToken {
+        return SessionToken(userId: userId)
     }
 }

@@ -26,8 +26,7 @@ final class SignInRepository: SignInRepositoryProtocol {
             try await deleteSection(for: previousSection)
         }
 
-        let sectionToken = getSectionToken()
-        let sectionModel = InternalSectionModel(userId: userId, token: sectionToken, isManager: false) // change this
+        let sectionModel = InternalSectionModel(userId: userId, token: "", isAdmin: false) // change this
         try await sectionModel.create(on: database)
 
         return sectionModel
@@ -41,10 +40,5 @@ final class SignInRepository: SignInRepositoryProtocol {
         return try await InternalSectionModel.query(on: database)
             .filter(\.$userId == userId)
             .first()
-    }
-
-    private func getSectionToken() -> String {
-        let sectionTokenGenerator = dependencyProvider.getSectionTokenGeneratorInstance()
-        return sectionTokenGenerator.getToken()
     }
 }

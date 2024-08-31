@@ -1,3 +1,4 @@
+import JWT
 import Vapor
 
 protocol AppConfigurationProtocol {
@@ -15,6 +16,7 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     func initialSetup() async throws {
+        await configureSegurityKey()
         setupDatabase()
         
         do {
@@ -42,6 +44,10 @@ final class AppConfiguration: AppConfigurationProtocol {
 
         addMigrations()
     }
+    
+    private func configureSegurityKey() async {
+        await app.jwt.keys.add(hmac: "secret", digestAlgorithm: .sha256) // change this
+    }
 
     private func addMigrations() {
         addUserMidrations()
@@ -50,7 +56,7 @@ final class AppConfiguration: AppConfigurationProtocol {
 
     private func addUserMidrations() {
         app.migrations.add(CreateUsersMigration())
-        app.migrations.add(CreateSectionMigration())
+        app.migrations.add(CreateSessionMigration())
         app.migrations.add(CreateManagerMigration())
     }
 
@@ -81,7 +87,13 @@ final class AppConfiguration: AppConfigurationProtocol {
 
     private func registerSignInController() throws {
         let respository = SignInRepository(dependencyProvider: dependencyProvider)
-        let controller = SignInController(dependencyProvider: dependencyProvider, repository: respository)
+        
+        let sectionRepository = SectionRepository(dependencyProvider: dependencyProvider)
+        let sectionController = SectionController(dependencyProvider: dependencyProvider, repository: sectionRepository)
+        
+        let controller = SignInController(dependencyProvider: dependencyProvider, 
+                                          repository: respository,
+                                          sectionController: sectionController)
         try app.register(collection: controller)
     }
 
@@ -95,9 +107,15 @@ final class AppConfiguration: AppConfigurationProtocol {
     private func registerProductController() throws {
         let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
         let nutritionalRepository = NutritionalRepository(dependencyProvider: dependencyProvider)
+        
+        let sectionRepository = SectionRepository(dependencyProvider: dependencyProvider)
+        let sectionController = SectionController(dependencyProvider: dependencyProvider,
+                                                  repository: sectionRepository)
 
         let tagRepository = Repository(dependencyProvider: dependencyProvider)
-        let tagController = ProductTagsController(dependencyProvider: dependencyProvider, repository: tagRepository)
+        let tagController = ProductTagsController(dependencyProvider: dependencyProvider,
+                                                  repository: tagRepository,
+                                                  sectionController: sectionController)
 
         let nutritionalController = NutritionalController(dependencyProvider: dependencyProvider,
                                                           repository: nutritionalRepository)
@@ -112,8 +130,14 @@ final class AppConfiguration: AppConfigurationProtocol {
 
     private func registerProductTagsController() throws {
         let repository = Repository(dependencyProvider: dependencyProvider)
+        
+        let sectionRepository = SectionRepository(dependencyProvider: dependencyProvider)
+        let sectionController = SectionController(dependencyProvider: dependencyProvider, 
+                                                  repository: sectionRepository)
+        
         let controller = ProductTagsController(dependencyProvider: dependencyProvider,
-                                               repository: repository)
+                                               repository: repository,
+                                               sectionController: sectionController)
         try app.register(collection: controller)
     }
 

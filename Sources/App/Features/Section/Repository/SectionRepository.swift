@@ -2,8 +2,9 @@ import FluentPostgresDriver
 import Vapor
 
 protocol SectionRepositoryProtocol {
-    func getSection(for userId: UUID) async throws -> InternalSectionModel?
-    func createSection(for userId: UUID) async throws -> InternalSectionModel
+    func getSection(for usertId: UUID) async throws -> InternalSectionModel?
+    func getSection(with token: String) async throws -> InternalSectionModel?
+    func createSection(for model: InternalSectionModel) async throws
     func deleteSection(for section: InternalSectionModel) async throws
 }
 
@@ -15,23 +16,21 @@ final class SectionRepository: SectionRepositoryProtocol {
         self.dependencyProvider = dependencyProvider
         database = dependencyProvider.getDatabaseInstance()
     }
-
-    func getSection(for userId: UUID) async throws -> InternalSectionModel? {
+    
+    func getSection(for usertId: UUID) async throws -> InternalSectionModel? {
         return try await InternalSectionModel.query(on: database)
-            .filter(\.$userId == userId)
+            .filter(\.$userId == usertId)
+            .first()
+    }
+    
+    func getSection(with token: String) async throws -> InternalSectionModel? {
+        return try await InternalSectionModel.query(on: database)
+            .filter(\.$token == token)
             .first()
     }
 
-    func createSection(for userId: UUID) async throws -> InternalSectionModel {
-        if let previousSection = try await getSection(for: userId) {
-            try await deleteSection(for: previousSection)
-        }
-
-        let sectionToken = "" // todo
-        let sectionModel = InternalSectionModel(userId: userId, token: sectionToken, isManager: false) // change this
-        try await sectionModel.create(on: database)
-
-        return sectionModel
+    func createSection(for model: InternalSectionModel) async throws {
+        try await model.create(on: database)
     }
 
     func deleteSection(for section: InternalSectionModel) async throws {

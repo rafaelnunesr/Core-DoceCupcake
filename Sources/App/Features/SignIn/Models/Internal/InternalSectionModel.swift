@@ -2,7 +2,7 @@ import Fluent
 import Vapor
 
 final class InternalSectionModel: Model, Content {
-    static let schema = "section"
+    static let schema = "session"
 
     @ID(key: .id)
     var id: UUID?
@@ -10,17 +10,14 @@ final class InternalSectionModel: Model, Content {
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
 
-    @Timestamp(key: "expiry_date", on: .create)
-    var expiryDate: Date?
-
     @Field(key: "user_id")
     var userId: UUID
 
     @Field(key: "token")
     var token: String
 
-    @Field(key: "is_manager")
-    var isManager: Bool
+    @Field(key: "is_admin")
+    var isAdmin: Bool
 
     internal init() { }
 
@@ -29,12 +26,11 @@ final class InternalSectionModel: Model, Content {
          expiryDate: Date? = nil,
          userId: UUID,
          token: String,
-         isManager: Bool) {
+         isAdmin: Bool) {
         self.id = id
         self.createdAt = createdAt
-        self.expiryDate = expiryDate
         self.userId = userId
         self.token = token
-        self.isManager = isManager
+        self.isAdmin = isAdmin
     }
 }
