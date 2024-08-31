@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-final class InternalProductTagModel: DatabaseModelProtocol {
+final class InternalProductTagModel: DatabaseModelProtocol, Sendable {
     static let schema = "product_tag"
 
     @ID(key: .id)

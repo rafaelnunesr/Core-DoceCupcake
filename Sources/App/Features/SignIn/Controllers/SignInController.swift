@@ -6,6 +6,7 @@ struct SignInController: RouteCollection {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: SignInRepositoryProtocol
     private let sectionController: SectionControllerProtocol
+    private let security: SecurityProtocol
 
     init(dependencyProvider: DependencyProviderProtocol, 
          repository: SignInRepositoryProtocol,
@@ -13,6 +14,8 @@ struct SignInController: RouteCollection {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
         self.sectionController = sectionController
+        
+        security = dependencyProvider.getSecurityInstance()
     }
 
     func boot(routes: RoutesBuilder) throws {
@@ -22,26 +25,48 @@ struct SignInController: RouteCollection {
 
     func signIn(req: Request) async throws -> ClientTokenResponse {
         let model: APISignInModel = try convertRequestDataToModel(req: req)
-
-        guard let userId = try await getUserId(model) else {
-            throw Abort(.unauthorized, reason: APIErrorMessage.Credentials.invalidCredentials)
-        }
-
-        return try await createSectionForUser(userId: userId, req: req)
+        return try await validateUser(model: model, req: req)
     }
-
+    
+    private func validateUser(model: APISignInModel, req: Request) async throws -> ClientTokenResponse {
+        if let userId = try await getUserId(model) {
+            return try await createSectionForUser(userId: userId, req: req, isAdmin: false)
+        }
+        
+        if let managerId = try await getManagerId(model) {
+            return try await createSectionForUser(userId: managerId, req: req, isAdmin: true)
+        }
+        
+        throw Abort(.unauthorized, reason: APIErrorMessage.Credentials.invalidCredentials)
+    }
+    
     private func getUserId(_ model: APISignInModel) async throws -> UUID? {
-        guard let user = try await repository.getUser(with: model.email),
-              user.password == model.password else {
-            return nil
+        if let user = try await repository.fetchUserByEmail(model.email) {
+            guard try security.isPasswordCorrect(password: model.password, hashPassword: user.password) else {
+                return nil
+            }
+            
+            return user.id
         }
-
-        return user.id
+        
+        return nil
+    }
+    
+    private func getManagerId(_ model: APISignInModel) async throws -> UUID? {
+        if let manager = try await repository.fetchManagerByEmail(model.email) {
+            guard try security.isPasswordCorrect(password: model.password, hashPassword: manager.password) else {
+                return nil
+            }
+            
+            return manager.id
+        }
+        
+        return nil
     }
 
-    private func createSectionForUser(userId: UUID, req: Request) async throws -> ClientTokenResponse {
-        guard let section = try await sectionController.createSection(for: userId, isAdmin: false, req: req) else {
-            fatalError()
+    private func createSectionForUser(userId: UUID, req: Request, isAdmin: Bool) async throws -> ClientTokenResponse {
+        guard let section = try await sectionController.createSection(for: userId, isAdmin: isAdmin, req: req) else {
+            throw Abort(.internalServerError)
         }
         return ClientTokenResponse(token: section.token)
     }

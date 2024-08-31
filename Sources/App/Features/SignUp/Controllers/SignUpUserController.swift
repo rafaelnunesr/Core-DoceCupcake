@@ -1,43 +1,41 @@
 import FluentPostgresDriver
 import Vapor
 
-struct SignUpManagerController: RouteCollection {
+struct SignUpUserController: RouteCollection {
     private let dependencyProvider: DependencyProviderProtocol
-    private let repository: SignUpManagerRepositoryProtocol
+    private let repository: SignUpUserRepositoryProtocol
+    private let security: SecurityProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
-         repository: SignUpManagerRepositoryProtocol) {
+         repository: SignUpUserRepositoryProtocol) {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
+        
+        security = dependencyProvider.getSecurityInstance()
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let signUpRoutes = routes.grouped("signUp")
-        signUpRoutes.post("/manager", use: signUp)
+        let signUpRoutes = routes.grouped("signup")
+        signUpRoutes.post(use: signUp)
     }
 
-    @Sendable
     func signUp(req: Request) async throws -> APIGenericMessageResponse {
-        let model: APISignUpManagerModel = try convertRequestDataToModel(req: req)
+        var model: APISignUpUserModel = try convertRequestDataToModel(req: req)
 
         guard try await repository.getUserId(with: model.email) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Credentials.userAlreadyRegistered)
         }
 
-        if !areCredentialsValid(model) {
+        if !security.areCredentialsValid(email: model.email, password: model.password) {
             throw Abort(.badRequest, reason: APIErrorMessage.Credentials.invalidCredentials)
         }
-
-        try await repository.createUser(with: Manager(from: model))
+        
+        model.password = try security.getHashPassword(model.password) // improve this
+        try await repository.createUser(with: User(from: model))
         return APIGenericMessageResponse(message: Constants.welcomeMessage)
     }
 
-    private func areCredentialsValid(_ model: APISignUpManagerModel) -> Bool {
-        model.email.isValidEmail && model.password.isValidPassword
-    }
-
     private enum Constants {
-        static let welcomeMessage = "Account created with success."
+        static let welcomeMessage = "Account created with success"
     }
 }
-

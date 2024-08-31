@@ -1,7 +1,7 @@
 struct APISignUpUserModel: Codable {
     let userName: String
     let email: String
-    let password: String
+    var password: String
     let state: String
     let city: String
     let address: String

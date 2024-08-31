@@ -1,7 +1,7 @@
 import Fluent
 
-struct CreateManagerMigration: AsyncMigration {
-    private let databaseName = "manager"
+struct CreateAdminMigration: AsyncMigration {
+    private let databaseName = "admin"
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)

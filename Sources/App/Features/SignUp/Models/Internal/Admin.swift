@@ -1,8 +1,8 @@
 import Fluent
 import Vapor
 
-final class Manager: Model {
-    static let schema = "manager"
+final class Admin: Model {
+    static let schema = "admin"
 
     @ID(key: .id)
     var id: UUID?
@@ -34,8 +34,8 @@ final class Manager: Model {
     }
 }
 
-extension Manager {
-    convenience init(from manager: APISignUpManagerModel) {
-        self.init(userName: manager.userName, email: manager.email, password: manager.email)
+extension Admin {
+    convenience init(from manager: APISignUpAdminModel) {
+        self.init(userName: manager.userName, email: manager.email, password: manager.password)
     }
 }

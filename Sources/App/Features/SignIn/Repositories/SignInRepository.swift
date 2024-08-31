@@ -1,9 +1,9 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol SignInRepositoryProtocol {
-    func getUser(with email: String) async throws -> User?
-    func createSection(for userId: UUID) async throws -> InternalSectionModel
+protocol SignInRepositoryProtocol: RepositoryProtocol {
+    func fetchUserByEmail(_ email: String) async throws -> User?
+    func fetchManagerByEmail(_ email: String) async throws -> Admin?
 }
 
 final class SignInRepository: SignInRepositoryProtocol {
@@ -14,31 +14,41 @@ final class SignInRepository: SignInRepositoryProtocol {
         self.dependencyProvider = dependencyProvider
         database = dependencyProvider.getDatabaseInstance()
     }
-
-    func getUser(with email: String) async throws -> User? {
+    
+    func fetchUserByEmail(_ email: String) async throws -> User? {
         try await User.query(on: database)
             .filter(\.$email == email)
-                .first()
-    }
-
-    func createSection(for userId: UUID) async throws -> InternalSectionModel {
-        if let previousSection = try await getSectionForUser(with: userId) {
-            try await deleteSection(for: previousSection)
-        }
-
-        let sectionModel = InternalSectionModel(userId: userId, token: "", isAdmin: false) // change this
-        try await sectionModel.create(on: database)
-
-        return sectionModel
-    }
-
-    private func deleteSection(for section: InternalSectionModel) async throws {
-        try await section.delete(on: database)
-    }
-
-    private func getSectionForUser(with userId: UUID) async throws -> InternalSectionModel? {
-        return try await InternalSectionModel.query(on: database)
-            .filter(\.$userId == userId)
             .first()
+    }
+    
+    func fetchManagerByEmail(_ email: String) async throws -> Admin? {
+        try await Admin.query(on: database)
+            .filter(\.$email == email)
+            .first()
+    }
+
+    func fetchAllResults<T: DatabaseModelProtocol>() async throws -> [T] {
+        try await T.query(on: database)
+            .all()
+    }
+
+    func fetchModelById<T: DatabaseModelProtocol>(_ id: UUID) async throws -> T? {
+        try await T.query(on: database)
+            .filter(T.idKey == id)
+            .first()
+    }
+
+    func fetchModelByCode<T: DatabaseModelProtocol>(_ code: String) async throws -> T? {
+        try await T.query(on: database)
+            .filter(T.codeKey == code)
+            .first()
+    }
+
+    func create<T: DatabaseModelProtocol>(_ model: T) async throws {
+        try await model.create(on: database)
+    }
+
+    func delete<T: DatabaseModelProtocol>(_ model: T) async throws {
+        try await model.delete(on: database)
     }
 }

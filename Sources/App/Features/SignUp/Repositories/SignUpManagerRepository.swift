@@ -3,7 +3,7 @@ import Vapor
 
 protocol SignUpManagerRepositoryProtocol {
     func getUserId(with email: String) async throws -> UUID?
-    func createUser(with manager: Manager) async throws
+    func createUser(with manager: Admin) async throws
 }
 
 final class SignUpManagerRepository: SignUpManagerRepositoryProtocol {
@@ -16,12 +16,12 @@ final class SignUpManagerRepository: SignUpManagerRepositoryProtocol {
     }
 
     func getUserId(with email: String) async throws -> UUID? {
-        try await Manager.query(on: database)
+        try await Admin.query(on: database)
             .filter(\.$email == email)
             .first()?.id
     }
 
-    func createUser(with manager: Manager) async throws {
+    func createUser(with manager: Admin) async throws {
         try await manager.create(on: database)
     }
 }

@@ -5,6 +5,7 @@ import Vapor
 protocol DependencyProviderProtocol {
     func getDatabaseInstance() -> Database
     func getAppInstance() -> ApplicationProtocol
+    func getSecurityInstance() -> SecurityProtocol
 }
 
 
@@ -21,5 +22,9 @@ final class DependencyProvider: DependencyProviderProtocol {
 
     func getAppInstance() -> ApplicationProtocol {
         app
+    }
+    
+    func getSecurityInstance() -> any SecurityProtocol {
+        Security()
     }
 }

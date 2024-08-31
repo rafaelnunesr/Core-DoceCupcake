@@ -57,7 +57,7 @@ final class AppConfiguration: AppConfigurationProtocol {
     private func addUserMidrations() {
         app.migrations.add(CreateUsersMigration())
         app.migrations.add(CreateSessionMigration())
-        app.migrations.add(CreateManagerMigration())
+        app.migrations.add(CreateAdminMigration())
     }
 
     private func addProductMigrations() {
@@ -75,7 +75,8 @@ final class AppConfiguration: AppConfigurationProtocol {
 
     private func registerUserGroupControllers() throws {
         try registerSignInController()
-        try registerSignUpController()
+        try registerUserSignUpController()
+        try registerAdminSignUpController()
     }
     
     private func registerProductGroupControllers() throws {
@@ -97,10 +98,17 @@ final class AppConfiguration: AppConfigurationProtocol {
         try app.register(collection: controller)
     }
 
-    private func registerSignUpController() throws {
+    private func registerUserSignUpController() throws {
         let repository = SignUpUserRepository(dependencyProvider: dependencyProvider)
         let controller = SignUpUserController(dependencyProvider: dependencyProvider,
                                               repository: repository)
+        try app.register(collection: controller)
+    }
+    
+    private func registerAdminSignUpController() throws {
+        let repository = SignUpManagerRepository(dependencyProvider: dependencyProvider)
+        let controller = SignUpAdminController(dependencyProvider: dependencyProvider,
+                                                 repository: repository)
         try app.register(collection: controller)
     }
 

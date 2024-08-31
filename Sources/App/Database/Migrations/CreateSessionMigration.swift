@@ -7,7 +7,7 @@ struct CreateSessionMigration: AsyncMigration {
         try await database.schema(databaseName)
             .id()
             .field("created_at", .datetime)
-            .field("user_id", .uuid, .required, .references("users", "id"))
+            .field("user_id", .uuid)
             .field("token", .string, .required)
             .field("is_admin", .bool, .required)
             .unique(on: "token")

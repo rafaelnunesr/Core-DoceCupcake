@@ -1,6 +1,6 @@
 import Vapor
 
-struct APIProductTagModel: Content, Codable {
+struct APIProductTagModel: Content, Codable, Sendable {
     let code: String
     let description: String
 }

@@ -1,7 +1,7 @@
-struct APISignUpManagerModel: Codable {
+struct APISignUpAdminModel: Codable {
     let userName: String
     let email: String
-    let password: String
+    var password: String
 
     enum CodingKeys: String, CodingKey {
         case userName = "user_name"
