@@ -27,13 +27,16 @@ struct ProductTagsController: ProductTagsControllerProtocol {
 
     func boot(routes: RoutesBuilder) throws {
         let productRoutes = routes.grouped("productTags")
-        productRoutes.grouped(userSectionValidation)
+        productRoutes
+            .grouped(userSectionValidation)
             .get(use: getProductTagsList)
         
-        productRoutes.grouped(adminSectionValidation)
+        productRoutes
+            .grouped(adminSectionValidation)
             .post(use: createNewTag)
         
-        productRoutes.grouped(adminSectionValidation)
+        productRoutes
+            .grouped(adminSectionValidation)
             .delete(use: deleteTag)
     }
     

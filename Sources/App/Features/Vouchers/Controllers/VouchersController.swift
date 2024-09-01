@@ -8,29 +8,33 @@ protocol VouchersControllerProtocol: RouteCollection {
 struct VouchersController: VouchersControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: RepositoryProtocol
+    
+    private let adminSectionValidation: AdminValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
          repository: RepositoryProtocol) {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
+        
+        adminSectionValidation = dependencyProvider.getAdminSectionValidationMiddleware()
     }
 
     func boot(routes: RoutesBuilder) throws {
         let vouchersRoutes = routes.grouped("vouchers")
+            .grouped(adminSectionValidation)
+        
         vouchersRoutes.get(use: getVouchersList)
         vouchersRoutes.post(use: createVoucher)
         vouchersRoutes.delete(use: deleteVoucher)
     }
 
     private func getVouchersList(req: Request) async throws -> APIVoucherModelList {
-        // check user privilegies
         let result: [InternalVoucherModel] = try await repository.fetchAllResults()
         let vouchers = result.map { APIVoucherModel(from: $0) }
         return APIVoucherModelList(count: vouchers.count, vouchers: vouchers)
     }
 
     private func createVoucher(req: Request) async throws -> APIGenericMessageResponse {
-        // check user privilegies
         let model: APIVoucherModel = try convertRequestDataToModel(req: req)
 
         guard try await getVoucher(with: model.code) == nil else {
@@ -43,7 +47,6 @@ struct VouchersController: VouchersControllerProtocol {
     }
 
     private func deleteVoucher(req: Request) async throws -> APIGenericMessageResponse {
-        // check user privilegies
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
 
         guard let voucher = try await getVoucher(with: model.id) else {
