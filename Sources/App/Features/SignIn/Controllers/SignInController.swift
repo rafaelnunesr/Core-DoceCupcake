@@ -42,7 +42,7 @@ struct SignInController: RouteCollection {
     
     private func getUserId(_ model: APISignInModel) async throws -> UUID? {
         if let user = try await repository.fetchUserByEmail(model.email) {
-            guard try security.isPasswordCorrect(password: model.password, hashPassword: user.password) else {
+            guard try security.isHashedValidCorrect(plainValue: model.password, hashValue: user.password) else {
                 return nil
             }
             
@@ -54,7 +54,7 @@ struct SignInController: RouteCollection {
     
     private func getManagerId(_ model: APISignInModel) async throws -> UUID? {
         if let manager = try await repository.fetchManagerByEmail(model.email) {
-            guard try security.isPasswordCorrect(password: model.password, hashPassword: manager.password) else {
+            guard try security.isHashedValidCorrect(plainValue: model.password, hashValue: manager.password) else {
                 return nil
             }
             

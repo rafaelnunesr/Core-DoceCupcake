@@ -30,7 +30,7 @@ struct SignUpAdminController: RouteCollection {
             throw Abort(.badRequest, reason: APIErrorMessage.Credentials.invalidCredentials)
         }
 
-        model.password = try security.getHashPassword(model.password)
+        model.password = try security.hashStringValue(model.password)
         try await repository.createUser(with: Admin(from: model))
         return APIGenericMessageResponse(message: Constants.welcomeMessage)
     }

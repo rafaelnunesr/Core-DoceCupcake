@@ -2,8 +2,14 @@ import FluentPostgresDriver
 import Foundation
 import Vapor
 
+enum SectionControlAccess {
+    case user
+    case admin
+    case unowned
+}
+
 protocol SectionControllerProtocol {
-    func validateSection(req: Request) async throws -> InternalSectionModel?
+    func validateSection(req: Request) async throws -> SectionControlAccess
     func createSection(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSectionModel? // improve this
     func deleteSection(for userId: UUID) async throws
 }
@@ -18,9 +24,15 @@ struct SectionController: SectionControllerProtocol {
         self.repository = repository
     }
 
-    func validateSection(req: Request) async throws -> InternalSectionModel? {
+    func validateSection(req: Request) async throws -> SectionControlAccess {
         let payload = try await req.jwt.verify(as: SessionToken.self)
-        return try await repository.getSection(for: payload.userId)
+        let user = try await repository.getSection(for: payload.userId)
+        
+        guard let user else {
+            return .unowned
+        }
+        
+        return user.isAdmin ? .admin : .user
     }
 
     func createSection(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSectionModel? {

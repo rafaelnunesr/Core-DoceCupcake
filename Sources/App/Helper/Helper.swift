@@ -7,3 +7,4 @@ func convertRequestDataToModel<T: Decodable>(req: Request) throws -> T {
 
     return try JSONDecoder().decode(T.self, from: bodyData)
 }
+

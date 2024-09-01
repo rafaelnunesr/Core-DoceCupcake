@@ -10,42 +10,40 @@ protocol ProductTagsControllerProtocol: RouteCollection {
 struct ProductTagsController: ProductTagsControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: RepositoryProtocol
-    private let sectionController: SectionControllerProtocol
     private let security: SecurityProtocol
+    
+    private let userSectionValidation: SectionValidationMiddlewareProtocol
+    private let adminSectionValidation: AdminValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
-         repository: RepositoryProtocol,
-         sectionController: SectionControllerProtocol) {
+         repository: RepositoryProtocol) {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
-        self.sectionController = sectionController
         
+        userSectionValidation = dependencyProvider.getUserSectionValidationMiddleware()
+        adminSectionValidation = dependencyProvider.getAdminSectionValidationMiddleware()
         security = dependencyProvider.getSecurityInstance()
     }
 
     func boot(routes: RoutesBuilder) throws {
         let productRoutes = routes.grouped("productTags")
-        productRoutes.get(use: getProductTagsList)
-        productRoutes.post(use: createNewTag)
-        productRoutes.delete(use: deleteTag)
+        productRoutes.grouped(userSectionValidation)
+            .get(use: getProductTagsList)
+        
+        productRoutes.grouped(adminSectionValidation)
+            .post(use: createNewTag)
+        
+        productRoutes.grouped(adminSectionValidation)
+            .delete(use: deleteTag)
     }
     
     private func getProductTagsList(req: Request) async throws -> APIProductTagListResponse {
-        guard try await sectionController.validateSection(req: req) != nil else {
-            throw Abort(.unauthorized, reason: "unauthorized")
-        }
-        
         let result: [InternalProductTagModel] = try await repository.fetchAllResults()
         let tags = result.map { APIProductTagModel(from: $0) }
         return APIProductTagListResponse(count: tags.count, tags: tags)
     }
 
     private func createNewTag(req: Request) async throws -> APIGenericMessageResponse {
-        guard let section = try await sectionController.validateSection(req: req),
-              section.isAdmin else {
-            throw Abort(.unauthorized, reason: "unauthorized")
-        }
-        
         let model: APIProductTagModel = try convertRequestDataToModel(req: req)
 
         guard try await getTag(with: model.code) == nil else {
@@ -58,11 +56,6 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     }
 
     private func deleteTag(req: Request) async throws -> APIGenericMessageResponse {
-        guard let section = try await sectionController.validateSection(req: req),
-              section.isAdmin else {
-            throw Abort(.unauthorized, reason: "unauthorized")
-        }
-        
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
 
         guard let tagModel = try await getTag(with: model.id) else {

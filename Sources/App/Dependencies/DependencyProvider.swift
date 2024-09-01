@@ -6,6 +6,8 @@ protocol DependencyProviderProtocol {
     func getDatabaseInstance() -> Database
     func getAppInstance() -> ApplicationProtocol
     func getSecurityInstance() -> SecurityProtocol
+    func getUserSectionValidationMiddleware() -> SectionValidationMiddlewareProtocol
+    func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol
 }
 
 
@@ -26,5 +28,17 @@ final class DependencyProvider: DependencyProviderProtocol {
     
     func getSecurityInstance() -> any SecurityProtocol {
         Security()
+    }
+    
+    func getUserSectionValidationMiddleware() -> SectionValidationMiddlewareProtocol {
+        let sectionRepository = SectionRepository(dependencyProvider: self)
+        let sectionControl = SectionController(dependencyProvider: self, repository: sectionRepository)
+        return SectionValidationMiddleware(sectionController: sectionControl)
+    }
+    
+    func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
+        let sectionRepository = SectionRepository(dependencyProvider: self)
+        let sectionControl = SectionController(dependencyProvider: self, repository: sectionRepository)
+        return AdminValidationMiddleware(sectionController: sectionControl)
     }
 }

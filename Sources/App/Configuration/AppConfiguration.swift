@@ -115,15 +115,10 @@ final class AppConfiguration: AppConfigurationProtocol {
     private func registerProductController() throws {
         let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
         let nutritionalRepository = NutritionalRepository(dependencyProvider: dependencyProvider)
-        
-        let sectionRepository = SectionRepository(dependencyProvider: dependencyProvider)
-        let sectionController = SectionController(dependencyProvider: dependencyProvider,
-                                                  repository: sectionRepository)
 
         let tagRepository = Repository(dependencyProvider: dependencyProvider)
         let tagController = ProductTagsController(dependencyProvider: dependencyProvider,
-                                                  repository: tagRepository,
-                                                  sectionController: sectionController)
+                                                  repository: tagRepository)
 
         let nutritionalController = NutritionalController(dependencyProvider: dependencyProvider,
                                                           repository: nutritionalRepository)
@@ -139,13 +134,8 @@ final class AppConfiguration: AppConfigurationProtocol {
     private func registerProductTagsController() throws {
         let repository = Repository(dependencyProvider: dependencyProvider)
         
-        let sectionRepository = SectionRepository(dependencyProvider: dependencyProvider)
-        let sectionController = SectionController(dependencyProvider: dependencyProvider, 
-                                                  repository: sectionRepository)
-        
         let controller = ProductTagsController(dependencyProvider: dependencyProvider,
-                                               repository: repository,
-                                               sectionController: sectionController)
+                                               repository: repository)
         try app.register(collection: controller)
     }
 

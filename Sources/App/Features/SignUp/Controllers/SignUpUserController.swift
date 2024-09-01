@@ -30,7 +30,7 @@ struct SignUpUserController: RouteCollection {
             throw Abort(.badRequest, reason: APIErrorMessage.Credentials.invalidCredentials)
         }
         
-        model.password = try security.getHashPassword(model.password) // improve this
+        model.password = try security.hashStringValue(model.password)
         try await repository.createUser(with: User(from: model))
         return APIGenericMessageResponse(message: Constants.welcomeMessage)
     }

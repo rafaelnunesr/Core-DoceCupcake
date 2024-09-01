@@ -1,18 +1,18 @@
 import Vapor
 
 protocol SecurityProtocol {
-    func getHashPassword(_ password: String) throws -> String
-    func isPasswordCorrect(password: String, hashPassword: String) throws -> Bool
+    func hashStringValue(_ value: String) throws -> String
+    func isHashedValidCorrect(plainValue: String, hashValue: String) throws -> Bool
     func areCredentialsValid(email: String, password: String) -> Bool
 }
 
 final class Security: SecurityProtocol {
-    func getHashPassword(_ password: String) throws -> String {
-        try Bcrypt.hash(password)
+    func hashStringValue(_ value: String) throws -> String {
+        try Bcrypt.hash(value)
     }
     
-    func isPasswordCorrect(password: String, hashPassword: String) throws -> Bool {
-        try Bcrypt.verify(password, created: hashPassword)
+    func isHashedValidCorrect(plainValue: String, hashValue: String) throws -> Bool {
+        try Bcrypt.verify(plainValue, created: hashValue)
     }
     
     func areCredentialsValid(email: String, password: String) -> Bool {
