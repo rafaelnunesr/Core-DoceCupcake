@@ -56,4 +56,3 @@ struct NutritionalController: NutritionalControllerProtocol {
         try await repository.delete(model)
     }
 }
-

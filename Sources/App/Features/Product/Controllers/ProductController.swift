@@ -7,6 +7,9 @@ struct ProductController: RouteCollection {
     private let productRepository: ProductRepositoryProtocol
     private let tagsController: ProductTagsControllerProtocol
     private let nutritionalController: NutritionalControllerProtocol
+    
+    private let userSectionValidation: SectionValidationMiddlewareProtocol
+    private let adminSectionValidation: AdminValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
          productRepository: ProductRepositoryProtocol,
@@ -16,15 +19,33 @@ struct ProductController: RouteCollection {
         self.productRepository = productRepository
         self.tagsController = tagsController
         self.nutritionalController = nutritionalController
+        
+        userSectionValidation = dependencyProvider.getUserSectionValidationMiddleware()
+        adminSectionValidation = dependencyProvider.getAdminSectionValidationMiddleware()
     }
 
     func boot(routes: RoutesBuilder) throws {
         let productRoutes = routes.grouped("productList")
-        productRoutes.get(use: getProductList)
-        productRoutes.get(":productID", use: getProduct)
-        productRoutes.post(use: createNewProduct)
-        productRoutes.put(use: updateProduct)
-        productRoutes.delete(use: deleteProduct)
+        
+        productRoutes
+            .grouped(userSectionValidation)
+            .get(use: getProductList)
+        
+        productRoutes
+            .grouped(userSectionValidation)
+            .get(":productID", use: getProduct)
+        
+        productRoutes
+            .grouped(adminSectionValidation)
+            .post(use: createNewProduct)
+        
+        productRoutes
+            .grouped(adminSectionValidation)
+            .put(use: updateProduct)
+        
+        productRoutes
+            .grouped(adminSectionValidation)
+            .delete(use: deleteProduct)
     }
 
     private func getProductList(req: Request) async throws -> APIProductListResponse {
@@ -66,7 +87,6 @@ struct ProductController: RouteCollection {
     }
 
     private func createNewProduct(req: Request) async throws -> APIGenericMessageResponse {
-        // check user privilegies
         let model: APIProductModel = try convertRequestDataToModel(req: req)
 
         guard try await productRepository.getProduct(with: model.id) == nil else {
@@ -112,17 +132,51 @@ struct ProductController: RouteCollection {
         return (tags: tagsModels, allergicTags: allergicModels)
     }
 
-    private func updateProduct(req: Request) async throws -> String {
-        // check user privilegies
-        .empty
+    private func updateProduct(req: Request) async throws -> APIGenericMessageResponse {
+        let model: APIProductModel = try convertRequestDataToModel(req: req)
+
+        guard let product = try await productRepository.getProduct(with: model.id) else {
+            throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
+        }
+        
+        let tagCodes = model.tags.map { $0.code }
+        let allergicCodes = model.allergicTags.map { $0.code }
+
+        let tagsResult = try await tagsController.areTagCodesValid(tagCodes)
+        let allergicCodesResult = try await tagsController.areTagCodesValid(allergicCodes)
+
+        guard tagsResult, allergicCodesResult else {
+            throw Abort(.badRequest, reason: APIErrorMessage.Product.invalidProductTag)
+        }
+
+        var nutritionalIds = [UUID]()
+        for nutritionalModel in model.nutritionalInformations {
+            let result = try await nutritionalController.saveNutritionalModel(InternalNutritionalModel(from: nutritionalModel))
+            if let id = result.id {
+                nutritionalIds.append(id)
+            }
+        }
+
+        let internalProduct = InternalProductModel(from: model, nutritionalIds: nutritionalIds)
+        try await productRepository.updateProduct(internalProduct)
+
+        return APIGenericMessageResponse(message: Constants.productCreated)
     }
 
-    private func deleteProduct(req: Request) async throws -> String {
-        // check user privilegies
-        .empty
+    private func deleteProduct(req: Request) async throws -> APIGenericMessageResponse {
+        let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
+        guard let product = try await productRepository.getProduct(with: model.id) else {
+            throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
+        }
+       
+        try await productRepository.deleteProduct(product)
+        
+        return APIGenericMessageResponse(message: Constants.productDeleted)
     }
 
     private enum Constants {
         static let productCreated = "Product created"
+        static let productUpdated = "Product updated"
+        static let productDeleted = "Product deleted"
     }
 }

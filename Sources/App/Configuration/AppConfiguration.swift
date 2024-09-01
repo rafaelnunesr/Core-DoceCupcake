@@ -66,6 +66,7 @@ final class AppConfiguration: AppConfigurationProtocol {
         app.migrations.add(CreateProductMigration())
         app.migrations.add(CreateVoucherMigration())
         app.migrations.add(CreateProductReviewMigration())
+        app.migrations.add(CreateCardMigration())
     }
 
     private func registerControllers() throws {
