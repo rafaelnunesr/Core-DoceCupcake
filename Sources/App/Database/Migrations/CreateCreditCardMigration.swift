@@ -1,20 +1,20 @@
 import Fluent
 
 struct CreateCreditCardMigration: AsyncMigration {
-    private let databaseName = "credit_card"
+    private let databaseName = CreditCardDbField.schema.rawValue
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)
             .id()
-            .field("created_at", .datetime)
-            .field("user_id", .uuid, .required, .references("users", "id"))
-            .field("card_holder_name", .string, .required)
-            .field("card_number", .string, .required)
-            .field("last_digits", .string, .required)
-            .field("expiry_month", .int, .required)
-            .field("expiry_year", .int, .required)
-            .field("cvv", .string, .required)
-            .unique(on: "card_number")
+            .field(CreditCardDbField.createdAt.fieldKey, .datetime)
+            .field(CreditCardDbField.userId.fieldKey, .uuid, .required, .references("users", "id"))
+            .field(CreditCardDbField.cardHolderName.fieldKey, .string, .required)
+            .field(CreditCardDbField.cardNumber.fieldKey, .string, .required)
+            .field(CreditCardDbField.lastDigits.fieldKey, .string, .required)
+            .field(CreditCardDbField.expiryMonth.fieldKey, .int, .required)
+            .field(CreditCardDbField.expiryYear.fieldKey, .int, .required)
+            .field(CreditCardDbField.cvv.fieldKey, .string, .required)
+            .unique(on: CreditCardDbField.cardNumber.fieldKey)
             .create()
     }
 

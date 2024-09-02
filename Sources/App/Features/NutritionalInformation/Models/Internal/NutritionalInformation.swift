@@ -1,22 +1,34 @@
 import Fluent
 import Vapor
 
+enum NutritionalInformationDbField: String {
+    case schema = "nutritional_information"
+    case code
+    case name
+    case quantityDescription = "quantity_description"
+    case dailyRepresentation = "daily_representation"
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class NutritionalInformation: DatabaseModelProtocol {
-    static let schema = "nutritional_information"
+    static let schema = NutritionalInformationDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
 
-    @Field(key: "code")
+    @Field(key: NutritionalInformationDbField.code.fieldKey)
     var code: String
 
-    @Field(key: "name")
+    @Field(key: NutritionalInformationDbField.name.fieldKey)
     var name: String
 
-    @Field(key: "quantity_description")
+    @Field(key: NutritionalInformationDbField.quantityDescription.fieldKey)
     var quantityDescription: String
 
-    @Field(key: "daily_representation")
+    @Field(key: NutritionalInformationDbField.dailyRepresentation.fieldKey)
     var dailyRepresentation: String
 
     internal init() { }

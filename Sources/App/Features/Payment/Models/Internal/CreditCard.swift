@@ -1,34 +1,50 @@
 import Fluent
 import Vapor
 
+enum CreditCardDbField: String {
+    case schema = "credit_card"
+    case createdAt = "created_at"
+    case userId = "user_id"
+    case cardHolderName = "card_holder_name"
+    case cardNumber = "card_number"
+    case lastDigits = "last_digits"
+    case expiryMonth = "expiry_month"
+    case expiryYear = "expiry_year"
+    case cvv
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class CreditCard: Model {
-    static let schema = "credit_card"
+    static let schema = CreditCardDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
     
-    @Timestamp(key: "created_at", on: .create)
+    @Timestamp(key: CreditCardDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
     
-    @OptionalField(key: "user_id")
+    @OptionalField(key: CreditCardDbField.userId.fieldKey)
     var userId: UUID?
     
-    @Field(key: "card_holder_name")
+    @Field(key: CreditCardDbField.cardHolderName.fieldKey)
     var cardHolderName: String
 
-    @Field(key: "card_number")
+    @Field(key: CreditCardDbField.cardNumber.fieldKey)
     var cardNumber: String
     
-    @Field(key: "last_digits")
+    @Field(key: CreditCardDbField.lastDigits.fieldKey)
     var lastDigits: String
 
-    @Field(key: "expiry_month")
+    @Field(key: CreditCardDbField.expiryMonth.fieldKey)
     var expiryMonth: Int
 
-    @Field(key: "expiry_year")
+    @Field(key: CreditCardDbField.expiryYear.fieldKey)
     var expiryYear: Int
 
-    @Field(key: "cvv")
+    @Field(key: CreditCardDbField.cvv.fieldKey)
     var cvv: String
 
     internal init() { }

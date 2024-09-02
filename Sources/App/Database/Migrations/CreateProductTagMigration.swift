@@ -1,14 +1,14 @@
 import Fluent
 
 struct CreateProductTagMigration: AsyncMigration {
-    private let databaseName = "product_tag"
+    private let databaseName = ProductTagDbField.schema.rawValue
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)
             .id()
-            .field("code", .string, .required)
-            .field("description", .string, .required)
-            .unique(on: "code")
+            .field(ProductTagDbField.code.fieldKey, .string, .required)
+            .field(ProductTagDbField.description.fieldKey, .string, .required)
+            .unique(on: ProductTagDbField.code.fieldKey)
             .create()
     }
 

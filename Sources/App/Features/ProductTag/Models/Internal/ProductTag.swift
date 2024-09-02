@@ -1,16 +1,26 @@
 import Fluent
 import Vapor
 
+enum ProductTagDbField: String {
+    case schema = "product_tag"
+    case code
+    case description
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class ProductTag: DatabaseModelProtocol, Sendable {
-    static let schema = "product_tag"
+    static let schema = ProductTagDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
 
-    @Field(key: "code")
+    @Field(key: ProductTagDbField.code.fieldKey)
     var code: String
 
-    @Field(key: "description")
+    @Field(key: ProductTagDbField.description.fieldKey)
     var description: String
 
     internal init() {}
