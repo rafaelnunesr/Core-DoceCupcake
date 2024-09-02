@@ -9,10 +9,12 @@ final class ControllerFactory: ControllerFactoryProtocol {
     private let productControllerFactory: ProductControllerFactoryProtocol
     private let voucherControllerFactory: VoucherControllerFactoryProtocol
 
-    init(dependencyProvider: DependencyProviderProtocol) {
-        userControllerFactory = dependencyProvider.getUserControllerFactory()
-        productControllerFactory = dependencyProvider.getProductControllerFactory()
-        voucherControllerFactory = dependencyProvider.getVoucherControllerFactory()
+    init(userControllerFactory: UserControllerFactoryProtocol,
+         productControllerFactory: ProductControllerFactoryProtocol,
+         voucherControllerFactory: VoucherControllerFactoryProtocol) {
+        self.userControllerFactory = userControllerFactory
+        self.productControllerFactory = productControllerFactory
+        self.voucherControllerFactory = voucherControllerFactory
     }
 
     func makeControllers() throws -> [RouteCollection] {

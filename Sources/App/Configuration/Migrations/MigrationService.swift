@@ -6,9 +6,10 @@ final class MigrationService: MigrationServiceProtocol {
     private let userMigrationService: MigrationServiceProtocol
     private let productMigrationService: MigrationServiceProtocol
     
-    init(dependencyProvider: DependencyProviderProtocol) {
-        userMigrationService = dependencyProvider.getUserMigrationServiceInstance()
-        productMigrationService = dependencyProvider.getProdductMigrationServiceInstance()
+    init(userMigrationService: MigrationServiceProtocol,
+         productMigrationService: MigrationServiceProtocol) {
+        self.userMigrationService = userMigrationService
+        self.productMigrationService = productMigrationService
     }
     
     func addMigrations() {

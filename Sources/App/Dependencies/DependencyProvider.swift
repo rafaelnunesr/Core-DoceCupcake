@@ -11,11 +11,6 @@ protocol DependencyProviderProtocol {
     func getMigrationServiceInstance() -> MigrationServiceProtocol
     func getControllerFactory() -> ControllerFactoryProtocol
     func getConfigurationServiceInstance() -> ConfigurationServiceProtocol
-    func getUserControllerFactory() -> UserControllerFactoryProtocol
-    func getProductControllerFactory() -> ProductControllerFactoryProtocol
-    func getVoucherControllerFactory() -> VoucherControllerFactoryProtocol
-    func getUserMigrationServiceInstance() -> MigrationServiceProtocol
-    func getProdductMigrationServiceInstance() -> MigrationServiceProtocol
 }
 
 final class DependencyProvider: DependencyProviderProtocol {
@@ -50,34 +45,22 @@ final class DependencyProvider: DependencyProviderProtocol {
     }
     
     func getMigrationServiceInstance() -> MigrationServiceProtocol {
-        MigrationService(dependencyProvider: self)
+        let userMigrationService = UserMigrationService(app: app)
+        let productMigrationService = ProductMigrationService(app: app)
+        return MigrationService(userMigrationService: userMigrationService,
+                                productMigrationService: productMigrationService)
     }
     
     func getControllerFactory() -> ControllerFactoryProtocol {
-        ControllerFactory(dependencyProvider: self)
+        let userController = UserControllerFactory(dependencyProvider: self)
+        let productController = ProductControllerFactory(dependencyProvider: self)
+        let voucherController = VoucherControllerFactory(dependencyProvider: self)
+        return ControllerFactory(userControllerFactory: userController,
+                                 productControllerFactory: productController,
+                                 voucherControllerFactory: voucherController)
     }
     
     func getConfigurationServiceInstance() -> ConfigurationServiceProtocol {
         ConfigurationService(app: app)
-    }
-    
-    func getUserControllerFactory() -> UserControllerFactoryProtocol {
-        UserControllerFactory(dependencyProvider: self)
-    }
-    
-    func getProductControllerFactory() -> ProductControllerFactoryProtocol {
-        ProductControllerFactory(dependencyProvider: self)
-    }
-    
-    func getVoucherControllerFactory() -> VoucherControllerFactoryProtocol {
-        VoucherControllerFactory(dependencyProvider: self)
-    }
-    
-    func getUserMigrationServiceInstance() -> MigrationServiceProtocol {
-        UserMigrationService(app: app)
-    }
-    
-    func getProdductMigrationServiceInstance() -> MigrationServiceProtocol {
-        ProductMigrationService(app: app)
     }
 }
