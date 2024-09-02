@@ -14,6 +14,8 @@ protocol DependencyProviderProtocol {
     func getUserControllerFactory() -> UserControllerFactoryProtocol
     func getProductControllerFactory() -> ProductControllerFactoryProtocol
     func getVoucherControllerFactory() -> VoucherControllerFactoryProtocol
+    func getUserMigrationServiceInstance() -> MigrationServiceProtocol
+    func getProdductMigrationServiceInstance() -> MigrationServiceProtocol
 }
 
 final class DependencyProvider: DependencyProviderProtocol {
@@ -56,7 +58,7 @@ final class DependencyProvider: DependencyProviderProtocol {
     }
     
     func getConfigurationServiceInstance() -> ConfigurationServiceProtocol {
-        ConfigurationService(dependecyProvider: self)
+        ConfigurationService(app: app)
     }
     
     func getUserControllerFactory() -> UserControllerFactoryProtocol {
@@ -69,5 +71,13 @@ final class DependencyProvider: DependencyProviderProtocol {
     
     func getVoucherControllerFactory() -> VoucherControllerFactoryProtocol {
         VoucherControllerFactory(dependencyProvider: self)
+    }
+    
+    func getUserMigrationServiceInstance() -> MigrationServiceProtocol {
+        UserMigrationService(app: app)
+    }
+    
+    func getProdductMigrationServiceInstance() -> MigrationServiceProtocol {
+        ProductMigrationService(app: app)
     }
 }

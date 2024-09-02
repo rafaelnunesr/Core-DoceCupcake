@@ -1,6 +1,6 @@
 import Fluent
 
-struct CreateCardMigration: AsyncMigration {
+struct CreateCreditCardMigration: AsyncMigration {
     private let databaseName = "credit_card"
 
     func prepare(on database: Database) async throws {

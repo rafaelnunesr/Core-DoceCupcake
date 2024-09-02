@@ -8,8 +8,8 @@ protocol ConfigurationServiceProtocol {
 final class ConfigurationService: ConfigurationServiceProtocol {
     private var app: ApplicationProtocol
     
-    init(dependecyProvider: DependencyProviderProtocol) {
-        app = dependecyProvider.getAppInstance()
+    init(app: ApplicationProtocol) {
+        self.app = app
     }
 
     func setupDatabase() {
