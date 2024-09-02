@@ -6,11 +6,9 @@ protocol ConfigurationServiceProtocol {
 }
 
 final class ConfigurationService: ConfigurationServiceProtocol {
-    private var dependecyProvider: DependencyProviderProtocol
     private var app: ApplicationProtocol
     
     init(dependecyProvider: DependencyProviderProtocol) {
-        self.dependecyProvider = dependecyProvider
         app = dependecyProvider.getAppInstance()
     }
 

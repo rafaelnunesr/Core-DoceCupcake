@@ -6,15 +6,13 @@ protocol AppConfigurationProtocol {
 }
 
 final class AppConfiguration: AppConfigurationProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let app: ApplicationProtocol
     private let migrationService: MigrationServiceProtocol
     private let controllerFactory: ControllerFactoryProtocol
     private let configService: ConfigurationServiceProtocol
     
     init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
-        self.app = dependencyProvider.getAppInstance()
+        app = dependencyProvider.getAppInstance()
         
         migrationService = dependencyProvider.getMigrationServiceInstance()
         controllerFactory = dependencyProvider.getControllerFactory()

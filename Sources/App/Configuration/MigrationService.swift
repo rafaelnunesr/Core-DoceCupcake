@@ -3,11 +3,9 @@ protocol MigrationServiceProtocol {
 }
 
 final class MigrationService: MigrationServiceProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let app: ApplicationProtocol
     
     init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
         app = dependencyProvider.getAppInstance()
     }
     
