@@ -1,8 +1,8 @@
 import Fluent
 import Vapor
 
-final class InternalNutritionalModel: DatabaseModelProtocol {
-    static let schema = "nutritional"
+final class NutritionalInformation: DatabaseModelProtocol {
+    static let schema = "nutritional_information"
 
     @ID(key: .id)
     var id: UUID?
@@ -34,17 +34,17 @@ final class InternalNutritionalModel: DatabaseModelProtocol {
     }
 }
 
-extension InternalNutritionalModel {
-    static var codeKey: KeyPath<InternalNutritionalModel, Field<String>> {
-        \InternalNutritionalModel.$code
+extension NutritionalInformation {
+    static var codeKey: KeyPath<NutritionalInformation, Field<String>> {
+        \NutritionalInformation.$code
     }
 
-    static var idKey: KeyPath<InternalNutritionalModel, IDProperty<InternalNutritionalModel, UUID>> {
-        \InternalNutritionalModel.$id
+    static var idKey: KeyPath<NutritionalInformation, IDProperty<NutritionalInformation, UUID>> {
+        \NutritionalInformation.$id
     }
 }
 
-extension InternalNutritionalModel {
+extension NutritionalInformation {
     convenience init(from model: APINutritionalInformation) {
         self.init(code: model.code,
                   name: model.name,

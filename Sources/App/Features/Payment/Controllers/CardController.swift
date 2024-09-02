@@ -2,9 +2,9 @@ import Foundation
 import Vapor
 
 protocol CardControllerProtocol {
-    func isCardValid(_ card: APICardModel) -> Bool
-    func fetchCard(for userId: UUID) async throws -> InternalCardModel?
-    func saveCard(for userId: UUID, card: APICardModel, lastDigits: String) async throws
+    func isCardValid(_ card: CreditCardRequest) -> Bool
+    func fetchCard(for userId: UUID) async throws -> CreditCard?
+    func saveCard(for userId: UUID, card: CreditCardRequest, lastDigits: String) async throws
     func deleteCard(for userId: UUID) async throws
 }
 
@@ -20,20 +20,20 @@ struct CardController: CardControllerProtocol {
         security = dependencyProvider.getSecurityInstance()
     }
     
-    func isCardValid(_ card: APICardModel) -> Bool {
+    func isCardValid(_ card: CreditCardRequest) -> Bool {
         return isCardNumberValid(card.cardNumber) && isExpiryDateValid(expiryMonth: card.expiryMonth, expiryYear: card.expiryYear)
     }
     
-    func fetchCard(for userId: UUID) async throws -> InternalCardModel? {
+    func fetchCard(for userId: UUID) async throws -> CreditCard? {
         try await repository.fetchCard(for: userId)
     }
     
-    func saveCard(for userId: UUID, card: APICardModel, lastDigits: String) async throws {
+    func saveCard(for userId: UUID, card: CreditCardRequest, lastDigits: String) async throws {
         guard try await fetchCard(for: userId) != nil else {
             return
         }
         
-        let cardModel = InternalCardModel(from: card, userId: userId, lastDigits: lastDigits)
+        let cardModel = CreditCard(from: card, userId: userId, lastDigits: lastDigits)
         try await repository.saveCard(for: cardModel)
     }
     

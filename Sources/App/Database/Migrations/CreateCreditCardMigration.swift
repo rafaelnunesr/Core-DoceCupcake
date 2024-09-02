@@ -1,7 +1,7 @@
 import Fluent
 
 struct CreateCardMigration: AsyncMigration {
-    private let databaseName = "card"
+    private let databaseName = "credit_card"
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)

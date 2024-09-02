@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Vapor
 
 protocol PackagingControllerProtocol: RouteCollection {
-    func getPackage(with code: String) async throws -> InternalPackageModel?
+    func getPackage(with code: String) async throws -> Package?
 }
 
 struct PackagingController: PackagingControllerProtocol {
@@ -37,24 +37,24 @@ struct PackagingController: PackagingControllerProtocol {
     }
 
     private func getPackageList(req: Request) async throws -> APIPackageList {
-        let result: [InternalPackageModel] = try await repository.fetchAllResults()
+        let result: [Package] = try await repository.fetchAllResults()
         let packages = result.map { APIPackage(from: $0) }
         return APIPackageList(count: packages.count, package: packages)
     }
 
-    private func createPackage(req: Request) async throws -> APIGenericMessageResponse {
+    private func createPackage(req: Request) async throws -> GenericMessageResponse {
         let model: APIPackage = try convertRequestDataToModel(req: req)
 
         guard try await getPackage(with: model.code) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
-        try await repository.create(InternalPackageModel(from: model))
+        try await repository.create(Package(from: model))
 
-        return APIGenericMessageResponse(message: Constants.packageCreated)
+        return GenericMessageResponse(message: Constants.packageCreated)
     }
 
-    private func deletePackage(req: Request) async throws -> APIGenericMessageResponse {
+    private func deletePackage(req: Request) async throws -> GenericMessageResponse {
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
 
         guard let package = try await getPackage(with: model.id) else {
@@ -63,11 +63,11 @@ struct PackagingController: PackagingControllerProtocol {
 
         try await repository.delete(package)
 
-        return APIGenericMessageResponse(message: Constants.packageDeleted)
+        return GenericMessageResponse(message: Constants.packageDeleted)
     }
 
-    func getPackage(with code: String) async throws -> InternalPackageModel? {
-        let result: InternalPackageModel? = try await repository.fetchModelByCode(code)
+    func getPackage(with code: String) async throws -> Package? {
+        let result: Package? = try await repository.fetchModelByCode(code)
         return result
     }
 

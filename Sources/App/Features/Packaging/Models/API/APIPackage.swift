@@ -13,7 +13,7 @@ struct APIPackage: Content {
 }
 
 extension APIPackage {
-    init(from model: InternalPackageModel) {
+    init(from model: Package) {
         createdAt = model.createdAt
         code = model.code
         name = model.name

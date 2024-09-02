@@ -1,5 +1,5 @@
 import Foundation
 
-struct APIReviewModel: Codable {
+struct APIReview: Codable {
     let productId: String
 }

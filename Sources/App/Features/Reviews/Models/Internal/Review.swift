@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-final class InternalProductReview: Model, Content {
+final class Review: Model, Content {
     static let schema = "product_review"
 
     @ID(key: .id)
@@ -50,8 +50,8 @@ final class InternalProductReview: Model, Content {
 
 }
 
-extension InternalProductReview {
-    convenience init(from review: APICreateReviewModel) {
+extension Review {
+    convenience init(from review: APICreateReview) {
         self.init(orderId: review.orderId,
                   userId: review.userId,
                   productId: review.productId,

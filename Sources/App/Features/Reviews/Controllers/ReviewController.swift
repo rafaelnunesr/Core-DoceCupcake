@@ -23,15 +23,15 @@ struct ReviewController: RouteCollection {
     }
 
     private func getReviewList(req: Request) async throws -> APIReviewListResponse {
-        let model: APIReviewModel = try convertRequestDataToModel(req: req)
+        let model: APIReview = try convertRequestDataToModel(req: req)
         let result = try await reviewRepository.getReviewList(productId: model.productId)
 
-        let reviews = result.map { APIReviewResponse(from: $0) }
+        let reviews = result.map { ReviewResponse(from: $0) }
         return APIReviewListResponse(count: result.count, reviews: reviews)
     }
 
-    private func createReview(req: Request) async throws -> APIGenericMessageResponse {
-        let model: APICreateReviewModel = try convertRequestDataToModel(req: req)
+    private func createReview(req: Request) async throws -> GenericMessageResponse {
+        let model: APICreateReview = try convertRequestDataToModel(req: req)
 
         guard try await productRepository.getProduct(with: model.productId) != nil else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
@@ -41,12 +41,12 @@ struct ReviewController: RouteCollection {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
-        try await reviewRepository.createReview(InternalProductReview(from: model))
+        try await reviewRepository.createReview(Review(from: model))
 
-        return APIGenericMessageResponse(message: Constants.reviewCreated)
+        return GenericMessageResponse(message: Constants.reviewCreated)
     }
 
-    private func deleteReview(req: Request) async throws -> APIGenericMessageResponse {
+    private func deleteReview(req: Request) async throws -> GenericMessageResponse {
         // check user privilegies
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
 
@@ -56,7 +56,7 @@ struct ReviewController: RouteCollection {
 
         try await reviewRepository.deleteReview(reviewModel)
 
-        return APIGenericMessageResponse(message: Constants.reviewDeleted)
+        return GenericMessageResponse(message: Constants.reviewDeleted)
     }
 
     private enum Constants {

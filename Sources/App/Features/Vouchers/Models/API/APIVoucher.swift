@@ -1,6 +1,6 @@
 import Vapor
 
-final class APIVoucherModel: Content {
+final class APIVoucher: Content {
     var createdAt: Date?
     var expiryDate: Date?
     var code: String
@@ -32,8 +32,8 @@ final class APIVoucherModel: Content {
     }
 }
 
-extension APIVoucherModel {
-    convenience init(from model: InternalVoucherModel) {
+extension APIVoucher {
+    convenience init(from model: Voucher) {
         self.init(createdAt: model.createdAt, 
                   expiryDate: model.expiryDate,
                   code: model.code, 

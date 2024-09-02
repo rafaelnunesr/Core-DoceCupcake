@@ -1,8 +1,9 @@
+import FluentPostgresDriver
 import Fluent
 import Vapor
 
-final class InternalOrderModel: Model {
-    static let schema = "orders"
+final class Order: Model {
+    static let schema = "order"
 
     @ID(key: .id)
     var id: UUID?
@@ -16,9 +17,6 @@ final class InternalOrderModel: Model {
     @Timestamp(key: "updated_at", on: .none)
     var updatedAt: Date?
     
-    @Field(key: "products")
-    var products: [String]
-    
     @Field(key: "vouchers_ids")
     var vouchersIds: [UUID]
     
@@ -28,31 +26,31 @@ final class InternalOrderModel: Model {
     @Field(key: "address")
     var address: String
     
-    @Field(key: "transportation_status")
-    var transportationStatus: [String]
+    @Field(key: "delivery_status")
+    var deliveryStatus: DeliveryStatus
+    
+    @Field(key: "order_status")
+    var orderStatus: OrderStatus
     
     internal init() { }
     
     init(id: UUID? = nil,
          userId: UUID,
-         createdAt: Date?,
-         updatedAt: Date?,
-         products: [String],
+         createdAt: Date? = nil,
+         updatedAt: Date? = nil,
          vouchersIds: [UUID],
          paymentId: UUID,
          address: String,
-         transportationStatus: [String]) {
+         deliveryStatus: DeliveryStatus,
+         orderStatus: OrderStatus) {
         self.id = id
         self.userId = userId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
-        self.products = products
         self.vouchersIds = vouchersIds
         self.paymentId = paymentId
         self.address = address
-        self.transportationStatus = transportationStatus
+        self.deliveryStatus = deliveryStatus
+        self.orderStatus = orderStatus
     }
-}
-
-extension InternalOrderModel {
 }

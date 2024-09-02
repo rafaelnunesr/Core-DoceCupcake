@@ -2,5 +2,5 @@ import Vapor
 
 struct APIVoucherModelList: Content {
     let count: Int
-    let vouchers: [APIVoucherModel]
+    let vouchers: [APIVoucher]
 }

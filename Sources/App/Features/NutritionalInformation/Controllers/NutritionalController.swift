@@ -7,9 +7,9 @@ enum DatabaseError: Error {
 }
 
 protocol NutritionalControllerProtocol {
-    func getNutritionalByIds(_ idList: [UUID]) async throws -> [InternalNutritionalModel]
-    func saveNutritionalModel(_ model: InternalNutritionalModel) async throws -> InternalNutritionalModel
-    func deleteNutritionalModel(_ model: InternalNutritionalModel) async throws
+    func getNutritionalByIds(_ idList: [UUID]) async throws -> [NutritionalInformation]
+    func saveNutritionalModel(_ model: NutritionalInformation) async throws -> NutritionalInformation
+    func deleteNutritionalModel(_ model: NutritionalInformation) async throws
 }
 
 struct NutritionalController: NutritionalControllerProtocol {
@@ -22,11 +22,11 @@ struct NutritionalController: NutritionalControllerProtocol {
         self.repository = repository
     }
 
-    func getNutritionalByIds(_ idList: [UUID]) async throws -> [InternalNutritionalModel] {
-        var nutritionalList = [InternalNutritionalModel]()
+    func getNutritionalByIds(_ idList: [UUID]) async throws -> [NutritionalInformation] {
+        var nutritionalList = [NutritionalInformation]()
 
         for id in idList {
-            if let result: InternalNutritionalModel = try await repository.fetchModelById(id) {
+            if let result: NutritionalInformation = try await repository.fetchModelById(id) {
                 nutritionalList.append(result)
             }
         }
@@ -34,7 +34,7 @@ struct NutritionalController: NutritionalControllerProtocol {
         return nutritionalList
     }
 
-    func saveNutritionalModel(_ model: InternalNutritionalModel) async throws -> InternalNutritionalModel {
+    func saveNutritionalModel(_ model: NutritionalInformation) async throws -> NutritionalInformation {
         let result = try await repository.getNutritionalByAllFields(model)
 
         if let result {
@@ -52,7 +52,7 @@ struct NutritionalController: NutritionalControllerProtocol {
         throw DatabaseError.unknown
     }
 
-    func deleteNutritionalModel(_ model: InternalNutritionalModel) async throws {
+    func deleteNutritionalModel(_ model: NutritionalInformation) async throws {
         try await repository.delete(model)
     }
 }

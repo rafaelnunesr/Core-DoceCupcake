@@ -15,7 +15,7 @@ struct APINutritionalInformation: Content, Codable {
 }
 
 extension APINutritionalInformation {
-    init(from model: InternalNutritionalModel) {
+    init(from model: NutritionalInformation) {
         code = model.code
         name = model.name
         quantityDescription = model.quantityDescription

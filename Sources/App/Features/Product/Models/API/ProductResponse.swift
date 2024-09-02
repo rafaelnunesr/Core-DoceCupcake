@@ -1,6 +1,6 @@
 import Vapor
 
-struct APIProductResponse: Content {
+struct ProductResponse: Content {
     var id: String
     let name: String
     let description: String
@@ -9,8 +9,8 @@ struct APIProductResponse: Content {
     var currentDiscount: Double?
     let stockCount: Double
     let launchDate: Date?
-    var tags: [APIProductTagModel]
-    var allergicTags: [APIProductTagModel]
+    var tags: [APIProductTag]
+    var allergicTags: [APIProductTag]
     var nutritionalInformations: [APINutritionalInformation]
 
     enum CodingKeys: String, CodingKey {
@@ -28,8 +28,8 @@ struct APIProductResponse: Content {
     }
 }
 
-extension APIProductResponse {
-    init(from product: InternalProductModel) {
+extension ProductResponse {
+    init(from product: Product) {
         id = product.productId
         name = product.name
         description = product.description

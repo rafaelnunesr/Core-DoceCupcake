@@ -1,7 +1,7 @@
 import Fluent
 
-struct CreateProductReviewMigration: AsyncMigration {
-    private let databaseName = "product_review"
+struct CreateReviewMigration: AsyncMigration {
+    private let databaseName = "review"
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)

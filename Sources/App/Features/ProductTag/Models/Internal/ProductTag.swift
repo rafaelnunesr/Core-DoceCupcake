@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-final class InternalProductTagModel: DatabaseModelProtocol, Sendable {
+final class ProductTag: DatabaseModelProtocol, Sendable {
     static let schema = "product_tag"
 
     @ID(key: .id)
@@ -22,18 +22,18 @@ final class InternalProductTagModel: DatabaseModelProtocol, Sendable {
     }
 }
 
-extension InternalProductTagModel {
-    static var codeKey: KeyPath<InternalProductTagModel, Field<String>> {
-        \InternalProductTagModel.$code
+extension ProductTag {
+    static var codeKey: KeyPath<ProductTag, Field<String>> {
+        \ProductTag.$code
     }
 
-    static var idKey: KeyPath<InternalProductTagModel, IDProperty<InternalProductTagModel, UUID>> {
-        \InternalProductTagModel.$id
+    static var idKey: KeyPath<ProductTag, IDProperty<ProductTag, UUID>> {
+        \ProductTag.$id
     }
 }
 
-extension InternalProductTagModel {
-    convenience init(from model: APIProductTagModel) {
+extension ProductTag {
+    convenience init(from model: APIProductTag) {
         self.init(code: model.code,
                   description: model.description
         )

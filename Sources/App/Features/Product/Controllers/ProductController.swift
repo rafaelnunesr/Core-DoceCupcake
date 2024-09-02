@@ -48,24 +48,24 @@ struct ProductController: RouteCollection {
             .delete(use: deleteProduct)
     }
 
-    private func getProductList(req: Request) async throws -> APIProductListResponse {
+    private func getProductList(req: Request) async throws -> ProductListResponse {
         let productList = try await productRepository.getProductList()
 
         let (tagsModels, allergicModels) = try await getProductTagsModel(productList)
 
-        var productResponse = [APIProductResponse]()
+        var productResponse = [ProductResponse]()
 
         for product in productList {
-            var prd = APIProductResponse(from: product)
-            prd.tags = tagsModels.map { APIProductTagModel(from: $0) }
-            prd.allergicTags = allergicModels.map { APIProductTagModel(from: $0) }
+            var prd = ProductResponse(from: product)
+            prd.tags = tagsModels.map { APIProductTag(from: $0) }
+            prd.allergicTags = allergicModels.map { APIProductTag(from: $0) }
             productResponse.append(prd)
         }
 
-        return APIProductListResponse(count: productResponse.count, products: productResponse)
+        return ProductListResponse(count: productResponse.count, products: productResponse)
     }
 
-    private func getProduct(req: Request) async throws -> APIProductResponse {
+    private func getProduct(req: Request) async throws -> ProductResponse {
         guard let id = req.parameters.get("productID") else {
             throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
         }
@@ -78,16 +78,16 @@ struct ProductController: RouteCollection {
         
         let nutritionalModel = try await nutritionalController.getNutritionalByIds(product.nutritionalIds)
 
-        var productResponse = APIProductResponse(from: product)
-        productResponse.tags = tagsModels.map { APIProductTagModel(from: $0) }
-        productResponse.allergicTags = allergicModels.map { APIProductTagModel(from: $0) }
+        var productResponse = ProductResponse(from: product)
+        productResponse.tags = tagsModels.map { APIProductTag(from: $0) }
+        productResponse.allergicTags = allergicModels.map { APIProductTag(from: $0) }
         productResponse.nutritionalInformations = nutritionalModel.map { APINutritionalInformation(from: $0) }
 
         return productResponse
     }
 
-    private func createNewProduct(req: Request) async throws -> APIGenericMessageResponse {
-        let model: APIProductModel = try convertRequestDataToModel(req: req)
+    private func createNewProduct(req: Request) async throws -> GenericMessageResponse {
+        let model: APIProduct = try convertRequestDataToModel(req: req)
 
         guard try await productRepository.getProduct(with: model.id) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
@@ -105,19 +105,19 @@ struct ProductController: RouteCollection {
 
         var nutritionalIds = [UUID]()
         for nutritionalModel in model.nutritionalInformations {
-            let result = try await nutritionalController.saveNutritionalModel(InternalNutritionalModel(from: nutritionalModel))
+            let result = try await nutritionalController.saveNutritionalModel(NutritionalInformation(from: nutritionalModel))
             if let id = result.id {
                 nutritionalIds.append(id)
             }
         }
 
-        let internalProduct = InternalProductModel(from: model, nutritionalIds: nutritionalIds)
+        let internalProduct = Product(from: model, nutritionalIds: nutritionalIds)
         try await productRepository.createProduct(internalProduct)
 
-        return APIGenericMessageResponse(message: Constants.productCreated)
+        return GenericMessageResponse(message: Constants.productCreated)
     }
 
-    private func getProductTagsModel(_ productList: [InternalProductModel]) async throws -> (tags: [InternalProductTagModel], allergicTags: [InternalProductTagModel]) {
+    private func getProductTagsModel(_ productList: [Product]) async throws -> (tags: [ProductTag], allergicTags: [ProductTag]) {
         var productTags = [String]()
         var allergicTags = [String]()
 
@@ -132,8 +132,8 @@ struct ProductController: RouteCollection {
         return (tags: tagsModels, allergicTags: allergicModels)
     }
 
-    private func updateProduct(req: Request) async throws -> APIGenericMessageResponse {
-        let model: APIProductModel = try convertRequestDataToModel(req: req)
+    private func updateProduct(req: Request) async throws -> GenericMessageResponse {
+        let model: APIProduct = try convertRequestDataToModel(req: req)
 
         guard let product = try await productRepository.getProduct(with: model.id) else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
@@ -151,19 +151,19 @@ struct ProductController: RouteCollection {
 
         var nutritionalIds = [UUID]()
         for nutritionalModel in model.nutritionalInformations {
-            let result = try await nutritionalController.saveNutritionalModel(InternalNutritionalModel(from: nutritionalModel))
+            let result = try await nutritionalController.saveNutritionalModel(NutritionalInformation(from: nutritionalModel))
             if let id = result.id {
                 nutritionalIds.append(id)
             }
         }
 
-        let internalProduct = InternalProductModel(from: model, nutritionalIds: nutritionalIds)
+        let internalProduct = Product(from: model, nutritionalIds: nutritionalIds)
         try await productRepository.updateProduct(internalProduct)
 
-        return APIGenericMessageResponse(message: Constants.productCreated)
+        return GenericMessageResponse(message: Constants.productCreated)
     }
 
-    private func deleteProduct(req: Request) async throws -> APIGenericMessageResponse {
+    private func deleteProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
         guard let product = try await productRepository.getProduct(with: model.id) else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
@@ -171,7 +171,7 @@ struct ProductController: RouteCollection {
        
         try await productRepository.deleteProduct(product)
         
-        return APIGenericMessageResponse(message: Constants.productDeleted)
+        return GenericMessageResponse(message: Constants.productDeleted)
     }
 
     private enum Constants {

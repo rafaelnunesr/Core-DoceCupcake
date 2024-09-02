@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-final class InternalProductModel: Model {
+final class Product: Model {
     static let schema = "product"
 
     @ID(key: .id)
@@ -79,8 +79,8 @@ final class InternalProductModel: Model {
     }
 }
 
-extension InternalProductModel {
-    convenience init(from product: APIProductModel, nutritionalIds: [UUID]) {
+extension Product {
+    convenience init(from product: APIProduct, nutritionalIds: [UUID]) {
         self.init(productId: product.id,
                   code: product.code,
                   name: product.name,

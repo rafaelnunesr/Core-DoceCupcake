@@ -1,4 +1,4 @@
-struct APISignUpAdminModel: Codable {
+struct SignUpAdminRequest: Codable {
     let userName: String
     let email: String
     var password: String

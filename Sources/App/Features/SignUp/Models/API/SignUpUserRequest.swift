@@ -1,4 +1,4 @@
-struct APISignUpUserModel: Codable {
+struct SignUpUserRequest: Codable {
     let userName: String
     let email: String
     var password: String

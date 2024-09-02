@@ -4,7 +4,7 @@ import Vapor
 
 protocol ProductTagsControllerProtocol: RouteCollection {
     func areTagCodesValid(_ tagCodeList: [String]) async throws -> Bool
-    func getTagsFor(_ tagCodeList: [String]) async throws -> [InternalProductTagModel]
+    func getTagsFor(_ tagCodeList: [String]) async throws -> [ProductTag]
 }
 
 struct ProductTagsController: ProductTagsControllerProtocol {
@@ -40,25 +40,25 @@ struct ProductTagsController: ProductTagsControllerProtocol {
             .delete(use: deleteTag)
     }
     
-    private func getProductTagsList(req: Request) async throws -> APIProductTagListResponse {
-        let result: [InternalProductTagModel] = try await repository.fetchAllResults()
-        let tags = result.map { APIProductTagModel(from: $0) }
-        return APIProductTagListResponse(count: tags.count, tags: tags)
+    private func getProductTagsList(req: Request) async throws -> ProductTagListResponse {
+        let result: [ProductTag] = try await repository.fetchAllResults()
+        let tags = result.map { APIProductTag(from: $0) }
+        return ProductTagListResponse(count: tags.count, tags: tags)
     }
 
-    private func createNewTag(req: Request) async throws -> APIGenericMessageResponse {
-        let model: APIProductTagModel = try convertRequestDataToModel(req: req)
+    private func createNewTag(req: Request) async throws -> GenericMessageResponse {
+        let model: APIProductTag = try convertRequestDataToModel(req: req)
 
         guard try await getTag(with: model.code) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
-        try await repository.create(InternalProductTagModel(from: model))
+        try await repository.create(ProductTag(from: model))
 
-        return APIGenericMessageResponse(message: Constants.tagCreated)
+        return GenericMessageResponse(message: Constants.tagCreated)
     }
 
-    private func deleteTag(req: Request) async throws -> APIGenericMessageResponse {
+    private func deleteTag(req: Request) async throws -> GenericMessageResponse {
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
 
         guard let tagModel = try await getTag(with: model.id) else {
@@ -67,11 +67,11 @@ struct ProductTagsController: ProductTagsControllerProtocol {
 
         try await repository.delete(tagModel)
 
-        return APIGenericMessageResponse(message: Constants.tagDeleted)
+        return GenericMessageResponse(message: Constants.tagDeleted)
     }
 
-    private func getTag(with code: String) async throws -> InternalProductTagModel? {
-        let result: InternalProductTagModel? = try await repository.fetchModelByCode(code)
+    private func getTag(with code: String) async throws -> ProductTag? {
+        let result: ProductTag? = try await repository.fetchModelByCode(code)
         return result
     }
 
@@ -85,8 +85,8 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         return true
     }
 
-    func getTagsFor(_ tagCodeList: [String]) async throws -> [InternalProductTagModel] {
-        var tagModels = [InternalProductTagModel]()
+    func getTagsFor(_ tagCodeList: [String]) async throws -> [ProductTag] {
+        var tagModels = [ProductTag]()
 
         for code in tagCodeList {
             if let result = try await getTag(with: code) {

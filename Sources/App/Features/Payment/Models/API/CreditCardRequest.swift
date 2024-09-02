@@ -1,6 +1,6 @@
 import Vapor
 
-struct APICardModel: Codable, Content {
+struct CreditCardRequest: Codable, Content {
     var cardHolderName: String
     var cardNumber: String
     var expiryMonth: Int

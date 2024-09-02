@@ -1,3 +1,3 @@
-struct APITagModel: Codable {
+struct APITag: Codable {
     let code: String
 }

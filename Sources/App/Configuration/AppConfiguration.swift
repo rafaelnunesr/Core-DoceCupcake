@@ -61,11 +61,11 @@ final class AppConfiguration: AppConfigurationProtocol {
     }
 
     private func addProductMigrations() {
-        app.migrations.add(CreateNutritionalMigration())
+        app.migrations.add(CreateNutritionalInformationMigration())
         app.migrations.add(CreateProductTagMigration())
         app.migrations.add(CreateProductMigration())
         app.migrations.add(CreateVoucherMigration())
-        app.migrations.add(CreateProductReviewMigration())
+        app.migrations.add(CreateReviewMigration())
         app.migrations.add(CreateCardMigration())
     }
 

@@ -1,8 +1,8 @@
 import Foundation
 import Fluent
 
-struct CreateNutritionalMigration: AsyncMigration {
-    private let databaseName = "nutritional"
+struct CreateNutritionalInformationMigration: AsyncMigration {
+    private let databaseName = "nutritional_information"
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)

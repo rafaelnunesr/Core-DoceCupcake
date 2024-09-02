@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Vapor
 
 protocol VouchersControllerProtocol: RouteCollection {
-    func getVoucher(with code: String) async throws -> InternalVoucherModel?
+    func getVoucher(with code: String) async throws -> Voucher?
 }
 
 struct VouchersController: VouchersControllerProtocol {
@@ -29,24 +29,24 @@ struct VouchersController: VouchersControllerProtocol {
     }
 
     private func getVouchersList(req: Request) async throws -> APIVoucherModelList {
-        let result: [InternalVoucherModel] = try await repository.fetchAllResults()
-        let vouchers = result.map { APIVoucherModel(from: $0) }
+        let result: [Voucher] = try await repository.fetchAllResults()
+        let vouchers = result.map { APIVoucher(from: $0) }
         return APIVoucherModelList(count: vouchers.count, vouchers: vouchers)
     }
 
-    private func createVoucher(req: Request) async throws -> APIGenericMessageResponse {
-        let model: APIVoucherModel = try convertRequestDataToModel(req: req)
+    private func createVoucher(req: Request) async throws -> GenericMessageResponse {
+        let model: APIVoucher = try convertRequestDataToModel(req: req)
 
         guard try await getVoucher(with: model.code) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
-        try await repository.create(InternalVoucherModel(from: model))
+        try await repository.create(Voucher(from: model))
 
-        return APIGenericMessageResponse(message: Constants.voucherCreated)
+        return GenericMessageResponse(message: Constants.voucherCreated)
     }
 
-    private func deleteVoucher(req: Request) async throws -> APIGenericMessageResponse {
+    private func deleteVoucher(req: Request) async throws -> GenericMessageResponse {
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
 
         guard let voucher = try await getVoucher(with: model.id) else {
@@ -55,11 +55,11 @@ struct VouchersController: VouchersControllerProtocol {
 
         try await repository.delete(voucher)
 
-        return APIGenericMessageResponse(message: Constants.voucherDeleted)
+        return GenericMessageResponse(message: Constants.voucherDeleted)
     }
 
 
-    func getVoucher(with code: String) async throws -> InternalVoucherModel? {
+    func getVoucher(with code: String) async throws -> Voucher? {
         try await repository.fetchModelByCode(code)
     }
 

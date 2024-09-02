@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-final class InternalPackageModel: DatabaseModelProtocol {
+final class Package: DatabaseModelProtocol {
     static let schema = "package"
 
     @ID(key: .id)
@@ -59,17 +59,17 @@ final class InternalPackageModel: DatabaseModelProtocol {
     }
 }
 
-extension InternalPackageModel {
-    static var codeKey: KeyPath<InternalPackageModel, Field<String>> {
-        \InternalPackageModel.$code
+extension Package {
+    static var codeKey: KeyPath<Package, Field<String>> {
+        \Package.$code
     }
 
-    static var idKey: KeyPath<InternalPackageModel, IDProperty<InternalPackageModel, UUID>> {
-        \InternalPackageModel.$id
+    static var idKey: KeyPath<Package, IDProperty<Package, UUID>> {
+        \Package.$id
     }
 }
 
-extension InternalPackageModel {
+extension Package {
     convenience init(from model: APIPackage) {
         self.init(createdAt: model.createdAt,
                   code: model.code,

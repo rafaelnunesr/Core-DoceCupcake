@@ -55,7 +55,7 @@ final class User: Model {
 }
 
 extension User {
-    convenience init(from model: APISignUpUserModel) {
+    convenience init(from model: SignUpUserRequest) {
         self.init(userName: model.userName,
                   email: model.email,
                   password: model.password,

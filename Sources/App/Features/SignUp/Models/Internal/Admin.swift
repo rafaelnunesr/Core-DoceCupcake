@@ -35,7 +35,7 @@ final class Admin: Model {
 }
 
 extension Admin {
-    convenience init(from manager: APISignUpAdminModel) {
+    convenience init(from manager: SignUpAdminRequest) {
         self.init(userName: manager.userName, email: manager.email, password: manager.password)
     }
 }

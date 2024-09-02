@@ -19,8 +19,8 @@ struct SignUpAdminController: RouteCollection {
         signUpRoutes.post(use: signUp)
     }
 
-    func signUp(req: Request) async throws -> APIGenericMessageResponse {
-        var model: APISignUpAdminModel = try convertRequestDataToModel(req: req)
+    func signUp(req: Request) async throws -> GenericMessageResponse {
+        var model: SignUpAdminRequest = try convertRequestDataToModel(req: req)
 
         guard try await repository.getUserId(with: model.email) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Credentials.userAlreadyRegistered)
@@ -32,7 +32,7 @@ struct SignUpAdminController: RouteCollection {
 
         model.password = try security.hashStringValue(model.password)
         try await repository.createUser(with: Admin(from: model))
-        return APIGenericMessageResponse(message: Constants.welcomeMessage)
+        return GenericMessageResponse(message: Constants.welcomeMessage)
     }
 
     private enum Constants {

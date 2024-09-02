@@ -1,6 +1,6 @@
 import Foundation
 
-struct APIProductModel: Codable {
+struct APIProduct: Codable {
     let id: String
     let code: String
     let name: String
@@ -10,8 +10,8 @@ struct APIProductModel: Codable {
     var currentDiscount: Double?
     let stockCount: Double
     var launchDate: String
-    var tags: [APITagModel]
-    var allergicTags: [APITagModel]
+    var tags: [APITag]
+    var allergicTags: [APITag]
     var nutritionalInformations: [APINutritionalInformation]
 
     enum CodingKeys: String, CodingKey {

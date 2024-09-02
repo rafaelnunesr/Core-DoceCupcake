@@ -1,6 +1,6 @@
 import Foundation
 
-struct APICreateReviewModel: Codable {
+struct APICreateReview: Codable {
     let userId: String
     let orderId: String
     let productId: String

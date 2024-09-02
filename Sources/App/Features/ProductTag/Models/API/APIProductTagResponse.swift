@@ -1,12 +1,12 @@
 import Vapor
 
-struct APIProductTagModel: Content, Codable, Sendable {
+struct APIProductTag: Content, Codable, Sendable {
     let code: String
     let description: String
 }
 
-extension APIProductTagModel{
-    init(from model: InternalProductTagModel) {
+extension APIProductTag{
+    init(from model: ProductTag) {
         code = model.code
         description = model.description
     }

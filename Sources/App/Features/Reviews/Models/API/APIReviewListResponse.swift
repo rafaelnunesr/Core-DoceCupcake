@@ -2,5 +2,5 @@ import Vapor
 
 struct APIReviewListResponse: Content {
     let count: Int
-    let reviews: [APIReviewResponse]
+    let reviews: [ReviewResponse]
 }

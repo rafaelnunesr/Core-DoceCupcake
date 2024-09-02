@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Vapor
 
 protocol NutritionalRepositoryProtocol: RepositoryProtocol {
-    func getNutritionalByAllFields(_ model: InternalNutritionalModel) async throws -> InternalNutritionalModel?
+    func getNutritionalByAllFields(_ model: NutritionalInformation) async throws -> NutritionalInformation?
 }
 
 final class NutritionalRepository: NutritionalRepositoryProtocol {
@@ -14,8 +14,8 @@ final class NutritionalRepository: NutritionalRepositoryProtocol {
         database = dependencyProvider.getDatabaseInstance()
     }
 
-    func getNutritionalByAllFields(_ model: InternalNutritionalModel) async throws -> InternalNutritionalModel? {
-        try await InternalNutritionalModel.query(on: database)
+    func getNutritionalByAllFields(_ model: NutritionalInformation) async throws -> NutritionalInformation? {
+        try await NutritionalInformation.query(on: database)
             .filter(\.$name == model.name)
             .filter(\.$quantityDescription == model.quantityDescription)
             .filter(\.$dailyRepresentation == model.dailyRepresentation)

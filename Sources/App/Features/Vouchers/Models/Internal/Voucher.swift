@@ -1,7 +1,7 @@
 import Fluent
 import Vapor
 
-final class InternalVoucherModel: DatabaseModelProtocol {
+final class Voucher: DatabaseModelProtocol {
     static let schema = "voucher"
 
     @ID(key: .id)
@@ -44,18 +44,18 @@ final class InternalVoucherModel: DatabaseModelProtocol {
     }
 }
 
-extension InternalVoucherModel {
-    static var codeKey: KeyPath<InternalVoucherModel, Field<String>> {
-        \InternalVoucherModel.$code
+extension Voucher {
+    static var codeKey: KeyPath<Voucher, Field<String>> {
+        \Voucher.$code
     }
 
-    static var idKey: KeyPath<InternalVoucherModel, IDProperty<InternalVoucherModel, UUID>> {
-        \InternalVoucherModel.$id
+    static var idKey: KeyPath<Voucher, IDProperty<Voucher, UUID>> {
+        \Voucher.$id
     }
 }
 
-extension InternalVoucherModel {
-    convenience init(from model: APIVoucherModel) {
+extension Voucher {
+    convenience init(from model: APIVoucher) {
         self.init(createdAt: model.createdAt,
                   expiryDate: model.expiryDate,
                   code: model.code,

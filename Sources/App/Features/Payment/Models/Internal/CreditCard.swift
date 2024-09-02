@@ -1,8 +1,8 @@
 import Fluent
 import Vapor
 
-final class InternalCardModel: Model {
-    static let schema = "card"
+final class CreditCard: Model {
+    static let schema = "credit_card"
 
     @ID(key: .id)
     var id: UUID?
@@ -54,8 +54,8 @@ final class InternalCardModel: Model {
     }
 }
 
-extension InternalCardModel {
-    convenience init(from model: APICardModel, userId: UUID, lastDigits: String) {
+extension CreditCard {
+    convenience init(from model: CreditCardRequest, userId: UUID, lastDigits: String) {
         self.init(userId: userId,
                   cardHolderName: model.cardHolderName,
                   cardNumber: model.cardNumber,

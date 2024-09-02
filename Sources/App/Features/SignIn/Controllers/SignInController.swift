@@ -24,11 +24,11 @@ struct SignInController: RouteCollection {
     }
 
     func signIn(req: Request) async throws -> ClientTokenResponse {
-        let model: APISignInModel = try convertRequestDataToModel(req: req)
+        let model: SignInRequest = try convertRequestDataToModel(req: req)
         return try await validateUser(model: model, req: req)
     }
     
-    private func validateUser(model: APISignInModel, req: Request) async throws -> ClientTokenResponse {
+    private func validateUser(model: SignInRequest, req: Request) async throws -> ClientTokenResponse {
         if let userId = try await getUserId(model) {
             return try await createSectionForUser(userId: userId, req: req, isAdmin: false)
         }
@@ -40,7 +40,7 @@ struct SignInController: RouteCollection {
         throw Abort(.unauthorized, reason: APIErrorMessage.Credentials.invalidCredentials)
     }
     
-    private func getUserId(_ model: APISignInModel) async throws -> UUID? {
+    private func getUserId(_ model: SignInRequest) async throws -> UUID? {
         if let user = try await repository.fetchUserByEmail(model.email) {
             guard try security.isHashedValidCorrect(plainValue: model.password, hashValue: user.password) else {
                 return nil
@@ -52,7 +52,7 @@ struct SignInController: RouteCollection {
         return nil
     }
     
-    private func getManagerId(_ model: APISignInModel) async throws -> UUID? {
+    private func getManagerId(_ model: SignInRequest) async throws -> UUID? {
         if let manager = try await repository.fetchManagerByEmail(model.email) {
             guard try security.isHashedValidCorrect(plainValue: model.password, hashValue: manager.password) else {
                 return nil
