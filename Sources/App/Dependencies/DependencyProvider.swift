@@ -8,8 +8,10 @@ protocol DependencyProviderProtocol {
     func getSecurityInstance() -> SecurityProtocol
     func getUserSectionValidationMiddleware() -> SectionValidationMiddlewareProtocol
     func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol
+    func getMigrationServiceInstance() -> MigrationServiceProtocol
+    func getControllerFactory() -> ControllerFactoryProtocol
+    func getConfigurationServiceInstance() -> ConfigurationServiceProtocol
 }
-
 
 final class DependencyProvider: DependencyProviderProtocol {
     private let app: ApplicationProtocol
@@ -40,5 +42,17 @@ final class DependencyProvider: DependencyProviderProtocol {
         let sectionRepository = SectionRepository(dependencyProvider: self)
         let sectionControl = SectionController(dependencyProvider: self, repository: sectionRepository)
         return AdminValidationMiddleware(sectionController: sectionControl)
+    }
+    
+    func getMigrationServiceInstance() -> MigrationServiceProtocol {
+        MigrationService(dependencyProvider: self)
+    }
+    
+    func getControllerFactory() -> ControllerFactoryProtocol {
+        ControllerFactory(dependencyProvider: self)
+    }
+    
+    func getConfigurationServiceInstance() -> ConfigurationServiceProtocol {
+        ConfigurationService(dependecyProvider: self)
     }
 }
