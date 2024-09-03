@@ -16,7 +16,7 @@ enum OrderItemDbField: String {
     }
 }
 
-final class OrderItem: Model {
+final class OrderItem: Model, @unchecked Sendable {
     static let schema = "order_item"
 
     @ID(key: .id)

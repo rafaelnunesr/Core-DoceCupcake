@@ -11,7 +11,7 @@ enum ProductTagDbField: String {
     }
 }
 
-final class ProductTag: DatabaseModelProtocol, Sendable {
+final class ProductTag: DatabaseModelProtocol, @unchecked Sendable {
     static let schema = ProductTagDbField.schema.rawValue
 
     @ID(key: .id)

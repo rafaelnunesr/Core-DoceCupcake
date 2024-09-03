@@ -23,6 +23,7 @@ struct SignInController: RouteCollection {
         signInRoutes.post(use: signIn)
     }
 
+    @Sendable
     func signIn(req: Request) async throws -> ClientTokenResponse {
         let model: SignInRequest = try convertRequestDataToModel(req: req)
         return try await validateUser(model: model, req: req)

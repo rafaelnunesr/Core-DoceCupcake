@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol VouchersControllerProtocol: RouteCollection, Sendable {
+protocol VouchersControllerProtocol: RouteCollection {
     func getVoucher(with code: String) async throws -> Voucher?
 }
 

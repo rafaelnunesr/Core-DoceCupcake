@@ -6,7 +6,7 @@ enum DatabaseError: Error {
     case unknown
 }
 
-protocol NutritionalControllerProtocol {
+protocol NutritionalControllerProtocol: Sendable {
     func getNutritionalByIds(_ idList: [UUID]) async throws -> [NutritionalInformation]
     func saveNutritionalModel(_ model: NutritionalInformation) async throws -> NutritionalInformation
     func deleteNutritionalModel(_ model: NutritionalInformation) async throws

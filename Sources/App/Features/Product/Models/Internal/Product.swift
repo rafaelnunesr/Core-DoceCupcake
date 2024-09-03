@@ -24,7 +24,7 @@ enum ProductDbField: String {
     }
 }
 
-final class Product: Model {
+final class Product: Model, @unchecked Sendable {
     static let schema = ProductDbField.schema.rawValue
 
     @ID(key: .id)

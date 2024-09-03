@@ -13,7 +13,7 @@ enum AdminDbField: String {
     }
 }
 
-final class Admin: Model {
+final class Admin: Model, @unchecked Sendable {
     static let schema = AdminDbField.schema.rawValue
 
     @ID(key: .id)

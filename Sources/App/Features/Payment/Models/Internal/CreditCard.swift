@@ -19,7 +19,7 @@ enum CreditCardDbField: String {
     }
 }
 
-final class CreditCard: Model {
+final class CreditCard: Model, @unchecked Sendable {
     static let schema = CreditCardDbField.schema.rawValue
 
     @ID(key: .id)

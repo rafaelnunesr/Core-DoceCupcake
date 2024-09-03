@@ -45,26 +45,32 @@ struct OrderController: OrderControllerProtocol {
             .delete(use: deleteOrder)
     }
     
+    @Sendable
     private func getOrderById(req: Request) async throws -> APIOrder {
         fatalError()
     }
     
+    @Sendable
     private func getOrderByUserId(req: Request) async throws -> [APIOrder] {
         fatalError()
     }
     
+    @Sendable
     private func getAllOpenOrders(req: Request) async throws -> [APIOrder] {
         fatalError()
     }
     
+    @Sendable
     private func createOrder(req: Request) async throws -> GenericMessageResponse {
         fatalError()
     }
     
+    @Sendable
     private func updateOrder(req: Request) async throws -> GenericMessageResponse {
         fatalError()
     }
     
+    @Sendable
     private func deleteOrder(req: Request) async throws -> GenericMessageResponse {
         fatalError()
     }

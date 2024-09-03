@@ -16,7 +16,7 @@ enum VoucherDbField: String {
     }
 }
 
-final class Voucher: DatabaseModelProtocol {
+final class Voucher: DatabaseModelProtocol, @unchecked Sendable {
     static let schema = VoucherDbField.schema.rawValue
 
     @ID(key: .id)

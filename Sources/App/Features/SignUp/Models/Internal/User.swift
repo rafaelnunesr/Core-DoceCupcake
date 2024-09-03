@@ -20,7 +20,7 @@ enum UsersDbField: String {
     }
 }
 
-final class User: Model {
+final class User: Model, @unchecked Sendable {
     static let schema = UsersDbField.schema.rawValue
 
     @ID(key: .id)

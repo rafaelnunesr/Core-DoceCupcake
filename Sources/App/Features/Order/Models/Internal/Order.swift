@@ -20,7 +20,7 @@ enum OrderDbField: String {
     }
 }
 
-final class Order: Model {
+final class Order: Model, @unchecked Sendable {
     static let schema = OrderDbField.schema.rawValue
 
     @ID(key: .id)

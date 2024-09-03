@@ -37,12 +37,14 @@ struct PackagingController: PackagingControllerProtocol {
             .delete(use: deletePackage)
     }
 
+    @Sendable
     private func getPackageList(req: Request) async throws -> APIPackageList {
         let result: [Package] = try await repository.fetchAllResults()
         let packages = result.map { APIPackage(from: $0) }
         return APIPackageList(count: packages.count, package: packages)
     }
 
+    @Sendable
     private func createPackage(req: Request) async throws -> GenericMessageResponse {
         let model: APIPackage = try convertRequestDataToModel(req: req)
 
@@ -55,6 +57,7 @@ struct PackagingController: PackagingControllerProtocol {
         return GenericMessageResponse(message: Constants.packageCreated)
     }
 
+    @Sendable
     private func deletePackage(req: Request) async throws -> GenericMessageResponse {
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
 

@@ -8,7 +8,7 @@ enum SectionControlAccess {
     case unowned
 }
 
-protocol SectionControllerProtocol {
+protocol SectionControllerProtocol: Sendable {
     func validateSection(req: Request) async throws -> SectionControlAccess
     func createSection(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSectionModel? // improve this
     func deleteSection(for userId: UUID) async throws

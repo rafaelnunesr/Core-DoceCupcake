@@ -19,6 +19,7 @@ struct SignUpAdminController: RouteCollection {
         signUpRoutes.post(use: signUp)
     }
 
+    @Sendable
     func signUp(req: Request) async throws -> GenericMessageResponse {
         var model: SignUpAdminRequest = try convertRequestDataToModel(req: req)
 

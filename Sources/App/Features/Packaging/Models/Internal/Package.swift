@@ -19,7 +19,7 @@ enum PackageDbField: String {
     }
 }
 
-final class Package: DatabaseModelProtocol {
+final class Package: DatabaseModelProtocol, @unchecked Sendable {
     static let schema = PackageDbField.schema.rawValue
 
     @ID(key: .id)

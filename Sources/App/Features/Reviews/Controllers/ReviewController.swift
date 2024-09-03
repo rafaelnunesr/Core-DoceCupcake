@@ -23,6 +23,7 @@ struct ReviewController: RouteCollection {
         productRoutes.delete(use: deleteReview)
     }
 
+    @Sendable
     private func getReviewList(req: Request) async throws -> APIReviewListResponse {
         let model: APIReview = try convertRequestDataToModel(req: req)
         let result = try await reviewRepository.getReviewList(productCode: model.productCode)
@@ -31,6 +32,7 @@ struct ReviewController: RouteCollection {
         return APIReviewListResponse(count: result.count, reviews: reviews)
     }
 
+    @Sendable
     private func createReview(req: Request) async throws -> GenericMessageResponse {
         let model: APICreateReview = try convertRequestDataToModel(req: req)
 
@@ -47,6 +49,7 @@ struct ReviewController: RouteCollection {
         return GenericMessageResponse(message: Constants.reviewCreated)
     }
 
+    @Sendable
     private func deleteReview(req: Request) async throws -> GenericMessageResponse {
         // check user privilegies
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
