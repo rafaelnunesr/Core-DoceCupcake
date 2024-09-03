@@ -1,18 +1,18 @@
 import Fluent
 
 struct CreateVoucherMigration: AsyncMigration {
-    private let databaseName = "voucher"
+    private let databaseName = VoucherDbField.schema.rawValue
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)
             .id()
-            .field("created_at", .datetime)
-            .field("expiry_date", .datetime)
-            .field("code", .string, .required)
-            .field("percentage_discount", .double)
-            .field("monetary_discount", .double)
-            .field("availability_count", .int)
-            .unique(on: "code")
+            .field(VoucherDbField.createdAt.fieldKey, .datetime)
+            .field(VoucherDbField.expiryDate.fieldKey, .datetime)
+            .field(VoucherDbField.code.fieldKey, .string, .required)
+            .field(VoucherDbField.percentageDiscount.fieldKey, .double)
+            .field(VoucherDbField.monetaryDiscount.fieldKey, .double)
+            .field(VoucherDbField.availabilityCount.fieldKey, .int)
+            .unique(on: VoucherDbField.code.fieldKey)
             .create()
     }
 

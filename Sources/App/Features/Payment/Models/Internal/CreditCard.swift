@@ -3,6 +3,8 @@ import Vapor
 
 enum CreditCardDbField: String {
     case schema = "credit_card"
+    
+    case id
     case createdAt = "created_at"
     case userId = "user_id"
     case cardHolderName = "card_holder_name"

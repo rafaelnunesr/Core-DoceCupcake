@@ -7,7 +7,8 @@ struct CreateCreditCardMigration: AsyncMigration {
         try await database.schema(databaseName)
             .id()
             .field(CreditCardDbField.createdAt.fieldKey, .datetime)
-            .field(CreditCardDbField.userId.fieldKey, .uuid, .required, .references("users", "id"))
+            .field(CreditCardDbField.userId.fieldKey, .uuid, .required, 
+                .references(UsersDbField.schema.rawValue, UsersDbField.id.fieldKey))
             .field(CreditCardDbField.cardHolderName.fieldKey, .string, .required)
             .field(CreditCardDbField.cardNumber.fieldKey, .string, .required)
             .field(CreditCardDbField.lastDigits.fieldKey, .string, .required)

@@ -1,31 +1,55 @@
 import Foundation
+import Vapor
 
-struct APIProduct: Codable {
-    let id: String
+struct APIProduct: Codable, Content {
+    let productId: String
     let code: String
     let name: String
     let description: String
-    var originalPrice: Double?
+    var imageUrl: String?
     let currentPrice: Double
-    var currentDiscount: Double?
+    var originalPrice: Double?
+    var voucherCode: String?
     let stockCount: Double
-    var launchDate: String
+    let launchDate: Date?
     var tags: [APITag]
     var allergicTags: [APITag]
     var nutritionalInformations: [APINutritionalInformation]
-
+    let isNew: Bool
+    
     enum CodingKeys: String, CodingKey {
-        case id = "product_id"
+        case productId = "product_id"
         case code
         case name
         case description
-        case originalPrice = "original_price"
+        case imageUrl = "image_url"
         case currentPrice = "current_price"
-        case currentDiscount = "current_discount"
+        case originalPrice = "original_price"
+        case voucherCode = "voucher_code"
         case stockCount = "stock_count"
         case launchDate = "launch_date"
         case tags
         case allergicTags = "allergic_tags"
         case nutritionalInformations = "nutritional_informations"
+        case isNew = "is_new"
+    }
+}
+
+extension APIProduct {
+    init(from model: Product, nutritionalInfos: [APINutritionalInformation]) {
+        productId = model.productId
+        code = model.code
+        name = model.name
+        description = model.description
+        imageUrl = model.imageUrl
+        currentPrice = model.currentPrice
+        originalPrice = model.originalPrice
+        voucherCode = model.voucherCode
+        stockCount = model.stockCount
+        launchDate = model.launchDate
+        tags = model.tags.map { APITag(code: $0) }
+        allergicTags = model.allergicTags.map { APITag(code: $0) }
+        nutritionalInformations = nutritionalInfos
+        isNew = model.isNew
     }
 }

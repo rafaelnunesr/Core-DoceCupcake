@@ -1,6 +1,21 @@
 import Foundation
 import Fluent
 
+enum OrderItemDbField: String {
+    case schema = "order_item"
+    
+    case id
+    case orderId = "order_id"
+    case paymentId = "product_id"
+    case quantity
+    case deliveryStatus = "unit_value"
+    case orderStatus = "order_status"
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class OrderItem: Model {
     static let schema = "order_item"
 
@@ -14,7 +29,7 @@ final class OrderItem: Model {
     var productId: UUID
 
     @Field(key: "quantity")
-    var quantity: Int
+    var quantity: Double
     
     @Field(key: "unit_value")
     var unitValue: Double
@@ -27,7 +42,7 @@ final class OrderItem: Model {
     init(id: UUID? = nil, 
          orderId: UUID,
          productId: UUID,
-         quantity: Int,
+         quantity: Double,
          unitValue: Double,
          orderStatus: OrderStatus) {
         self.id = id

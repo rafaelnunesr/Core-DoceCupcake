@@ -1,97 +1,133 @@
 import Fluent
 import Vapor
 
+enum ProductDbField: String {
+    case schema = "product"
+    
+    case createdAt = "created_at"
+    case productId = "product_id"
+    case code
+    case name
+    case description
+    case imageUrl = "imag_url"
+    case currentPrice = "current_price"
+    case originalPrice = "original_price"
+    case voucherCode = "voucher_code"
+    case stockCount = "stock_count"
+    case launchDate = "launch_date"
+    case tags = "tags"
+    case allergicTags = "allergic_tags"
+    case nutritionalIds = "nutritional_ids"
+    case isNew = "is_new"
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class Product: Model {
-    static let schema = "product"
+    static let schema = ProductDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
-
-    @Field(key: "product_id")
-    var productId: String
-
-    @Field(key: "code")
-    var code: String
-
-    @Timestamp(key: "created_at", on: .create)
+    
+    @Timestamp(key: ProductDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
 
-    @Field(key: "name")
+    @Field(key: ProductDbField.productId.fieldKey)
+    var productId: String
+
+    @Field(key: ProductDbField.code.fieldKey)
+    var code: String
+
+    @Field(key: ProductDbField.name.fieldKey)
     var name: String
 
-    @Field(key: "description")
+    @Field(key: ProductDbField.description.fieldKey)
     var description: String
+    
+    @OptionalField(key: ProductDbField.imageUrl.fieldKey)
+    var imageUrl: String?
 
-    @Field(key: "current_price")
+    @Field(key: ProductDbField.currentPrice.fieldKey)
     var currentPrice: Double
 
-    @OptionalField(key: "original_price")
+    @OptionalField(key: ProductDbField.originalPrice.fieldKey)
     var originalPrice: Double?
 
-    @OptionalField(key: "current_discount")
-    var currentDiscount: Double?
+    @OptionalField(key: ProductDbField.voucherCode.fieldKey)
+    var voucherCode: String?
 
-    @Field(key: "stock_count")
+    @Field(key: ProductDbField.stockCount.fieldKey)
     var stockCount: Double
 
-    @Timestamp(key: "launch_date", on: .none)
+    @Timestamp(key: ProductDbField.launchDate.fieldKey, on: .none)
     var launchDate: Date?
 
-    @Field(key: "tags")
+    @Field(key: ProductDbField.tags.fieldKey)
     var tags: [String]
 
-    @Field(key: "allergic_tags")
+    @Field(key: ProductDbField.allergicTags.fieldKey)
     var allergicTags: [String]
 
-    @Field(key: "nutritional_ids")
+    @Field(key: ProductDbField.nutritionalIds.fieldKey)
     var nutritionalIds: [UUID]
+    
+    @Field(key: ProductDbField.isNew.fieldKey)
+    var isNew: Bool
 
     internal init() { }
 
     init(id: UUID? = nil,
+         createdAt: Date? = nil,
          productId: String,
          code: String,
-         createdAt: Date? = nil,
          name: String,
          description: String,
+         imageUrl: String? = nil,
          currentPrice: Double,
          originalPrice: Double?,
-         currentDiscount: Double?,
+         voucherCode: String? = nil,
          stockCount: Double,
          launchDate: Date?,
          tags: [String],
          allergicTags: [String],
-         nutritionalIds: [UUID]) {
+         nutritionalIds: [UUID], 
+         isNew: Bool = false) {
         self.id = id
         self.productId = productId
         self.code = code
         self.createdAt = createdAt
         self.name = name
         self.description = description
+        self.imageUrl = imageUrl
         self.currentPrice = currentPrice
         self.originalPrice = originalPrice
-        self.currentDiscount = currentDiscount
+        self.voucherCode = voucherCode
         self.stockCount = stockCount
         self.launchDate = launchDate
         self.tags = tags
         self.allergicTags = allergicTags
         self.nutritionalIds = nutritionalIds
+        self.isNew = isNew
     }
 }
 
 extension Product {
     convenience init(from product: APIProduct, nutritionalIds: [UUID]) {
-        self.init(productId: product.id,
+        self.init(productId: product.productId,
                   code: product.code,
                   name: product.name,
                   description: product.description,
+                  imageUrl: product.imageUrl,
                   currentPrice: product.currentPrice,
                   originalPrice: product.originalPrice,
-                  currentDiscount: product.currentDiscount,
+                  voucherCode: product.voucherCode,
                   stockCount: product.stockCount,
-                  launchDate: product.launchDate.dateValue,
+                  launchDate: product.launchDate,
                   tags: product.tags.map { $0.code },
                   allergicTags: product.allergicTags.map { $0.code },
-                  nutritionalIds: nutritionalIds)
+                  nutritionalIds: [], // TODO
+                  isNew: product.isNew)
     }
 }

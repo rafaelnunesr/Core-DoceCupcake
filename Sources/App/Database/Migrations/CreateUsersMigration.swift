@@ -1,19 +1,21 @@
 import Fluent
 
 struct CreateUsersMigration: AsyncMigration {
-    private let databaseName = "users"
+    private let databaseName = UsersDbField.schema.rawValue
 
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)
             .id()
-            .field("created_at", .datetime)
-            .field("user_name", .string, .required)
-            .field("email", .string, .required)
-            .field("password", .string, .required)
-            .field("state", .string, .required)
-            .field("city", .string, .required)
-            .field("address", .string, .required)
-            .field("address_complement", .string)
+            .field(UsersDbField.createdAt.fieldKey, .datetime)
+            .field(UsersDbField.userName.fieldKey, .string, .required)
+            .field(UsersDbField.email.fieldKey, .string, .required)
+            .field(UsersDbField.password.fieldKey, .string, .required)
+            .field(UsersDbField.imageUrl.fieldKey, .string)
+            .field(UsersDbField.state.fieldKey, .string, .required)
+            .field(UsersDbField.city.fieldKey, .string, .required)
+            .field(UsersDbField.address.fieldKey, .string, .required)
+            .field(UsersDbField.addressComplement.fieldKey, .string)
+            .unique(on: UsersDbField.email.fieldKey)
             .create()
     }
 

@@ -1,31 +1,47 @@
 import Fluent
 import Vapor
 
+enum ReviewDbField: String {
+    case schema = "review"
+    
+    case createdAt = "created_at"
+    case orderId = "order_id"
+    case userId = "user_id"
+    case productId = "product_id"
+    case rate
+    case title
+    case text
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class Review: Model, Content {
-    static let schema = "product_review"
+    static let schema = ReviewDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
 
-    @Timestamp(key: "created_at", on: .create)
+    @Timestamp(key: ReviewDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
 
-    @Field(key: "order_id")
+    @Field(key: ReviewDbField.orderId.fieldKey)
     var orderId: String
 
-    @Field(key: "user_id")
+    @Field(key: ReviewDbField.userId.fieldKey)
     var userId: String
 
-    @Field(key: "product_id")
+    @Field(key: ReviewDbField.productId.fieldKey)
     var productId: String
 
-    @Field(key: "rate")
+    @Field(key: ReviewDbField.rate.fieldKey)
     var rate: Int
 
-    @Field(key: "title")
+    @Field(key: ReviewDbField.title.fieldKey)
     var title: String
 
-    @Field(key: "text")
+    @Field(key: ReviewDbField.text.fieldKey)
     var text: String
 
     internal init() {}

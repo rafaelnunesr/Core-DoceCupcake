@@ -11,6 +11,7 @@ struct CreateNutritionalInformationMigration: AsyncMigration {
             .field(NutritionalInformationDbField.name.fieldKey, .string, .required)
             .field(NutritionalInformationDbField.quantityDescription.fieldKey, .string, .required)
             .field(NutritionalInformationDbField.dailyRepresentation.fieldKey, .string, .required)
+            .unique(on: NutritionalInformationDbField.code.fieldKey)
             .create()
     }
 

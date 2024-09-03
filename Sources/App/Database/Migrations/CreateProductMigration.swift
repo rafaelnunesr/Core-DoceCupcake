@@ -2,24 +2,29 @@ import Foundation
 import Fluent
 
 struct CreateProductMigration: AsyncMigration {
-    private let databaseName = "product"
+    private let databaseName = ProductDbField.schema.rawValue
     
     func prepare(on database: Database) async throws {
         try await database.schema(databaseName)
             .id()
-            .field("product_id", .string, .required)
-            .field("code", .string, .required)
-            .field("created_at", .datetime)
-            .field("name", .string, .required)
-            .field("description", .string, .required)
-            .field("current_price", .double, .required)
-            .field("original_price", .double)
-            .field("current_discount", .double)
-            .field("stock_count", .double, .required)
-            .field("launch_date", .datetime)
-            .field("tags", .array(of: .string), .required)
-            .field("allergic_tags", .array(of: .string), .required)
-            .field("nutritional_ids", .array(of: .uuid), .required)
+            .field(ProductDbField.createdAt.fieldKey, .datetime)
+            .field(ProductDbField.productId.fieldKey, .string, .required)
+            .field(ProductDbField.code.fieldKey, .string, .required)
+            .field(ProductDbField.name.fieldKey, .string, .required)
+            .field(ProductDbField.description.fieldKey, .string, .required)
+            .field(ProductDbField.imageUrl.fieldKey, .string)
+            .field(ProductDbField.currentPrice.fieldKey, .double, .required)
+            .field(ProductDbField.originalPrice.fieldKey, .double)
+            .field(ProductDbField.voucherCode.fieldKey, .string,
+                .references(VoucherDbField.schema.rawValue, VoucherDbField.code.fieldKey))
+            .field(ProductDbField.stockCount.fieldKey, .double, .required)
+            .field(ProductDbField.launchDate.fieldKey, .datetime)
+            .field(ProductDbField.tags.fieldKey, .array(of: .string), .required)
+            .field(ProductDbField.allergicTags.fieldKey, .array(of: .string), .required)
+            .field(ProductDbField.nutritionalIds.fieldKey, .array(of: .uuid), .required)
+            .field(ProductDbField.isNew.fieldKey, .bool, .required)
+            .unique(on: ProductDbField.productId.fieldKey)
+            .unique(on: ProductDbField.code.fieldKey)
             .create()
     }
     

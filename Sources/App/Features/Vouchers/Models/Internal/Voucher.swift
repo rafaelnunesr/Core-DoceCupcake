@@ -1,28 +1,43 @@
 import Fluent
 import Vapor
 
+enum VoucherDbField: String {
+    case schema = "voucher"
+    
+    case createdAt = "created_at"
+    case expiryDate = "expiry_date"
+    case code
+    case percentageDiscount = "percentage_discount"
+    case monetaryDiscount = "monetary_discount"
+    case availabilityCount = "availability_count"
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class Voucher: DatabaseModelProtocol {
-    static let schema = "voucher"
+    static let schema = VoucherDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
 
-    @Timestamp(key: "created_at", on: .create)
+    @Timestamp(key: VoucherDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
 
-    @Timestamp(key: "expiry_date", on: .none)
+    @Timestamp(key: VoucherDbField.expiryDate.fieldKey, on: .none)
     var expiryDate: Date?
 
-    @Field(key: "code")
+    @Field(key: VoucherDbField.code.fieldKey)
     var code: String
 
-    @OptionalField(key: "percentage_discount")
+    @OptionalField(key: VoucherDbField.percentageDiscount.fieldKey)
     var percentageDiscount: Double?
 
-    @OptionalField(key: "monetary_discount")
+    @OptionalField(key: VoucherDbField.monetaryDiscount.fieldKey)
     var monetaryDiscount: Double?
 
-    @OptionalField(key: "availability_count")
+    @OptionalField(key: VoucherDbField.availabilityCount.fieldKey)
     var availabilityCount: Int?
 
     internal init() { }

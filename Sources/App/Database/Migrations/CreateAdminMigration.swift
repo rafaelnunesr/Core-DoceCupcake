@@ -10,6 +10,7 @@ struct CreateAdminMigration: AsyncMigration {
             .field(AdminDbField.userName.fieldKey, .string, .required)
             .field(AdminDbField.email.fieldKey, .string, .required)
             .field(AdminDbField.password.fieldKey, .string, .required)
+            .unique(on: AdminDbField.email.fieldKey)
             .create()
     }
 

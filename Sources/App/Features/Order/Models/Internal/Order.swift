@@ -2,54 +2,72 @@ import FluentPostgresDriver
 import Fluent
 import Vapor
 
+enum OrderDbField: String {
+    case schema = "order"
+    
+    case id
+    case createdAt = "created_at"
+    case updatedAt = "updated_at"
+    case userId = "user_id"
+    case voucherCode = "voucher_code"
+    case paymentId = "payment_id"
+    case deliveryAddress = "delivery_address"
+    case deliveryStatus = "delivery_status"
+    case orderStatus = "order_status"
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class Order: Model {
-    static let schema = "order"
+    static let schema = OrderDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
-
-    @Field(key: "user_id")
-    var userId: UUID
     
-    @Timestamp(key: "created_at", on: .create)
+    @Timestamp(key: OrderDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
     
-    @Timestamp(key: "updated_at", on: .none)
+    @Timestamp(key: OrderDbField.updatedAt.fieldKey, on: .none)
     var updatedAt: Date?
+
+    @Field(key: OrderDbField.userId.fieldKey)
+    var userId: UUID
     
-    @Field(key: "vouchers_ids")
-    var vouchersIds: [UUID]
+    @OptionalField(key: OrderDbField.voucherCode.fieldKey)
+    var voucherCode: String?
     
-    @Field(key: "payment_id")
+    @Field(key: OrderDbField.paymentId.fieldKey)
     var paymentId: UUID
     
-    @Field(key: "address")
-    var address: String
+    @Field(key: OrderDbField.deliveryAddress.fieldKey)
+    var deliveryAddress: String
     
-    @Field(key: "delivery_status")
+    @Field(key: OrderDbField.deliveryStatus.fieldKey)
     var deliveryStatus: DeliveryStatus
     
-    @Field(key: "order_status")
+    @Field(key: OrderDbField.orderStatus.fieldKey)
     var orderStatus: OrderStatus
     
     internal init() { }
     
     init(id: UUID? = nil,
-         userId: UUID,
          createdAt: Date? = nil,
          updatedAt: Date? = nil,
-         vouchersIds: [UUID],
+         userId: UUID,
+         voucherCode: String? = nil,
          paymentId: UUID,
-         address: String,
+         deliveryAddress: String,
          deliveryStatus: DeliveryStatus,
          orderStatus: OrderStatus) {
         self.id = id
         self.userId = userId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
-        self.vouchersIds = vouchersIds
+        self.voucherCode = voucherCode
         self.paymentId = paymentId
-        self.address = address
+        self.deliveryAddress = deliveryAddress
         self.deliveryStatus = deliveryStatus
         self.orderStatus = orderStatus
     }

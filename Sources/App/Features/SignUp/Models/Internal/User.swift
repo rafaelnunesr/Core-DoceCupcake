@@ -1,34 +1,56 @@
 import Fluent
 import Vapor
 
+enum UsersDbField: String {
+    case schema = "review"
+    
+    case id
+    case createdAt = "created_at"
+    case userName = "user_name"
+    case email
+    case password
+    case imageUrl = "image_url"
+    case state
+    case city
+    case address
+    case addressComplement = "address_complement"
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class User: Model {
-    static let schema = "users"
+    static let schema = UsersDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
 
-    @Timestamp(key: "created_at", on: .create)
+    @Timestamp(key: UsersDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
 
-    @Field(key: "user_name")
+    @Field(key: UsersDbField.userName.fieldKey)
     var userName: String
 
-    @Field(key: "email")
+    @Field(key: UsersDbField.email.fieldKey)
     var email: String
 
-    @Field(key: "password")
+    @Field(key: UsersDbField.password.fieldKey)
     var password: String
+    
+    @OptionalField(key: UsersDbField.imageUrl.fieldKey)
+    var imageUrl: String?
 
-    @Field(key: "state")
+    @Field(key: UsersDbField.state.fieldKey)
     var state: String
 
-    @Field(key: "city")
+    @Field(key: UsersDbField.city.fieldKey)
     var city: String
 
-    @Field(key: "address")
+    @Field(key: UsersDbField.address.fieldKey)
     var address: String
 
-    @OptionalField(key: "address_complement")
+    @OptionalField(key: UsersDbField.addressComplement.fieldKey)
     var addressComplement: String?
 
     internal init() {}
@@ -37,7 +59,8 @@ final class User: Model {
          createdAt: Date? = nil,
          userName: String,
          email: String,
-         password: String, 
+         password: String,
+         imageUrl: String? = nil,
          state: String,
          city: String,
          address: String,
@@ -47,6 +70,7 @@ final class User: Model {
         self.userName = userName
         self.email = email
         self.password = password
+        self.imageUrl = imageUrl
         self.state = state
         self.city = city
         self.address = address
@@ -59,6 +83,7 @@ extension User {
         self.init(userName: model.userName,
                   email: model.email,
                   password: model.password,
+                  imageUrl: model.imageUrl,
                   state: model.state,
                   city: model.city,
                   address: model.address,
