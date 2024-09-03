@@ -16,7 +16,8 @@ struct ReviewController: RouteCollection {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let productRoutes = routes.grouped("review")
+        let productRoutes = routes.grouped(Routes.review.pathValue)
+        
         productRoutes.get(":productId", use: getReviewList)
         productRoutes.post(use: createReview)
         productRoutes.delete(use: deleteReview)

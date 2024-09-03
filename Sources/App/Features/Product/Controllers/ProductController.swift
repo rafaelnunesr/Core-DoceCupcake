@@ -25,7 +25,7 @@ struct ProductController: RouteCollection {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let productRoutes = routes.grouped("productList")
+        let productRoutes = routes.grouped(Routes.productList.pathValue)
         
         productRoutes
             .grouped(userSectionValidation)
@@ -48,6 +48,7 @@ struct ProductController: RouteCollection {
             .delete(use: deleteProduct)
     }
 
+    @Sendable
     private func getProductList(req: Request) async throws -> ProductListResponse {
         let productList = try await productRepository.getProductList()
 
@@ -63,6 +64,7 @@ struct ProductController: RouteCollection {
         return ProductListResponse(count: productResponse.count, products: productResponse)
     }
 
+    @Sendable
     private func getProduct(req: Request) async throws -> APIProduct {
         guard let id = req.parameters.get("productID") else {
             throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
@@ -82,6 +84,7 @@ struct ProductController: RouteCollection {
         return productResponse
     }
 
+    @Sendable
     private func createNewProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
@@ -113,6 +116,7 @@ struct ProductController: RouteCollection {
         return GenericMessageResponse(message: Constants.productCreated)
     }
 
+    @Sendable
     private func getProductTagsModel(_ productList: [Product]) async throws -> (tags: [ProductTag], allergicTags: [ProductTag]) {
         var productTags = [String]()
         var allergicTags = [String]()
@@ -128,6 +132,7 @@ struct ProductController: RouteCollection {
         return (tags: tagsModels, allergicTags: allergicModels)
     }
 
+    @Sendable
     private func updateProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
@@ -159,6 +164,7 @@ struct ProductController: RouteCollection {
         return GenericMessageResponse(message: Constants.productCreated)
     }
 
+    @Sendable
     private func deleteProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
         guard let product = try await productRepository.getProduct(with: model.id) else {

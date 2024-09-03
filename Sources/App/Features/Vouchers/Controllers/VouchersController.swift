@@ -20,7 +20,7 @@ struct VouchersController: VouchersControllerProtocol {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let vouchersRoutes = routes.grouped("vouchers")
+        let vouchersRoutes = routes.grouped(Routes.vouchers.pathValue)
             .grouped(adminSectionValidation)
         
         vouchersRoutes.get(use: getVouchersList)

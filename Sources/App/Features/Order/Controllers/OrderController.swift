@@ -22,7 +22,7 @@ struct OrderController: OrderControllerProtocol {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let ordersRoutes = routes.grouped("orders")
+        let ordersRoutes = routes.grouped(Routes.orders.pathValue)
         
         ordersRoutes
             .grouped(userSectionValidation)

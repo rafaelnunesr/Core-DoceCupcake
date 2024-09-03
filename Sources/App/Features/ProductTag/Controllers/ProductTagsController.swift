@@ -26,7 +26,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let productRoutes = routes.grouped("productTags")
+        let productRoutes = routes.grouped(Routes.productTags.pathValue)
         productRoutes
             .grouped(userSectionValidation)
             .get(use: getProductTagsList)

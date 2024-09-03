@@ -19,7 +19,7 @@ struct SignInController: RouteCollection {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let signInRoutes = routes.grouped("signIn")
+        let signInRoutes = routes.grouped(Routes.signin.pathValue)
         signInRoutes.post(use: signIn)
     }
 
