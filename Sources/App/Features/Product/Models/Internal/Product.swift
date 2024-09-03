@@ -5,7 +5,6 @@ enum ProductDbField: String {
     case schema = "product"
     
     case createdAt = "created_at"
-    case productId = "product_id"
     case code
     case name
     case description
@@ -33,9 +32,6 @@ final class Product: Model {
     
     @Timestamp(key: ProductDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
-
-    @Field(key: ProductDbField.productId.fieldKey)
-    var productId: String
 
     @Field(key: ProductDbField.code.fieldKey)
     var code: String
@@ -80,7 +76,6 @@ final class Product: Model {
 
     init(id: UUID? = nil,
          createdAt: Date? = nil,
-         productId: String,
          code: String,
          name: String,
          description: String,
@@ -95,7 +90,6 @@ final class Product: Model {
          nutritionalIds: [UUID], 
          isNew: Bool = false) {
         self.id = id
-        self.productId = productId
         self.code = code
         self.createdAt = createdAt
         self.name = name
@@ -115,8 +109,7 @@ final class Product: Model {
 
 extension Product {
     convenience init(from product: APIProduct, nutritionalIds: [UUID]) {
-        self.init(productId: product.productId,
-                  code: product.code,
+        self.init(code: product.code,
                   name: product.name,
                   description: product.description,
                   imageUrl: product.imageUrl,

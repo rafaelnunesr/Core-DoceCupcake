@@ -85,7 +85,7 @@ struct ProductController: RouteCollection {
     private func createNewProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
-        guard try await productRepository.getProduct(with: model.productId) == nil else {
+        guard try await productRepository.getProduct(with: model.code) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
@@ -131,7 +131,7 @@ struct ProductController: RouteCollection {
     private func updateProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
-        guard let product = try await productRepository.getProduct(with: model.productId) else {
+        guard let product = try await productRepository.getProduct(with: model.code) else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
         

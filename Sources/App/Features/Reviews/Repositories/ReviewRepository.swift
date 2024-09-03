@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Vapor
 
 protocol ReviewRepositoryProtocol {
-    func getReviewList(productId: String) async throws -> [Review]
+    func getReviewList(productCode: String) async throws -> [Review]
     func getReview(orderId: String) async throws -> Review?
     func createReview(_ review: Review) async throws
     func deleteReview(_ review: Review) async throws
@@ -17,9 +17,9 @@ final class ReviewRepository: ReviewRepositoryProtocol {
         database = dependencyProvider.getDatabaseInstance()
     }
 
-    func getReviewList(productId: String) async throws -> [Review] {
+    func getReviewList(productCode: String) async throws -> [Review] {
         try await Review.query(on: database)
-            .filter(\.$productId == productId)
+            .filter(\.$productCode == productCode)
             .all()
     }
 

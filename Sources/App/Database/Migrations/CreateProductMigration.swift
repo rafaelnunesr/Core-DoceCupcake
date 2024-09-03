@@ -8,7 +8,6 @@ struct CreateProductMigration: AsyncMigration {
         try await database.schema(databaseName)
             .id()
             .field(ProductDbField.createdAt.fieldKey, .datetime)
-            .field(ProductDbField.productId.fieldKey, .string, .required)
             .field(ProductDbField.code.fieldKey, .string, .required)
             .field(ProductDbField.name.fieldKey, .string, .required)
             .field(ProductDbField.description.fieldKey, .string, .required)
@@ -23,7 +22,6 @@ struct CreateProductMigration: AsyncMigration {
             .field(ProductDbField.allergicTags.fieldKey, .array(of: .string), .required)
             .field(ProductDbField.nutritionalIds.fieldKey, .array(of: .uuid), .required)
             .field(ProductDbField.isNew.fieldKey, .bool, .required)
-            .unique(on: ProductDbField.productId.fieldKey)
             .unique(on: ProductDbField.code.fieldKey)
             .create()
     }

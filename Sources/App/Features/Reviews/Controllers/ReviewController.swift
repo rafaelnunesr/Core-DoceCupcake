@@ -24,7 +24,7 @@ struct ReviewController: RouteCollection {
 
     private func getReviewList(req: Request) async throws -> APIReviewListResponse {
         let model: APIReview = try convertRequestDataToModel(req: req)
-        let result = try await reviewRepository.getReviewList(productId: model.productId)
+        let result = try await reviewRepository.getReviewList(productCode: model.productCode)
 
         let reviews = result.map { ReviewResponse(from: $0) }
         return APIReviewListResponse(count: result.count, reviews: reviews)
@@ -33,7 +33,7 @@ struct ReviewController: RouteCollection {
     private func createReview(req: Request) async throws -> GenericMessageResponse {
         let model: APICreateReview = try convertRequestDataToModel(req: req)
 
-        guard try await productRepository.getProduct(with: model.productId) != nil else {
+        guard try await productRepository.getProduct(with: model.productCode) != nil else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
 

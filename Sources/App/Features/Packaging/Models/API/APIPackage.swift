@@ -7,7 +7,7 @@ struct APIPackage: Content {
     var description: String
     var width: Double
     var height: Double
-    var length: Double
+    var depth: Double
     var price: Double
     var stockCount: Int
 }
@@ -20,7 +20,7 @@ extension APIPackage {
         description = model.description
         width = model.width
         height = model.height
-        length = model.length
+        depth = model.depth
         price = model.price
         stockCount = model.stockCount
     }

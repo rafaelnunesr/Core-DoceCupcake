@@ -1,37 +1,55 @@
 import Fluent
 import Vapor
 
+enum PackageDbField: String {
+    case schema = "package"
+    
+    case code
+    case createdAt = "created_at"
+    case name
+    case description
+    case width
+    case height
+    case depth
+    case price
+    case stockCount = "stock_count"
+    
+    var fieldKey: FieldKey {
+        return FieldKey(stringLiteral: self.rawValue)
+    }
+}
+
 final class Package: DatabaseModelProtocol {
-    static let schema = "package"
+    static let schema = PackageDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
-
-    @Timestamp(key: "created_at", on: .create)
-    var createdAt: Date?
-
-    @Field(key: "code")
+    
+    @Field(key: PackageDbField.code.fieldKey)
     var code: String
 
-    @Field(key: "name")
+    @Timestamp(key: PackageDbField.createdAt.fieldKey, on: .create)
+    var createdAt: Date?
+
+    @Field(key: PackageDbField.name.fieldKey)
     var name: String
 
-    @Field(key: "description")
+    @Field(key: PackageDbField.description.fieldKey)
     var description: String
 
-    @Field(key: "width")
+    @Field(key: PackageDbField.width.fieldKey)
     var width: Double
 
-    @Field(key: "height")
+    @Field(key: PackageDbField.height.fieldKey)
     var height: Double
 
-    @Field(key: "length")
-    var length: Double
+    @Field(key: PackageDbField.depth.fieldKey)
+    var depth: Double
 
-    @Field(key: "price")
+    @Field(key: PackageDbField.price.fieldKey)
     var price: Double
 
-    @Field(key: "stock_count")
+    @Field(key: PackageDbField.stockCount.fieldKey)
     var stockCount: Int
 
     internal init() {}
@@ -43,7 +61,7 @@ final class Package: DatabaseModelProtocol {
          description: String, 
          width: Double,
          height: Double,
-         length: Double,
+         depth: Double,
          price: Double,
          stockCount: Int) {
         self.id = id
@@ -53,7 +71,7 @@ final class Package: DatabaseModelProtocol {
         self.description = description
         self.width = width
         self.height = height
-        self.length = length
+        self.depth = depth
         self.price = price
         self.stockCount = stockCount
     }
@@ -77,7 +95,7 @@ extension Package {
                   description: model.description,
                   width: model.width,
                   height: model.height,
-                  length: model.length,
+                  depth: model.depth,
                   price: model.price,
                   stockCount: model.stockCount)
     }

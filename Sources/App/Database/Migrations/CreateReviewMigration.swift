@@ -10,8 +10,8 @@ struct CreateReviewMigration: AsyncMigration {
             .field(ReviewDbField.orderId.fieldKey, .string, .required) // change relationship
             .field(ReviewDbField.userId.fieldKey, .string, .required,
                    .references(UsersDbField.schema.rawValue, UsersDbField.id.fieldKey))
-            .field(ReviewDbField.productId.fieldKey, .string, .required,
-                   .references(ProductDbField.schema.rawValue, ProductDbField.productId.fieldKey))
+            .field(ReviewDbField.productCode.fieldKey, .string, .required,
+                   .references(ProductDbField.schema.rawValue, ProductDbField.code.fieldKey))
             .field(ReviewDbField.rate.fieldKey, .int, .required)
             .field(ReviewDbField.title.fieldKey, .string, .required)
             .field(ReviewDbField.text.fieldKey, .string, .required)

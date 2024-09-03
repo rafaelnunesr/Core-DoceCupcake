@@ -18,9 +18,9 @@ final class ProductRepository: ProductRepositoryProtocol {
         database = dependencyProvider.getDatabaseInstance()
     }
 
-    func getProduct(with id: String) async throws -> Product? {
+    func getProduct(with code: String) async throws -> Product? {
         try await Product.query(on: database)
-            .filter(\.$productId == id)
+            .filter(\.$code == code)
             .first()
     }
 
