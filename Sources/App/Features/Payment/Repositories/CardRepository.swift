@@ -18,7 +18,7 @@ final class CardRepository: CardRepositoryProtocol {
     
     func fetchCard(for userId: UUID) async throws -> CreditCard? {
         try await CreditCard.query(on: database)
-            .filter(\.$userId == userId)
+            .filter(\.$user.$id == userId)
             .first()
     }
     

@@ -28,8 +28,8 @@ final class CreditCard: Model {
     @Timestamp(key: CreditCardDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
     
-    @OptionalField(key: CreditCardDbField.userId.fieldKey)
-    var userId: UUID?
+    @Parent(key: CreditCardDbField.userId.fieldKey)
+    var user: User
     
     @Field(key: CreditCardDbField.cardHolderName.fieldKey)
     var cardHolderName: String
@@ -53,7 +53,7 @@ final class CreditCard: Model {
 
     init(id: UUID? = nil,
          createdAt: Date? = nil,
-         userId: UUID? = nil,
+         user: User,
          cardHolderName: String,
          cardNumber: String,
          lastDigits: String,
@@ -62,7 +62,7 @@ final class CreditCard: Model {
          cvv: String) {
         self.id = id
         self.createdAt = createdAt
-        self.userId = userId
+        self.user = user
         self.cardHolderName = cardHolderName
         self.cardNumber = cardNumber
         self.lastDigits = lastDigits
@@ -73,8 +73,8 @@ final class CreditCard: Model {
 }
 
 extension CreditCard {
-    convenience init(from model: CreditCardRequest, userId: UUID, lastDigits: String) {
-        self.init(userId: userId,
+    convenience init(from model: CreditCardRequest, user: User, lastDigits: String) {
+        self.init(user: user,
                   cardHolderName: model.cardHolderName,
                   cardNumber: model.cardNumber,
                   lastDigits: lastDigits,
