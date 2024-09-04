@@ -2,7 +2,7 @@ import Fluent
 import FluentPostgresDriver
 import Vapor
 
-protocol DependencyProviderProtocol: Sendable {
+protocol DependencyProviderProtocol {
     func getDatabaseInstance() -> Database
     func getAppInstance() -> ApplicationProtocol
     func getSecurityInstance() -> SecurityProtocol

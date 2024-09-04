@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol RepositoryProtocol: Sendable {
+protocol RepositoryProtocol {
     func fetchAllResults<T: DatabaseModelProtocol>() async throws -> [T]
     func fetchModelById<T: DatabaseModelProtocol>(_ id: UUID) async throws -> T?
     func fetchModelByCode<T: DatabaseModelProtocol>(_ code: String) async throws -> T?

@@ -2,7 +2,7 @@ import FluentKit
 import JWT
 import Vapor
 
-protocol ApplicationProtocol: Sendable {
+protocol ApplicationProtocol {
     var db: Database { get }
     var databases: Databases { get }
     var migrations: Migrations { get }

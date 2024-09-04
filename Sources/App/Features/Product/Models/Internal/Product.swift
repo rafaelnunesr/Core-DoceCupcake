@@ -4,6 +4,7 @@ import Vapor
 enum ProductDbField: String {
     case schema = "product"
     
+    case id
     case createdAt = "created_at"
     case code
     case name
@@ -24,7 +25,7 @@ enum ProductDbField: String {
     }
 }
 
-final class Product: Model, @unchecked Sendable {
+final class Product: Model {
     static let schema = ProductDbField.schema.rawValue
 
     @ID(key: .id)

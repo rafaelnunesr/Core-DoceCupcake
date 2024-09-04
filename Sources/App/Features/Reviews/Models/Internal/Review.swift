@@ -17,7 +17,7 @@ enum ReviewDbField: String {
     }
 }
 
-final class Review: Model, Content, @unchecked Sendable {
+final class Review: Model, Content {
     static let schema = ReviewDbField.schema.rawValue
 
     @ID(key: .id)

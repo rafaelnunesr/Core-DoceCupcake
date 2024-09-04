@@ -1,6 +1,6 @@
 import Vapor
 
-struct ProductTagListResponse: Content, Sendable {
+struct ProductTagListResponse: Content {
     let count: Int
     let tags: [APIProductTag]
 }

@@ -4,6 +4,7 @@ import Vapor
 enum VoucherDbField: String {
     case schema = "voucher"
     
+    case id
     case createdAt = "created_at"
     case expiryDate = "expiry_date"
     case code
@@ -16,7 +17,7 @@ enum VoucherDbField: String {
     }
 }
 
-final class Voucher: DatabaseModelProtocol, @unchecked Sendable {
+final class Voucher: DatabaseModelProtocol {
     static let schema = VoucherDbField.schema.rawValue
 
     @ID(key: .id)

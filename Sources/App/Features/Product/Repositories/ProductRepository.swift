@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol ProductRepositoryProtocol: Sendable {
+protocol ProductRepositoryProtocol {
     func getProduct(with id: String) async throws -> Product?
     func getProductList() async throws -> [Product]
     func createProduct(_ product: Product) async throws

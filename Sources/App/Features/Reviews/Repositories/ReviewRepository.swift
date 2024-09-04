@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol ReviewRepositoryProtocol: Sendable {
+protocol ReviewRepositoryProtocol {
     func getReviewList(productCode: String) async throws -> [Review]
     func getReview(orderId: String) async throws -> Review?
     func createReview(_ review: Review) async throws

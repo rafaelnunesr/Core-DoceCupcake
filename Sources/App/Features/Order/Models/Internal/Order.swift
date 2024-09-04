@@ -9,9 +9,9 @@ enum OrderDbField: String {
     case createdAt = "created_at"
     case updatedAt = "updated_at"
     case userId = "user_id"
-    case voucherCode = "voucher_code"
+    case voucherId = "voucher_id"
     case paymentId = "payment_id"
-    case deliveryAddress = "delivery_address"
+    case addressId = "address_id"
     case deliveryStatus = "delivery_status"
     case orderStatus = "order_status"
     
@@ -20,7 +20,7 @@ enum OrderDbField: String {
     }
 }
 
-final class Order: Model, @unchecked Sendable {
+final class Order: Model {
     static let schema = OrderDbField.schema.rawValue
 
     @ID(key: .id)
@@ -32,17 +32,17 @@ final class Order: Model, @unchecked Sendable {
     @Timestamp(key: OrderDbField.updatedAt.fieldKey, on: .none)
     var updatedAt: Date?
 
-    @Field(key: OrderDbField.userId.fieldKey)
-    var userId: UUID
+    @Parent(key: OrderDbField.userId.fieldKey)
+    var user: User
     
-    @OptionalField(key: OrderDbField.voucherCode.fieldKey)
-    var voucherCode: String?
+    @OptionalParent(key: OrderDbField.voucherId.fieldKey)
+    var voucher: Voucher?
     
-    @Field(key: OrderDbField.paymentId.fieldKey)
-    var paymentId: UUID
+    @Parent(key: OrderDbField.paymentId.fieldKey)
+    var payment: CreditCard
     
-    @Field(key: OrderDbField.deliveryAddress.fieldKey)
-    var deliveryAddress: String
+    @Parent(key: OrderDbField.addressId.fieldKey)
+    var deliveryAddress: Address
     
     @Field(key: OrderDbField.deliveryStatus.fieldKey)
     var deliveryStatus: DeliveryStatus
@@ -55,18 +55,18 @@ final class Order: Model, @unchecked Sendable {
     init(id: UUID? = nil,
          createdAt: Date? = nil,
          updatedAt: Date? = nil,
-         userId: UUID,
-         voucherCode: String? = nil,
-         paymentId: UUID,
-         deliveryAddress: String,
+         user: User,
+         voucher: Voucher? = nil,
+         payment: CreditCard,
+         deliveryAddress: Address,
          deliveryStatus: DeliveryStatus,
          orderStatus: OrderStatus) {
         self.id = id
-        self.userId = userId
+        self.user = user
         self.createdAt = createdAt
         self.updatedAt = updatedAt
-        self.voucherCode = voucherCode
-        self.paymentId = paymentId
+        self.voucher = voucher
+        self.payment = payment
         self.deliveryAddress = deliveryAddress
         self.deliveryStatus = deliveryStatus
         self.orderStatus = orderStatus

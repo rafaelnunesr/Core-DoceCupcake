@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol SectionRepositoryProtocol: Sendable {
+protocol SectionRepositoryProtocol {
     func getSection(for usertId: UUID) async throws -> InternalSectionModel?
     func getSection(with token: String) async throws -> InternalSectionModel?
     func createSection(for model: InternalSectionModel) async throws

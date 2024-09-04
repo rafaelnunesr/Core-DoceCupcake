@@ -14,7 +14,7 @@ enum SessionDbField: String {
     }
 }
 
-final class InternalSectionModel: Model, Content, @unchecked Sendable {
+final class InternalSectionModel: Model, Content {
     static let schema = SessionDbField.schema.rawValue
 
     @ID(key: .id)

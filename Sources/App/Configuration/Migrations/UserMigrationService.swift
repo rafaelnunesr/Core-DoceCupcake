@@ -6,8 +6,9 @@ final class UserMigrationService: MigrationServiceProtocol {
     }
     
     func addMigrations() {
-        app.migrations.add(CreateAdminMigration())
-        app.migrations.add(CreateUsersMigration())
-        app.migrations.add(CreateSessionMigration())
+        //app.migrations.add(CreateAdminMigration())
+        //app.migrations.add(CreateUsersMigration())
+        //app.migrations.add(CreateAddressMigration())
+        //app.migrations.add(CreateSessionMigration())
     }
 }
