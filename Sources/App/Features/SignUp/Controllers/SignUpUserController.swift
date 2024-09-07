@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-struct SignUpUserController: RouteCollection {
+struct SignUpUserController: RouteCollection, Sendable {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: SignUpUserRepositoryProtocol
     private let security: SecurityProtocol
@@ -15,12 +15,13 @@ struct SignUpUserController: RouteCollection {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let signUpRoutes = routes.grouped(Routes.signin.path)
+        let signUpRoutes = routes.grouped(Routes.signup.path)
         
-        signUpRoutes.post(use: signUp)
+        signUpRoutes.post(use: signup)
     }
 
-    func signUp(req: Request) async throws -> GenericMessageResponse {
+    @Sendable
+    func signup(req: Request) async throws -> GenericMessageResponse {
         var model: SignUpUserRequest = try convertRequestDataToModel(req: req)
 
         guard try await repository.getUserId(with: model.email) == nil else {

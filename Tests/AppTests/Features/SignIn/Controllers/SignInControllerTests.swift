@@ -31,25 +31,13 @@ final class SignInControllerTests: XCTestCase {
         mockDependencyProvider = nil
     }
     
-    func test_signIn_with_invalid_email() throws {
+    func test_signIn_with_invalid_request() throws {
         let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.invalidCredentials)
+        mockSecurity.isValid = false
         
         try self.app.test(.POST, Routes.signin.rawValue,
         beforeRequest: { request in
-            try request.content.encode(invalidEmailRequest)
-        }, afterResponse: { response in
-            XCTAssertEqual(response.status, .unauthorized)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
-        })
-    }
-    
-    func test_signIn_with_invalid_password() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.invalidCredentials)
-        
-        try self.app.test(.POST, Routes.signin.rawValue,
-        beforeRequest: { request in
-            try request.content.encode(invalidPasswordRequest)
+            try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
@@ -62,7 +50,7 @@ final class SignInControllerTests: XCTestCase {
         
         try self.app.test(.POST, Routes.signin.rawValue,
         beforeRequest: { request in
-            try request.content.encode(validRequest)
+            try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
@@ -77,7 +65,7 @@ final class SignInControllerTests: XCTestCase {
         
         try self.app.test(.POST, Routes.signin.rawValue,
         beforeRequest: { request in
-            try request.content.encode(validRequest)
+            try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             XCTAssertEqual(response.body.string, expectedResponse)
@@ -91,7 +79,7 @@ final class SignInControllerTests: XCTestCase {
         
         try self.app.test(.POST, Routes.signin.rawValue,
         beforeRequest: { request in
-            try request.content.encode(validRequest)
+            try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             XCTAssertEqual(response.body.string, expectedResponse)
@@ -100,21 +88,7 @@ final class SignInControllerTests: XCTestCase {
 }
 
 extension SignInControllerTests {
-    var invalidEmailRequest: [String: String] {
-        ["email": "invalid.com", "password": "Aa12345678#"]
-    }
-    
-    var invalidPasswordRequest: [String: String] {
-        ["email": "email@email.com", "password": "123#"]
-    }
-    
-    var validRequest: [String: String] {
-        ["email": "email@email.com", "password": "Aa12345678#"]
-    }
-    
-    func convertBodyToErrorResponse(with body: ByteBuffer) -> ErrorResponse {
-        let data = Data(buffer: body)
-        let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data)
-        return errorResponse ?? ErrorResponse(error: false, reason: .empty)
+    var requestContent: [String: String] {
+        ["email": "A", "password": "B"]
     }
 }

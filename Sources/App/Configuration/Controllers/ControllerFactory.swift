@@ -19,8 +19,8 @@ final class ControllerFactory: ControllerFactoryProtocol {
 
     func makeControllers() throws -> [RouteCollection] {
         return [
-//            try userControllerFactory.makeSignInController(),
-//            try userControllerFactory.makeUserSignUpController(),
+            try userControllerFactory.makeSignInController(),
+            try userControllerFactory.makeUserSignUpController(),
 //            try userControllerFactory.makeAdminSignUpController(),
 //            try productControllerFactory.makeProductController(),
 //            try productControllerFactory.makeProductTagsController(),

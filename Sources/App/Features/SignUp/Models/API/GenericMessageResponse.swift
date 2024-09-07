@@ -1,5 +1,5 @@
 import Vapor
 
-struct GenericMessageResponse: Content {
+struct GenericMessageResponse: Content, Equatable {
     let message: String
 }

@@ -2,7 +2,7 @@ import Fluent
 import Vapor
 
 enum UsersDbField: String {
-    case schema = "review"
+    case schema = "users"
     
     case id
     case createdAt = "created_at"

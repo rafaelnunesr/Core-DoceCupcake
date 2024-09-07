@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol SignUpUserRepositoryProtocol {
+protocol SignUpUserRepositoryProtocol: Sendable {
     func getUserId(with email: String) async throws -> UUID?
     func createUser(with user: User) async throws
 }

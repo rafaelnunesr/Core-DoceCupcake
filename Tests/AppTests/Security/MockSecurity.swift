@@ -8,10 +8,10 @@ final class MockSecurity: SecurityProtocol {
     }
     
     func hashStringValue(_ value: String) throws -> String {
-        fatalError()
+        value
     }
     
     func areCredentialsValid(email: String, password: String) -> Bool {
-        fatalError()
+        isValid
     }
 }
