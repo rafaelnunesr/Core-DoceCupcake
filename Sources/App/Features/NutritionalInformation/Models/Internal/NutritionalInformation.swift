@@ -13,7 +13,7 @@ enum NutritionalInformationDbField: String {
     }
 }
 
-final class NutritionalInformation: DatabaseModelProtocol {
+final class NutritionalInformation: DatabaseModelProtocol  {
     static let schema = NutritionalInformationDbField.schema.rawValue
 
     @ID(key: .id)

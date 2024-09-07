@@ -6,9 +6,9 @@ protocol ConfigurationServiceProtocol {
 }
 
 final class ConfigurationService: ConfigurationServiceProtocol {
-    private var app: ApplicationProtocol
+    private var app: Application
     
-    init(app: ApplicationProtocol) {
+    init(app: Application) {
         self.app = app
     }
 

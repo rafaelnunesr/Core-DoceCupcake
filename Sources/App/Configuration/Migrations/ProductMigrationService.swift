@@ -1,7 +1,9 @@
+import Vapor
+
 final class ProductMigrationService: MigrationServiceProtocol {
-    private let app: ApplicationProtocol
+    private let app: Application
     
-    init(app: ApplicationProtocol) {
+    init(app: Application) {
         self.app = app
     }
     

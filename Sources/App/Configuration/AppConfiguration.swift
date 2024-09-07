@@ -6,7 +6,7 @@ protocol AppConfigurationProtocol {
 }
 
 final class AppConfiguration: AppConfigurationProtocol {
-    private let app: ApplicationProtocol
+    private let app: Application
     private let migrationService: MigrationServiceProtocol
     private let controllerFactory: ControllerFactoryProtocol
     private let configService: ConfigurationServiceProtocol

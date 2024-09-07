@@ -2,21 +2,22 @@ import Fluent
 import FluentPostgresDriver
 import Vapor
 
-protocol DependencyProviderProtocol {
+protocol DependencyProviderProtocol: Sendable {
     func getDatabaseInstance() -> Database
-    func getAppInstance() -> ApplicationProtocol
+    func getAppInstance() -> Application
     func getSecurityInstance() -> SecurityProtocol
     func getUserSectionValidationMiddleware() -> SectionValidationMiddlewareProtocol
     func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol
     func getMigrationServiceInstance() -> MigrationServiceProtocol
     func getControllerFactory() -> ControllerFactoryProtocol
     func getConfigurationServiceInstance() -> ConfigurationServiceProtocol
+    func getSectionController() -> SectionControllerProtocol
 }
 
 final class DependencyProvider: DependencyProviderProtocol {
-    private let app: ApplicationProtocol
+    private let app: Application
 
-    init(app: ApplicationProtocol) {
+    init(app: Application) {
         self.app = app
     }
 
@@ -24,7 +25,7 @@ final class DependencyProvider: DependencyProviderProtocol {
         app.db
     }
 
-    func getAppInstance() -> ApplicationProtocol {
+    func getAppInstance() -> Application {
         app
     }
     
@@ -62,5 +63,10 @@ final class DependencyProvider: DependencyProviderProtocol {
     
     func getConfigurationServiceInstance() -> ConfigurationServiceProtocol {
         ConfigurationService(app: app)
+    }
+    
+    func getSectionController() -> SectionControllerProtocol {
+        let repository = SectionRepository(dependencyProvider: self)
+        return SectionController(dependencyProvider: self, repository: repository)
     }
 }
