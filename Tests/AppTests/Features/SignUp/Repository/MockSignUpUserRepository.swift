@@ -11,4 +11,3 @@ final class MockSignUpUserRepository: SignUpUserRepositoryProtocol {
 
     func createUser(with user: User) async throws {}
 }
-
