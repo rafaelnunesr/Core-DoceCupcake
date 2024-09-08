@@ -1,20 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-enum Routes: String {
-    case admin
-    case vouchers
-    case signin
-    case signup
-    case products
-    case productTags
-    
-    var path: PathComponent {
-        PathComponent(stringLiteral: self.rawValue)
-    }
-}
-
-protocol VouchersControllerProtocol: RouteCollection {
+protocol VouchersControllerProtocol: RouteCollection, Sendable {
     func getVoucher(with code: String) async throws -> Voucher?
 }
 
@@ -46,12 +33,14 @@ struct VouchersController: VouchersControllerProtocol {
             .delete(use: deleteVoucher)
     }
 
+    @Sendable
     private func getVouchersList(req: Request) async throws -> APIVoucherModelList {
         let result: [Voucher] = try await repository.fetchAllResults()
         let vouchers = result.map { APIVoucher(from: $0) }
         return APIVoucherModelList(count: vouchers.count, vouchers: vouchers)
     }
 
+    @Sendable
     private func createVoucher(req: Request) async throws -> GenericMessageResponse {
         let model: APIVoucher = try convertRequestDataToModel(req: req)
 
@@ -64,6 +53,7 @@ struct VouchersController: VouchersControllerProtocol {
         return GenericMessageResponse(message: Constants.voucherCreated)
     }
 
+    @Sendable
     private func deleteVoucher(req: Request) async throws -> GenericMessageResponse {
         let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
 

@@ -1,6 +1,6 @@
 import Vapor
 
-final class APIVoucher: Content {
+final class APIVoucher: Content, Codable, Equatable {
     var createdAt: Date?
     var expiryDate: Date?
     var code: String
@@ -29,6 +29,15 @@ final class APIVoucher: Content {
         self.percentageDiscount = percentageDiscount
         self.monetaryDiscount = monetaryDiscount
         self.availabilityCount = availabilityCount
+    }
+    
+    static func == (lhs: APIVoucher, rhs: APIVoucher) -> Bool {
+        lhs.createdAt == rhs.createdAt &&
+        lhs.expiryDate == rhs.expiryDate &&
+        lhs.code == rhs.code &&
+        lhs.percentageDiscount == rhs.percentageDiscount &&
+        lhs.monetaryDiscount == rhs.monetaryDiscount &&
+        lhs.availabilityCount == rhs.availabilityCount
     }
 }
 

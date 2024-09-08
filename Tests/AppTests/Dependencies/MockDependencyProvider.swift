@@ -5,16 +5,19 @@ import Vapor
 @testable import App
 
 final class MockDependencyProvider: DependencyProviderProtocol {
-    private let app: Application
-    private let sectionController: SectionControllerProtocol
-    private let security: SecurityProtocol
+    var app: Application
+    var sectionController: SectionControllerProtocol
+    var security: SecurityProtocol
+    var adminValidationMiddleware: MockAdminValidationMiddleware
 
     init(app: Application,
          sectionController: SectionControllerProtocol = MockSectionController(),
-         security: SecurityProtocol = MockSecurity()) {
+         security: SecurityProtocol = MockSecurity(),
+         adminValidationMiddleware: MockAdminValidationMiddleware = MockAdminValidationMiddleware()) {
         self.app = app
         self.sectionController = sectionController
         self.security = security
+        self.adminValidationMiddleware = adminValidationMiddleware
     }
 
     func getDatabaseInstance() -> any Database {
@@ -34,7 +37,7 @@ final class MockDependencyProvider: DependencyProviderProtocol {
     }
     
     func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
-        fatalError()
+        adminValidationMiddleware
     }
     
     func getMigrationServiceInstance() -> MigrationServiceProtocol {

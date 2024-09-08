@@ -5,6 +5,8 @@ func convertRequestDataToModel<T: Decodable>(req: Request) throws -> T {
         throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
     }
 
-    return try JSONDecoder().decode(T.self, from: bodyData)
-}
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
 
+    return try decoder.decode(T.self, from: bodyData)
+}
