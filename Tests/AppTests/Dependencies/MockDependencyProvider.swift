@@ -8,15 +8,18 @@ final class MockDependencyProvider: DependencyProviderProtocol {
     var app: Application
     var sectionController: SectionControllerProtocol
     var security: SecurityProtocol
+    var sectionValidationMiddleware: MockSectionValidationMiddleware
     var adminValidationMiddleware: MockAdminValidationMiddleware
 
     init(app: Application,
          sectionController: SectionControllerProtocol = MockSectionController(),
          security: SecurityProtocol = MockSecurity(),
+         sectionValidationMiddleware: MockSectionValidationMiddleware = MockSectionValidationMiddleware(),
          adminValidationMiddleware: MockAdminValidationMiddleware = MockAdminValidationMiddleware()) {
         self.app = app
         self.sectionController = sectionController
         self.security = security
+        self.sectionValidationMiddleware = sectionValidationMiddleware
         self.adminValidationMiddleware = adminValidationMiddleware
     }
 
@@ -33,7 +36,7 @@ final class MockDependencyProvider: DependencyProviderProtocol {
     }
     
     func getUserSectionValidationMiddleware() -> SectionValidationMiddlewareProtocol {
-        fatalError()
+        sectionValidationMiddleware
     }
     
     func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
