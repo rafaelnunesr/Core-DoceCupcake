@@ -9,5 +9,7 @@ final class MockSignUpUserRepository: SignUpUserRepositoryProtocol {
         user?.id
     }
 
-    func createUser(with user: User) async throws {}
+    func createUser(with user: User) async throws {
+        self.user = user
+    }
 }

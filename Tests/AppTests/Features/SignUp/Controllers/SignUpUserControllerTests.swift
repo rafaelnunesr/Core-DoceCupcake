@@ -66,7 +66,7 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_create_user_with_valid_data() throws {
-        let expectedResponse = GenericMessageResponse(message: "Account created with success")
+        let expectedResponse = GenericMessageResponse(message: SignUpUserController.Constants.welcomeMessage)
         
         try self.app.test(.POST, Routes.signup.rawValue,
                           beforeRequest: { request in

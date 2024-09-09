@@ -123,7 +123,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = GenericMessageResponse(message: "Voucher created.")
+        let expectedResponse = GenericMessageResponse(message: VouchersController.Constants.voucherCreated)
         
         try self.app.test(.POST, route,
                           beforeRequest: { request in
@@ -156,7 +156,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = GenericMessageResponse(message: "Voucher deleted.")
+        let expectedResponse = GenericMessageResponse(message: VouchersController.Constants.voucherDeleted)
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in

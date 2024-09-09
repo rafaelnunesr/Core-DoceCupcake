@@ -67,7 +67,7 @@ final class SignUpAdminControllerTests: XCTestCase {
     }
     
     func test_create_admin_with_valid_data() throws {
-        let expectedResponse = GenericMessageResponse(message: "Admin created with success.")
+        let expectedResponse = GenericMessageResponse(message: SignUpAdminController.Constants.welcomeMessage)
         
         try self.app.test(.POST, route,
                           beforeRequest: { request in

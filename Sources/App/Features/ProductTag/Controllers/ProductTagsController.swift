@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Foundation
 import Vapor
 
-protocol ProductTagsControllerProtocol: RouteCollection {
+protocol ProductTagsControllerProtocol: RouteCollection, Sendable {
     func areTagCodesValid(_ tagCodeList: [String]) async throws -> Bool
     func getTagsFor(_ tagCodeList: [String]) async throws -> [ProductTag]
 }
@@ -41,12 +41,14 @@ struct ProductTagsController: ProductTagsControllerProtocol {
             .delete(use: deleteTag)
     }
     
+    @Sendable
     private func getProductTagsList(req: Request) async throws -> ProductTagListResponse {
         let result: [ProductTag] = try await repository.fetchAllResults()
         let tags = result.map { APIProductTag(from: $0) }
         return ProductTagListResponse(count: tags.count, tags: tags)
     }
 
+    @Sendable
     private func createNewTag(req: Request) async throws -> GenericMessageResponse {
         let model: APIProductTag = try convertRequestDataToModel(req: req)
 
@@ -59,8 +61,9 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         return GenericMessageResponse(message: Constants.tagCreated)
     }
 
+    @Sendable
     private func deleteTag(req: Request) async throws -> GenericMessageResponse {
-        let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
+        let model: APIRequestId = try convertRequestDataToModel(req: req)
 
         guard let tagModel = try await getTag(with: model.id) else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
@@ -98,7 +101,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         return tagModels
     }
 
-    private enum Constants {
+    enum Constants {
         static let tagCreated = "Tag created"
         static let tagDeleted = "Tag deleted"
     }

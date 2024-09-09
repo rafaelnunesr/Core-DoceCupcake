@@ -5,19 +5,19 @@ import Foundation
 final class MockSessionRepository: SessionRepositoryProtocol {
     var result: InternalSessionModel?
     
-    func getSection(for usertId: UUID) async throws -> InternalSessionModel? {
+    func getSession(for usertId: UUID) async throws -> InternalSessionModel? {
         result
     }
     
-    func getSection(with token: String) async throws -> InternalSessionModel? {
+    func getSession(with token: String) async throws -> InternalSessionModel? {
         result
     }
 
-    func createSection(for model: InternalSessionModel) async throws {
+    func createSession(for model: InternalSessionModel) async throws {
         result = model
     }
 
-    func deleteSection(for section: InternalSessionModel) async throws {
+    func deleteSession(for session: InternalSessionModel) async throws {
         result = nil
     }
 }

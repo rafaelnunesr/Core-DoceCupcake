@@ -36,7 +36,7 @@ struct SignUpAdminController: RouteCollection, Sendable {
         return GenericMessageResponse(message: Constants.welcomeMessage)
     }
 
-    private enum Constants {
+    enum Constants {
         static let welcomeMessage = "Admin created with success."
     }
 }

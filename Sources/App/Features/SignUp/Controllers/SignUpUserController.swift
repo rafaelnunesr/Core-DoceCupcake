@@ -37,7 +37,7 @@ struct SignUpUserController: RouteCollection, Sendable {
         return GenericMessageResponse(message: Constants.welcomeMessage)
     }
 
-    private enum Constants {
+    enum Constants {
         static let welcomeMessage = "Account created with success"
     }
 }

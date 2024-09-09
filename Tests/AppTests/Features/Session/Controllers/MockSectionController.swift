@@ -3,17 +3,18 @@ import Vapor
 @testable import App
 
 final class MockSectionController: SessionControllerProtocol {
-    var section: InternalSessionModel?
+    var session: InternalSessionModel?
+    var sessionResult = SessionControlAccess.unowned
 
-    func createSection(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {
-        return section
+    func createSession(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {
+        return session
     }
     
-    func validateSection(req: Vapor.Request) async throws -> App.SessionControlAccess {
-        fatalError()
+    func validateSession(req: Vapor.Request) async throws -> SessionControlAccess {
+        sessionResult
     }
     
-    func deleteSection(for userId: UUID) async throws {
-        fatalError()
+    func deleteSession(for userId: UUID) async throws {
+        session = nil
     }
 }

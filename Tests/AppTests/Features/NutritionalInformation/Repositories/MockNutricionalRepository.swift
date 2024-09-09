@@ -41,5 +41,7 @@ final class MockNutricionalRepository: NutritionalRepositoryProtocol {
         result = model
     }
 
-    func delete<T: DatabaseModelProtocol>(_ model: T) async throws {}
+    func delete<T: DatabaseModelProtocol>(_ model: T) async throws {
+        result = nil
+    }
 }

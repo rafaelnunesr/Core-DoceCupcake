@@ -30,7 +30,11 @@ final class MockRepository: RepositoryProtocol {
         return nil
     }
 
-    func create<T: DatabaseModelProtocol>(_ model: T) async throws {}
+    func create<T: DatabaseModelProtocol>(_ model: T) async throws {
+        result = model
+    }
 
-    func delete<T: DatabaseModelProtocol>(_ model: T) async throws {}
+    func delete<T: DatabaseModelProtocol>(_ model: T) async throws {
+        result = nil
+    }
 }

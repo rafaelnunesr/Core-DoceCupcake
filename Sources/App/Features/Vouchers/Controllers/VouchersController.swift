@@ -9,6 +9,7 @@ struct VouchersController: VouchersControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: RepositoryProtocol
     
+    private let sessionValidation: SessionValidationMiddlewareProtocol
     private let adminSectionValidation: AdminValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
@@ -16,23 +17,42 @@ struct VouchersController: VouchersControllerProtocol {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
         
+        sessionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }
 
     func boot(routes: RoutesBuilder) throws {
         let vouchersRoutes = routes.grouped(Routes.vouchers.path)
+            
+        vouchersRoutes
+            .grouped(sessionValidation)
+            .get(use: getVoucher)
+        
+        vouchersRoutes
             .grouped(adminSectionValidation)
+            .get("/all", use: getVouchersList)
         
         vouchersRoutes
-            .get(use: getVouchersList)
-        
-        vouchersRoutes
+            .grouped(adminSectionValidation)
             .post(use: createVoucher)
         
         vouchersRoutes
+            .grouped(adminSectionValidation)
             .delete(use: deleteVoucher)
     }
-
+    
+    @Sendable
+    private func getVoucher(req: Request) async throws -> APIValidateVoucher {
+        let model: APIValidateVoucher = try convertRequestDataToModel(req: req)
+        let result: Voucher? = try await repository.fetchModelByCode(model.code)
+        
+        guard let result else {
+            throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
+        }
+        
+        return APIValidateVoucher(from: result)
+    }
+    
     @Sendable
     private func getVouchersList(req: Request) async throws -> APIVoucherModelList {
         let result: [Voucher] = try await repository.fetchAllResults()
@@ -55,7 +75,7 @@ struct VouchersController: VouchersControllerProtocol {
 
     @Sendable
     private func deleteVoucher(req: Request) async throws -> GenericMessageResponse {
-        let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
+        let model: APIRequestId = try convertRequestDataToModel(req: req)
 
         guard let voucher = try await getVoucher(with: model.id) else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
@@ -70,7 +90,7 @@ struct VouchersController: VouchersControllerProtocol {
         try await repository.fetchModelByCode(code)
     }
 
-    private enum Constants {
+    enum Constants {
         static let voucherCreated = "Voucher created."
         static let voucherDeleted = "Voucher deleted."
     }

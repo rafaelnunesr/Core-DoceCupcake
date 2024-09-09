@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Foundation
 import Vapor
 
-struct ProductController: RouteCollection {
+struct ProductController: RouteCollection, Sendable {
     private let dependencyProvider: DependencyProviderProtocol
     private let productRepository: ProductRepositoryProtocol
     private let tagsController: ProductTagsControllerProtocol
@@ -48,6 +48,7 @@ struct ProductController: RouteCollection {
             .delete(use: deleteProduct)
     }
 
+    @Sendable
     private func getProductList(req: Request) async throws -> ProductListResponse {
         let productList = try await productRepository.getProductList()
 
@@ -63,6 +64,7 @@ struct ProductController: RouteCollection {
         return ProductListResponse(count: productResponse.count, products: productResponse)
     }
 
+    @Sendable
     private func getProduct(req: Request) async throws -> APIProduct {
         guard let id = req.parameters.get("productID") else {
             throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
@@ -82,6 +84,7 @@ struct ProductController: RouteCollection {
         return productResponse
     }
 
+    @Sendable
     private func createNewProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
@@ -160,7 +163,7 @@ struct ProductController: RouteCollection {
     }
 
     private func deleteProduct(req: Request) async throws -> GenericMessageResponse {
-        let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
+        let model: APIRequestId = try convertRequestDataToModel(req: req)
         guard let product = try await productRepository.getProduct(with: model.id) else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
@@ -170,7 +173,7 @@ struct ProductController: RouteCollection {
         return GenericMessageResponse(message: Constants.productDeleted)
     }
 
-    private enum Constants {
+    enum Constants {
         static let productCreated = "Product created"
         static let productUpdated = "Product updated"
         static let productDeleted = "Product deleted"

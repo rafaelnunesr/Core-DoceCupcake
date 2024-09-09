@@ -9,5 +9,7 @@ final class MockSignUpAdminRepository: SignUpAdminRepositoryProtocol {
         admin?.id
     }
 
-    func createUser(with user: Admin) async throws {}
+    func createUser(with user: Admin) async throws {
+        admin = user
+    }
 }

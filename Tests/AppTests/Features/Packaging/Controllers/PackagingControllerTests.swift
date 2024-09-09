@@ -104,7 +104,7 @@ final class PackagingControllerTests: XCTestCase {
         sut = PackagingController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = GenericMessageResponse(message: "Package created.")
+        let expectedResponse = GenericMessageResponse(message: PackagingController.Constants.packageCreated)
         
         try self.app.test(.POST, route, beforeRequest: { request in
             try request.content.encode(requestContent)
@@ -135,7 +135,7 @@ final class PackagingControllerTests: XCTestCase {
         sut = PackagingController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = GenericMessageResponse(message: "Package deleted.")
+        let expectedResponse = GenericMessageResponse(message: PackagingController.Constants.packageDeleted)
         
         try self.app.test(.DELETE, route, beforeRequest: { request in
             try request.content.encode(deleteContent)

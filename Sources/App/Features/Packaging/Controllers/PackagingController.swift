@@ -59,7 +59,7 @@ struct PackagingController: PackagingControllerProtocol {
 
     @Sendable
     private func deletePackage(req: Request) async throws -> GenericMessageResponse {
-        let model: APIDeleteInfo = try convertRequestDataToModel(req: req)
+        let model: APIRequestId = try convertRequestDataToModel(req: req)
 
         guard let package = try await getPackage(with: model.id) else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
@@ -76,7 +76,7 @@ struct PackagingController: PackagingControllerProtocol {
     }
 
 
-    private enum Constants {
+    enum Constants {
         static let packageCreated = "Package created."
         static let packageDeleted = "Package deleted."
     }

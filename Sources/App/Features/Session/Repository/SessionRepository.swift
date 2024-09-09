@@ -5,7 +5,7 @@ protocol SessionRepositoryProtocol: Sendable {
     func getSession(for usertId: UUID) async throws -> InternalSessionModel?
     func getSession(with token: String) async throws -> InternalSessionModel?
     func createSession(for model: InternalSessionModel) async throws
-    func deleteSession(for section: InternalSessionModel) async throws
+    func deleteSession(for session: InternalSessionModel) async throws
 }
 
 final class SessionRepository: SessionRepositoryProtocol {
@@ -33,7 +33,7 @@ final class SessionRepository: SessionRepositoryProtocol {
         try await model.create(on: database)
     }
 
-    func deleteSession(for section: InternalSessionModel) async throws {
-        try await section.delete(on: database)
+    func deleteSession(for session: InternalSessionModel) async throws {
+        try await session.delete(on: database)
     }
 }

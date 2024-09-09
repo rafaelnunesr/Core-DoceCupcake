@@ -25,8 +25,8 @@ struct SessionController: SessionControllerProtocol {
     }
 
     func validateSession(req: Request) async throws -> SessionControlAccess {
-        let payload = try await req.jwt.verify(as: SessionToken.self)
-        let user = try await repository.getSession(for: payload.userId)
+        let session = try await req.jwt.verify(as: SessionToken.self)
+        let user = try await repository.getSession(for: session.userId)
         
         guard let user else {
             return .unowned
