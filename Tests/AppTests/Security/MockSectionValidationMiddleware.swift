@@ -2,7 +2,7 @@ import Vapor
 
 @testable import App
 
-struct MockSectionValidationMiddleware: SectionValidationMiddlewareProtocol {
+struct MockSectionValidationMiddleware: SessionValidationMiddlewareProtocol {
     var responseStatus: ResponseStatus = .success
     
     enum ResponseStatus {

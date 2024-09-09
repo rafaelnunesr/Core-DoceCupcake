@@ -8,7 +8,7 @@ struct ProductController: RouteCollection {
     private let tagsController: ProductTagsControllerProtocol
     private let nutritionalController: NutritionalControllerProtocol
     
-    private let userSectionValidation: SectionValidationMiddlewareProtocol
+    private let userSectionValidation: SessionValidationMiddlewareProtocol
     private let adminSectionValidation: AdminValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
@@ -20,8 +20,8 @@ struct ProductController: RouteCollection {
         self.tagsController = tagsController
         self.nutritionalController = nutritionalController
         
-        userSectionValidation = dependencyProvider.getUserSectionValidationMiddleware()
-        adminSectionValidation = dependencyProvider.getAdminSectionValidationMiddleware()
+        userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
+        adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }
 
     func boot(routes: RoutesBuilder) throws {

@@ -6,13 +6,13 @@ import Vapor
 
 final class MockDependencyProvider: DependencyProviderProtocol {
     var app: Application
-    var sectionController: SectionControllerProtocol
+    var sectionController: SessionControllerProtocol
     var security: SecurityProtocol
     var sectionValidationMiddleware: MockSectionValidationMiddleware
     var adminValidationMiddleware: MockAdminValidationMiddleware
 
     init(app: Application,
-         sectionController: SectionControllerProtocol = MockSectionController(),
+         sectionController: SessionControllerProtocol = MockSectionController(),
          security: SecurityProtocol = MockSecurity(),
          sectionValidationMiddleware: MockSectionValidationMiddleware = MockSectionValidationMiddleware(),
          adminValidationMiddleware: MockAdminValidationMiddleware = MockAdminValidationMiddleware()) {
@@ -35,11 +35,11 @@ final class MockDependencyProvider: DependencyProviderProtocol {
         security
     }
     
-    func getUserSectionValidationMiddleware() -> SectionValidationMiddlewareProtocol {
+    func getUserSessionValidationMiddleware() -> SessionValidationMiddlewareProtocol {
         sectionValidationMiddleware
     }
     
-    func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
+    func getAdminSessionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
         adminValidationMiddleware
     }
     
@@ -55,7 +55,7 @@ final class MockDependencyProvider: DependencyProviderProtocol {
         fatalError()
     }
     
-    func getSectionController() -> SectionControllerProtocol {
+    func getSectionController() -> SessionControllerProtocol {
         sectionController
     }
 }

@@ -8,8 +8,8 @@ struct MockInternalSectionModel {
                        expiryDate: Date? = nil,
                        userId: UUID = UUID(),
                        token: String = "A",
-                       isAdmin: Bool = false) -> InternalSectionModel {
-        InternalSectionModel(id: id,
+                       isAdmin: Bool = false) -> InternalSessionModel {
+        InternalSessionModel(id: id,
                              createdAt: createdAt,
                              expiryDate: expiryDate, 
                              userId: userId,

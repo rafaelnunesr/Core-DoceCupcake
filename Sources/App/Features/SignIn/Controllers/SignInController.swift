@@ -5,7 +5,7 @@ import Vapor
 struct SignInController: RouteCollection, Sendable {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: SignInRepositoryProtocol
-    private let sectionController: SectionControllerProtocol
+    private let sessionController: SessionControllerProtocol
     private let security: SecurityProtocol
 
     init(dependencyProvider: DependencyProviderProtocol, 
@@ -13,7 +13,7 @@ struct SignInController: RouteCollection, Sendable {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
         
-        sectionController = dependencyProvider.getSectionController()
+        sessionController = dependencyProvider.getSessionController()
         security = dependencyProvider.getSecurityInstance()
     }
 
@@ -59,7 +59,7 @@ struct SignInController: RouteCollection, Sendable {
     }
 
     private func createSectionForUser(userId: UUID, req: Request, isAdmin: Bool) async throws -> ClientTokenResponse {
-        guard let section = try await sectionController.createSection(for: userId, isAdmin: isAdmin, req: req) else {
+        guard let section = try await sessionController.createSession(for: userId, isAdmin: isAdmin, req: req) else {
             throw Abort(.internalServerError)
         }
         return ClientTokenResponse(token: section.token)

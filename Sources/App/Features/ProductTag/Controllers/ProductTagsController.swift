@@ -12,7 +12,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     private let repository: RepositoryProtocol
     private let security: SecurityProtocol
     
-    private let userSectionValidation: SectionValidationMiddlewareProtocol
+    private let userSectionValidation: SessionValidationMiddlewareProtocol
     private let adminSectionValidation: AdminValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
@@ -20,8 +20,8 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
         
-        userSectionValidation = dependencyProvider.getUserSectionValidationMiddleware()
-        adminSectionValidation = dependencyProvider.getAdminSectionValidationMiddleware()
+        userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
+        adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
         security = dependencyProvider.getSecurityInstance()
     }
 

@@ -9,7 +9,7 @@ struct PackagingController: PackagingControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let repository: RepositoryProtocol
     
-    private let userSectionValidation: SectionValidationMiddlewareProtocol
+    private let userSectionValidation: SessionValidationMiddlewareProtocol
     private let adminSectionValidation: AdminValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
@@ -17,8 +17,8 @@ struct PackagingController: PackagingControllerProtocol {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
         
-        userSectionValidation = dependencyProvider.getUserSectionValidationMiddleware()
-        adminSectionValidation = dependencyProvider.getAdminSectionValidationMiddleware()
+        userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
+        adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }
 
     func boot(routes: RoutesBuilder) throws {

@@ -1,10 +1,10 @@
 import Vapor
 
-protocol AdminValidationMiddlewareProtocol: AsyncMiddleware {
+protocol SessionValidationMiddlewareProtocol: AsyncMiddleware {
     func respond(to req: Request, chainingTo next: AsyncResponder) async throws -> Response
 }
 
-struct AdminValidationMiddleware: AdminValidationMiddlewareProtocol {
+struct SessionValidationMiddleware: SessionValidationMiddlewareProtocol {
     private let sessionController: SessionControllerProtocol
 
     init(sessionController: SessionControllerProtocol) {
@@ -12,7 +12,7 @@ struct AdminValidationMiddleware: AdminValidationMiddlewareProtocol {
     }
 
     func respond(to req: Request, chainingTo next: AsyncResponder) async throws -> Response {
-        guard try await sessionController.validateSession(req: req) == .admin else {
+        guard try await sessionController.validateSession(req: req) != .unowned else {
             throw Abort(.unauthorized, reason: APIErrorMessage.Common.unauthorized)
         }
 

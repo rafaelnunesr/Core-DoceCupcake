@@ -16,7 +16,7 @@ struct VouchersController: VouchersControllerProtocol {
         self.dependencyProvider = dependencyProvider
         self.repository = repository
         
-        adminSectionValidation = dependencyProvider.getAdminSectionValidationMiddleware()
+        adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }
 
     func boot(routes: RoutesBuilder) throws {

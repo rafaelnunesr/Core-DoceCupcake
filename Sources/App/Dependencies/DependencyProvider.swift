@@ -6,12 +6,12 @@ protocol DependencyProviderProtocol: Sendable {
     func getDatabaseInstance() -> Database
     func getAppInstance() -> Application
     func getSecurityInstance() -> SecurityProtocol
-    func getUserSectionValidationMiddleware() -> SectionValidationMiddlewareProtocol
-    func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol
+    func getUserSessionValidationMiddleware() -> SessionValidationMiddlewareProtocol
+    func getAdminSessionValidationMiddleware() -> AdminValidationMiddlewareProtocol
     func getMigrationServiceInstance() -> MigrationServiceProtocol
     func getControllerFactory() -> ControllerFactoryProtocol
     func getConfigurationServiceInstance() -> ConfigurationServiceProtocol
-    func getSectionController() -> SectionControllerProtocol
+    func getSessionController() -> SessionControllerProtocol
 }
 
 final class DependencyProvider: DependencyProviderProtocol {
@@ -33,16 +33,16 @@ final class DependencyProvider: DependencyProviderProtocol {
         Security()
     }
     
-    func getUserSectionValidationMiddleware() -> SectionValidationMiddlewareProtocol {
-        let sectionRepository = SectionRepository(dependencyProvider: self)
-        let sectionControl = SectionController(dependencyProvider: self, repository: sectionRepository)
-        return SectionValidationMiddleware(sectionController: sectionControl)
+    func getUserSessionValidationMiddleware() -> SessionValidationMiddlewareProtocol {
+        let sessionRepository = SessionRepository(dependencyProvider: self)
+        let sessionControl = SessionController(dependencyProvider: self, repository: sessionRepository)
+        return SessionValidationMiddleware(sessionController: sessionControl)
     }
     
-    func getAdminSectionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
-        let sectionRepository = SectionRepository(dependencyProvider: self)
-        let sectionControl = SectionController(dependencyProvider: self, repository: sectionRepository)
-        return AdminValidationMiddleware(sectionController: sectionControl)
+    func getAdminSessionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
+        let sessionRepository = SessionRepository(dependencyProvider: self)
+        let sessionControl = SessionController(dependencyProvider: self, repository: sessionRepository)
+        return AdminValidationMiddleware(sessionController: sessionControl)
     }
     
     func getMigrationServiceInstance() -> MigrationServiceProtocol {
@@ -65,8 +65,8 @@ final class DependencyProvider: DependencyProviderProtocol {
         ConfigurationService(app: app)
     }
     
-    func getSectionController() -> SectionControllerProtocol {
-        let repository = SectionRepository(dependencyProvider: self)
-        return SectionController(dependencyProvider: self, repository: repository)
+    func getSessionController() -> SessionControllerProtocol {
+        let repository = SessionRepository(dependencyProvider: self)
+        return SessionController(dependencyProvider: self, repository: repository)
     }
 }
