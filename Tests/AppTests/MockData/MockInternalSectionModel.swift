@@ -2,16 +2,16 @@ import Foundation
 
 @testable import App
 
-struct MockInternalSectionModel {
+struct MockInternalSessionModel {
     static func create(id: UUID? = nil,
                        createdAt: Date? = nil,
-                       expiryDate: Date? = nil,
+                       expiryAt: Date? = nil,
                        userId: UUID = UUID(),
                        token: String = "A",
                        isAdmin: Bool = false) -> InternalSessionModel {
         InternalSessionModel(id: id,
                              createdAt: createdAt,
-                             expiryDate: expiryDate, 
+                             expiryAt: expiryAt,
                              userId: userId,
                              token: token,
                              isAdmin: isAdmin)

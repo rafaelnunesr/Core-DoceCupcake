@@ -2,7 +2,7 @@ import Vapor
 
 @testable import App
 
-final class MockSectionController: SessionControllerProtocol {
+final class MockSessionController: SessionControllerProtocol {
     var session: InternalSessionModel?
     var sessionResult = SessionControlAccess.unowned
 

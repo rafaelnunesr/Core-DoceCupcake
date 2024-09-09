@@ -1,3 +1,3 @@
 struct APITag: Codable {
-    let code: String
+    var code: String
 }

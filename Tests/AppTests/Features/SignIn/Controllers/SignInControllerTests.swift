@@ -6,16 +6,16 @@ final class SignInControllerTests: XCTestCase {
     private var app: Application!
     private var sut: SignInController!
     private var mockRepository: MockSignInRepository!
-    private var mockSectionController: MockSectionController!
+    private var mockSessionController: MockSessionController!
     private var mockSecurity: MockSecurity!
     private var mockDependencyProvider: MockDependencyProvider!
     
     override func setUp() async throws {
         app = try await Application.make(.testing)
         mockRepository = MockSignInRepository()
-        mockSectionController = MockSectionController()
+        mockSessionController = MockSessionController()
         mockSecurity = MockSecurity()
-        mockDependencyProvider = MockDependencyProvider(app: app, sectionController: mockSectionController, security: mockSecurity)
+        mockDependencyProvider = MockDependencyProvider(app: app, sessionController: mockSessionController, security: mockSecurity)
         sut = SignInController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         
         try app.register(collection: sut)
@@ -26,7 +26,7 @@ final class SignInControllerTests: XCTestCase {
         app = nil
         sut = nil
         mockRepository = nil
-        mockSectionController = nil
+        mockSessionController = nil
         mockSecurity = nil
         mockDependencyProvider = nil
     }
@@ -60,7 +60,7 @@ final class SignInControllerTests: XCTestCase {
     
     func test_signIn_with_valid_user() throws {
         mockRepository.user = MockUser().john
-        mockSectionController.section = MockInternalSectionModel().defaultUser
+        mockSessionController.session = MockInternalSessionModel().defaultUser
         let expectedResponse = String("{\"token\":\"A\"}")
         
         try self.app.test(.POST, Routes.signin.rawValue,
@@ -74,7 +74,7 @@ final class SignInControllerTests: XCTestCase {
     
     func test_signIn_with_valid_admin() throws {
         mockRepository.admin = MockAdmin().mary
-        mockSectionController.section = MockInternalSectionModel().adminUser
+        mockSessionController.session = MockInternalSessionModel().adminUser
         let expectedResponse = String("{\"token\":\"A\"}")
         
         try self.app.test(.POST, Routes.signin.rawValue,

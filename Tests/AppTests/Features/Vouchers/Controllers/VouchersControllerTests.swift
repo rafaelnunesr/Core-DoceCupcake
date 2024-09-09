@@ -6,7 +6,7 @@ final class VouchersControllerTests: XCTestCase {
     private var app: Application!
     private var sut: VouchersController!
     private var mockRepository: MockRepository!
-    private var mockSectionController: MockSectionController!
+    private var mockSessionController: MockSessionController!
     private var mockSecurity: MockSecurity!
     private var mockDependencyProvider: MockDependencyProvider!
     private let route = Routes.vouchers.rawValue
@@ -14,9 +14,9 @@ final class VouchersControllerTests: XCTestCase {
     override func setUp() async throws {
         app = try await Application.make(.testing)
         mockRepository = MockRepository()
-        mockSectionController = MockSectionController()
+        mockSessionController = MockSessionController()
         mockSecurity = MockSecurity()
-        mockDependencyProvider = MockDependencyProvider(app: app, sectionController: mockSectionController, security: mockSecurity)
+        mockDependencyProvider = MockDependencyProvider(app: app, sessionController: mockSessionController, security: mockSecurity)
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         
         try app.register(collection: sut)
@@ -27,7 +27,7 @@ final class VouchersControllerTests: XCTestCase {
         app = nil
         sut = nil
         mockRepository = nil
-        mockSectionController = nil
+        mockSessionController = nil
         mockSecurity = nil
         mockDependencyProvider = nil
     }

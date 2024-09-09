@@ -6,20 +6,20 @@ import Vapor
 
 final class MockDependencyProvider: DependencyProviderProtocol {
     var app: Application
-    var sectionController: SessionControllerProtocol
+    var sessionController: SessionControllerProtocol
     var security: SecurityProtocol
-    var sectionValidationMiddleware: MockSectionValidationMiddleware
+    var sessionValidationMiddleware: MockSessionValidationMiddleware
     var adminValidationMiddleware: MockAdminValidationMiddleware
 
     init(app: Application,
-         sectionController: SessionControllerProtocol = MockSectionController(),
+         sessionController: SessionControllerProtocol = MockSessionController(),
          security: SecurityProtocol = MockSecurity(),
-         sectionValidationMiddleware: MockSectionValidationMiddleware = MockSectionValidationMiddleware(),
+         sessionValidationMiddleware: MockSessionValidationMiddleware = MockSessionValidationMiddleware(),
          adminValidationMiddleware: MockAdminValidationMiddleware = MockAdminValidationMiddleware()) {
         self.app = app
-        self.sectionController = sectionController
+        self.sessionController = sessionController
         self.security = security
-        self.sectionValidationMiddleware = sectionValidationMiddleware
+        self.sessionValidationMiddleware = sessionValidationMiddleware
         self.adminValidationMiddleware = adminValidationMiddleware
     }
 
@@ -36,7 +36,7 @@ final class MockDependencyProvider: DependencyProviderProtocol {
     }
     
     func getUserSessionValidationMiddleware() -> SessionValidationMiddlewareProtocol {
-        sectionValidationMiddleware
+        sessionValidationMiddleware
     }
     
     func getAdminSessionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
@@ -55,7 +55,7 @@ final class MockDependencyProvider: DependencyProviderProtocol {
         fatalError()
     }
     
-    func getSectionController() -> SessionControllerProtocol {
-        sectionController
+    func getSessionController() -> SessionControllerProtocol {
+        sessionController
     }
 }
