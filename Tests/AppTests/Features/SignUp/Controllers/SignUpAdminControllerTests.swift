@@ -8,7 +8,7 @@ final class SignUpAdminControllerTests: XCTestCase {
     private var mockRepository: MockSignUpAdminRepository!
     private var mockSecurity: MockSecurity!
     private var mockDependencyProvider: MockDependencyProvider!
-    private var route = Routes.admin.rawValue
+    private var route = PathRoutes.admin.rawValue
     
     override func setUp() async throws {
         app = try await Application.make(.testing)

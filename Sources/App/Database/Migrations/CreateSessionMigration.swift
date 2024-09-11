@@ -7,6 +7,7 @@ struct CreateSessionMigration: AsyncMigration {
         try await database.schema(databaseName)
             .id()
             .field(SessionDbField.createdAt.fieldKey, .datetime)
+            .field(SessionDbField.expiryAt.fieldKey, .datetime)
             .field(SessionDbField.userId.fieldKey, .uuid)
             .field(SessionDbField.token.fieldKey, .string, .required)
             .field(SessionDbField.isAdmin.fieldKey, .bool, .required)
@@ -19,3 +20,6 @@ struct CreateSessionMigration: AsyncMigration {
         try await database.schema(databaseName).delete()
     }
 }
+
+// swift run App migrate --revert
+// swift run App migrate

@@ -18,7 +18,7 @@ struct SignInController: RouteCollection, Sendable {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let signInRoutes = routes.grouped(Routes.signin.path)
+        let signInRoutes = routes.grouped(PathRoutes.signin.path)
         signInRoutes.post(use: signIn)
     }
 

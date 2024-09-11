@@ -29,7 +29,7 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_when_request_fields_are_incomplete_should_return_bad_request_error() throws {
-        try self.app.test(.POST, Routes.signup.rawValue,
+        try self.app.test(.POST, PathRoutes.signup.rawValue,
         beforeRequest: { request in
             try request.content.encode(invalidRequest)
         }, afterResponse: { response in
@@ -41,7 +41,7 @@ final class SignUpUserControllerTests: XCTestCase {
         let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.userAlreadyRegistered)
         mockRepository.user = MockUser().john
         
-        try self.app.test(.POST, Routes.signup.rawValue,
+        try self.app.test(.POST, PathRoutes.signup.rawValue,
         beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
@@ -55,7 +55,7 @@ final class SignUpUserControllerTests: XCTestCase {
         let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.invalidCredentials)
         mockSecurity.isValid = false
         
-        try self.app.test(.POST, Routes.signup.rawValue,
+        try self.app.test(.POST, PathRoutes.signup.rawValue,
         beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
@@ -68,7 +68,7 @@ final class SignUpUserControllerTests: XCTestCase {
     func test_create_user_with_valid_data() throws {
         let expectedResponse = GenericMessageResponse(message: SignUpUserController.Constants.welcomeMessage)
         
-        try self.app.test(.POST, Routes.signup.rawValue,
+        try self.app.test(.POST, PathRoutes.signup.rawValue,
                           beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in

@@ -28,7 +28,10 @@ struct SessionController: SessionControllerProtocol {
         let session = try await req.jwt.verify(as: SessionToken.self)
         let user = try await repository.getSession(for: session.userId)
         
-        guard let user else {
+        let expirationTime = session.expiration.value
+        let currentTime = Date()
+
+        guard expirationTime > currentTime, let user else {
             return .unowned
         }
         

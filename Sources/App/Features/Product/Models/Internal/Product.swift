@@ -121,7 +121,7 @@ extension Product {
                   launchDate: product.launchDate,
                   tags: product.tags.map { $0.code },
                   allergicTags: product.allergicTags.map { $0.code },
-                  nutritionalIds: [], // TODO
+                  nutritionalIds: nutritionalIds, 
                   isNew: product.isNew)
     }
 }

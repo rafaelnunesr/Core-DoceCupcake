@@ -25,7 +25,7 @@ struct ProductController: RouteCollection, Sendable {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let productRoutes = routes.grouped(Routes.products.path)
+        let productRoutes = routes.grouped(PathRoutes.products.path)
         
         productRoutes
             .grouped(userSectionValidation)
@@ -33,7 +33,7 @@ struct ProductController: RouteCollection, Sendable {
         
         productRoutes
             .grouped(userSectionValidation)
-            .get(":productID", use: getProduct)
+            .get(":productCode", use: getProduct)
         
         productRoutes
             .grouped(adminSectionValidation)
@@ -51,22 +51,19 @@ struct ProductController: RouteCollection, Sendable {
     @Sendable
     private func getProductList(req: Request) async throws -> ProductListResponse {
         let productList = try await productRepository.getProductList()
-
-        let (tagsModels, allergicModels) = try await getProductTagsModel(productList)
-
-        var productResponse = [APIProduct]()
-
+        
+        var productListResponse = [APIProductResponse]()
         for product in productList {
-            var prd = APIProduct(from: product, nutritionalInfos: []) // TODO
-            productResponse.append(prd)
+            let productResponse = try await createAPIProductResponse(for: product)
+            productListResponse.append(productResponse)
         }
-
-        return ProductListResponse(count: productResponse.count, products: productResponse)
+        
+        return ProductListResponse(count: productListResponse.count, products: productListResponse)
     }
 
     @Sendable
-    private func getProduct(req: Request) async throws -> APIProduct {
-        guard let id = req.parameters.get("productID") else {
+    private func getProduct(req: Request) async throws -> APIProductResponse {
+        guard let id = req.parameters.get("productCode") else {
             throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
         }
 
@@ -74,14 +71,21 @@ struct ProductController: RouteCollection, Sendable {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
 
-        let (tagsModels, allergicModels) = try await getProductTagsModel([product])
-        
-        let nutritionalModel = try await nutritionalController.getNutritionalByIds(product.nutritionalIds)
-
-        var productResponse = APIProduct(from: product, nutritionalInfos: []) // TODO
-        productResponse.nutritionalInformations = nutritionalModel.map { APINutritionalInformation(from: $0) }
-
+        let productResponse = try await createAPIProductResponse(for: product)
         return productResponse
+    }
+    
+    private func createAPIProductResponse(for product: Product) async throws -> APIProductResponse {
+        let tags = try await getProductTags(with: product.tags)
+        let allergicTags = try await getProductTags(with: product.allergicTags)
+        let nutritionalModels = try await nutritionalController.getNutritionalByIds(product.nutritionalIds)
+
+        return APIProductResponse(
+            from: product,
+            tags: tags,
+            allergicTags: allergicTags,
+            nutritionalInfos: nutritionalModels.map { APINutritionalInformation(from: $0) }
+        )
     }
 
     @Sendable
@@ -116,21 +120,12 @@ struct ProductController: RouteCollection, Sendable {
         return GenericMessageResponse(message: Constants.productCreated)
     }
 
-    private func getProductTagsModel(_ productList: [Product]) async throws -> (tags: [ProductTag], allergicTags: [ProductTag]) {
-        var productTags = [String]()
-        var allergicTags = [String]()
-
-        for product in productList {
-            productTags.append(contentsOf: product.tags)
-            allergicTags.append(contentsOf: product.allergicTags)
-        }
-
-        let tagsModels = try await tagsController.getTagsFor(productTags)
-        let allergicModels = try await tagsController.getTagsFor(allergicTags)
-
-        return (tags: tagsModels, allergicTags: allergicModels)
+    private func getProductTags(with tags: [String]) async throws -> [APIProductTag] {
+        let models = try await tagsController.getTagsFor(tags)
+        return models.map { APIProductTag(from: $0) }
     }
 
+    @Sendable
     private func updateProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
@@ -162,6 +157,7 @@ struct ProductController: RouteCollection, Sendable {
         return GenericMessageResponse(message: Constants.productCreated)
     }
 
+    @Sendable
     private func deleteProduct(req: Request) async throws -> GenericMessageResponse {
         let model: APIRequestId = try convertRequestDataToModel(req: req)
         guard let product = try await productRepository.getProduct(with: model.id) else {

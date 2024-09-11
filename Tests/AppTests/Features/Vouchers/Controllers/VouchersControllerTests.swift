@@ -9,7 +9,7 @@ final class VouchersControllerTests: XCTestCase {
     private var mockSessionController: MockSessionController!
     private var mockSecurity: MockSecurity!
     private var mockDependencyProvider: MockDependencyProvider!
-    private let route = Routes.vouchers.rawValue
+    private let route = PathRoutes.vouchers.rawValue
     
     override func setUp() async throws {
         app = try await Application.make(.testing)

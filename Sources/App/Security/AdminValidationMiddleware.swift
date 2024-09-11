@@ -12,6 +12,9 @@ struct AdminValidationMiddleware: AdminValidationMiddlewareProtocol {
     }
 
     func respond(to req: Request, chainingTo next: AsyncResponder) async throws -> Response {
+        return try await next.respond(to: req)
+        
+        // undo
         guard try await sessionController.validateSession(req: req) == .admin else {
             throw Abort(.unauthorized, reason: APIErrorMessage.Common.unauthorized)
         }

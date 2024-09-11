@@ -22,10 +22,10 @@ final class ControllerFactory: ControllerFactoryProtocol {
             try userControllerFactory.makeSignInController(),
             try userControllerFactory.makeUserSignUpController(),
             try userControllerFactory.makeAdminSignUpController(),
-//            try productControllerFactory.makeProductController(),
-//            try productControllerFactory.makeProductTagsController(),
-//            try productControllerFactory.makeProductReviewController(),
-//            try voucherControllerFactory.makeVoucherController()
+            try productControllerFactory.makeProductController(),
+            try productControllerFactory.makeProductTagsController(),
+            //try productControllerFactory.makeProductReviewController(),
+            try voucherControllerFactory.makeVoucherController()
         ]
     }
 }

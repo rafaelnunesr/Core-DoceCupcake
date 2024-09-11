@@ -15,7 +15,7 @@ struct SignUpAdminController: RouteCollection, Sendable {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let signUpRoutes = routes.grouped(Routes.admin.path)
+        let signUpRoutes = routes.grouped(PathRoutes.admin.path)
         signUpRoutes.post(use: signup)
     }
 

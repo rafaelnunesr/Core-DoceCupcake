@@ -22,7 +22,7 @@ struct PackagingController: PackagingControllerProtocol {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let packageRoutes = routes.grouped(Routes.packages.path)
+        let packageRoutes = routes.grouped(PathRoutes.packages.path)
         
         packageRoutes
             .grouped(userSectionValidation)

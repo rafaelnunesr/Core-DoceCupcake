@@ -2,7 +2,7 @@ import JWT
 import Vapor
 
 struct SessionToken: Content, Authenticatable, JWTPayload {
-    private var expirationTime: TimeInterval = 60 * 15
+    private var expirationTime = Date().timeIntervalSince1970 + 3600
     
     var expiration: ExpirationClaim
     var userId: UUID

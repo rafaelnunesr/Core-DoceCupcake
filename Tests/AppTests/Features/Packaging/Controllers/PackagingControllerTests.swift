@@ -8,7 +8,7 @@ final class PackagingControllerTests: XCTestCase {
     private var mockRepository: MockRepository!
     private var mockSecurity: MockSecurity!
     private var mockDependencyProvider: MockDependencyProvider!
-    private var route = Routes.packages.rawValue
+    private var route = PathRoutes.packages.rawValue
     
     override func setUp() async throws {
         app = try await Application.make(.testing)

@@ -6,6 +6,7 @@ protocol RepositoryProtocol: Sendable {
     func fetchModelById<T: DatabaseModelProtocol>(_ id: UUID) async throws -> T?
     func fetchModelByCode<T: DatabaseModelProtocol>(_ code: String) async throws -> T?
     func create<T: DatabaseModelProtocol>(_ model: T) async throws
+    func update<T: DatabaseModelProtocol>(_ model: T) async throws
     func delete<T: DatabaseModelProtocol>(_ model: T) async throws
 }
 
@@ -37,6 +38,10 @@ final class Repository: RepositoryProtocol {
 
     func create<T: DatabaseModelProtocol>(_ model: T) async throws {
         try await model.create(on: database)
+    }
+    
+    func update<T: DatabaseModelProtocol>(_ model: T) async throws {
+        try await model.update(on: database)
     }
 
     func delete<T: DatabaseModelProtocol>(_ model: T) async throws {

@@ -42,6 +42,10 @@ final class NutritionalRepository: NutritionalRepositoryProtocol {
     func create<T: DatabaseModelProtocol>(_ model: T) async throws {
         try await model.create(on: database)
     }
+    
+    func update<T: DatabaseModelProtocol>(_ model: T) async throws {
+        try await model.update(on: database)
+    }
 
     func delete<T: DatabaseModelProtocol>(_ model: T) async throws {
         try await model.delete(on: database)

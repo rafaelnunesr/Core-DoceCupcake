@@ -22,7 +22,7 @@ struct VouchersController: VouchersControllerProtocol {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let vouchersRoutes = routes.grouped(Routes.vouchers.path)
+        let vouchersRoutes = routes.grouped(PathRoutes.vouchers.path)
             
         vouchersRoutes
             .grouped(sessionValidation)

@@ -1,5 +1,5 @@
 protocol VoucherControllerFactoryProtocol {
-    //func makeVoucherController() throws -> VouchersController
+    func makeVoucherController() throws -> VouchersController
 }
 
 final class VoucherControllerFactory: VoucherControllerFactoryProtocol {
@@ -9,8 +9,8 @@ final class VoucherControllerFactory: VoucherControllerFactoryProtocol {
         self.dependencyProvider = dependencyProvider
     }
 
-//    func makeVoucherController() throws -> VouchersController {
-//        let repository = Repository(dependencyProvider: dependencyProvider)
-//        return VouchersController(dependencyProvider: dependencyProvider, repository: repository)
-//    }
+    func makeVoucherController() throws -> VouchersController {
+        let repository = Repository(dependencyProvider: dependencyProvider)
+        return VouchersController(dependencyProvider: dependencyProvider, repository: repository)
+    }
 }

@@ -1,6 +1,6 @@
 import Vapor
 
-enum Routes: String {
+enum PathRoutes: String {
     case admin
     case vouchers
     case signin

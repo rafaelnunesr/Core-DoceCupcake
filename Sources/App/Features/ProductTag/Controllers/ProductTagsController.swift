@@ -26,7 +26,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let productRoutes = routes.grouped(Routes.productTags.path)
+        let productRoutes = routes.grouped(PathRoutes.productTags.path)
         
         productRoutes
             .grouped(userSectionValidation)
@@ -35,6 +35,10 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         productRoutes
             .grouped(adminSectionValidation)
             .post(use: createNewTag)
+        
+        productRoutes
+            .grouped(adminSectionValidation)
+            .put(use: updateProductTag)
         
         productRoutes
             .grouped(adminSectionValidation)
@@ -59,6 +63,19 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         try await repository.create(ProductTag(from: model))
 
         return GenericMessageResponse(message: Constants.tagCreated)
+    }
+    
+    @Sendable
+    private func updateProductTag(req: Request) async throws -> GenericMessageResponse {
+        let model: APIProductTag = try convertRequestDataToModel(req: req)
+
+        guard let tagModel = try await getTag(with: model.code) else {
+            throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
+        }
+
+        try await repository.update(ProductTag(from: model))
+
+        return GenericMessageResponse(message: Constants.tagUpdated)
     }
 
     @Sendable
@@ -103,6 +120,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
 
     enum Constants {
         static let tagCreated = "Tag created"
+        static let tagUpdated = "Tag updated"
         static let tagDeleted = "Tag deleted"
     }
 }

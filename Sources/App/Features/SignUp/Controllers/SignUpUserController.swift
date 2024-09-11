@@ -15,7 +15,7 @@ struct SignUpUserController: RouteCollection, Sendable {
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let signUpRoutes = routes.grouped(Routes.signup.path)
+        let signUpRoutes = routes.grouped(PathRoutes.signup.path)
         
         signUpRoutes.post(use: signup)
     }
