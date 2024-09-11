@@ -119,6 +119,21 @@ struct ProductController: RouteCollection, Sendable {
 
         return GenericMessageResponse(message: Constants.productCreated)
     }
+    
+    private func validateTagsAndAllergies(tags: [String], allergies: [String]) async throws {
+        async let areTagsValid = tagsController.areTagCodesValid(tags)
+        async let areAllergiesValid = tagsController.areTagCodesValid(allergies)
+
+        guard try await areTagsValid, try await areAllergiesValid else {
+            throw Abort(.badRequest, reason: APIErrorMessage.Product.invalidProductTag)
+        }
+    }
+    
+    private func saveNutritional(for nutritionals: [APINutritionalInformation]) async throws -> [UUID] {
+        try await nutritionals.asyncCompactMap {
+            try await nutritionalController.saveNutritionalModel(NutritionalInformation(from: $0)).id
+        }
+    }
 
     private func getProductTags(with tags: [String]) async throws -> [APIProductTag] {
         let models = try await tagsController.getTagsFor(tags)
