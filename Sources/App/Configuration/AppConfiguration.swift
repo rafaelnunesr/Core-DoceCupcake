@@ -23,6 +23,7 @@ final class AppConfiguration: AppConfigurationProtocol {
         await configService.configureJwtSegurityKey()
         configService.setupDatabase()
         migrationService.addMigrations()
+        //app.middleware.use(ErrorHandlingMiddleware())
         
         do {
             try registerControllers()
