@@ -10,6 +10,7 @@ enum SessionControlAccess {
 
 protocol SessionControllerProtocol: Sendable {
     func validateSession(req: Request) async throws -> SessionControlAccess
+    func getLoggedUserId(req: Request) async throws -> UUID
     func createSession(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel?
     func deleteSession(for userId: UUID) async throws
 }
@@ -36,6 +37,13 @@ struct SessionController: SessionControllerProtocol {
         }
         
         return user.isAdmin ? .admin : .user
+    }
+    
+    func getLoggedUserId(req: Request) async throws -> UUID {
+        let session = try await req.jwt.verify(as: SessionToken.self)
+        guard let user = try await repository.getSession(for: session.userId)
+        else { throw APIError.internalServerError }
+        return user.userId
     }
 
     func createSession(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {

@@ -6,6 +6,7 @@ enum OrderDbField: String {
     case schema = "order"
     
     case id
+    case code
     case createdAt = "created_at"
     case updatedAt = "updated_at"
     case userId = "user_id"
@@ -20,11 +21,14 @@ enum OrderDbField: String {
     }
 }
 
-final class Order: Model {
+final class Order: DatabaseModelProtocol {
     static let schema = OrderDbField.schema.rawValue
 
     @ID(key: .id)
     var id: UUID?
+    
+    @Field(key: OrderDbField.code.fieldKey)
+    var code: String
     
     @Timestamp(key: OrderDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
@@ -53,6 +57,7 @@ final class Order: Model {
     internal init() { }
     
     init(id: UUID? = nil,
+         code: String,
          createdAt: Date? = nil,
          updatedAt: Date? = nil,
          user: User,
@@ -62,6 +67,7 @@ final class Order: Model {
          deliveryStatus: DeliveryStatus,
          orderStatus: OrderStatus) {
         self.id = id
+        self.code = code
         self.user = user
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -70,5 +76,15 @@ final class Order: Model {
         self.deliveryAddress = deliveryAddress
         self.deliveryStatus = deliveryStatus
         self.orderStatus = orderStatus
+    }
+}
+
+extension Order {
+    static var codeKey: KeyPath<Order, Field<String>> {
+        \Order.$code
+    }
+
+    static var idKey: KeyPath<Order, IDProperty<Order, UUID>> {
+        \Order.$id
     }
 }

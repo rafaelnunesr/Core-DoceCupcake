@@ -27,8 +27,6 @@ final class SessionControllerTests: XCTestCase {
     }
     
     func test_validate_session_when_session_does_not_exists_should_return_unowned() throws {
-        mockRepository.result = MockSession().user
-        
     }
     
     func test_validate_session_when_session_is_from_user_should_return_user() throws {

@@ -69,7 +69,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     private func updateProductTag(req: Request) async throws -> GenericMessageResponse {
         let model: APIProductTag = try convertRequestDataToModel(req: req)
 
-        guard let tagModel = try await getTag(with: model.code) else {
+        guard try await getTag(with: model.code) != nil else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
 
