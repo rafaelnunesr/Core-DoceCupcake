@@ -4,7 +4,7 @@ import Vapor
 protocol OrderRepositoryProtocol: Sendable {
     func fetchAllOrdersByStatus(_ status: OrderStatus) async throws -> [Order]
     func fetchAllOrdersByUserId(_ userId: UUID) async throws -> [Order]
-    func fetchOrderById(_ orderId: UUID) async throws -> Order?
+    func fetchOrderByNumber(_ orderNumber: String) async throws -> Order?
     func create(_ order: Order) async throws
     func update(_ order: Order) async throws
     func delete(_ order: Order) async throws
@@ -29,9 +29,9 @@ final class OrderRepository: OrderRepositoryProtocol {
             .all()
     }
     
-    func fetchOrderById(_ orderId: UUID) async throws -> Order? {
+    func fetchOrderByNumber(_ number: String) async throws -> Order? {
         try await Order.query(on: database)
-            .filter(\.$id == orderId)
+            .filter(\.$code == number)
             .first()
     }
 

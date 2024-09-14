@@ -3,6 +3,7 @@ import Foundation
 import Vapor
 
 protocol ProductControllerProtocol: RouteCollection, Sendable {
+    func fetchProduct(with code: String) async throws -> Product?
     func checkProductAvailability(with code: String, and quantity: Double) async throws -> Bool
     func updateProductAvailability(with code: String, and quantity: Double) async throws
 }
@@ -63,10 +64,10 @@ struct ProductController: ProductControllerProtocol {
 
     @Sendable
     private func fetchProduct(req: Request) async throws -> APIProductResponse {
-        guard let id = req.parameters.get("productCode") 
+        guard let code = req.parameters.get("productCode")
         else { throw APIResponseError.Common.badRequest }
 
-        guard let product = try await productRepository.fetchProduct(with: id) 
+        guard let product = try await productRepository.fetchProduct(with: code)
         else { throw APIResponseError.Common.notFound }
 
         let productResponse = try await createAPIProductResponse(for: product)
@@ -172,6 +173,10 @@ struct ProductController: ProductControllerProtocol {
         return models.map { APIProductTag(from: $0) }
     }
     
+    func fetchProduct(with code: String) async throws -> Product? {
+        try await productRepository.fetchProduct(with: code)
+    }
+    
     func checkProductAvailability(with code: String, and quantity: Double) async throws -> Bool {
         guard let product = try await productRepository.fetchProduct(with: code)
         else { return false }
@@ -179,7 +184,7 @@ struct ProductController: ProductControllerProtocol {
     }
     
     func updateProductAvailability(with code: String, and quantity: Double) async throws {
-        guard var product = try await productRepository.fetchProduct(with: code)
+        guard let product = try await productRepository.fetchProduct(with: code)
         else { throw APIResponseError.Common.internalServerError }
         product.stockCount -= quantity
         

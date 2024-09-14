@@ -2,6 +2,7 @@ import Vapor
 
 protocol VouchersControllerProtocol: RouteCollection, Sendable {
     func getVoucher(with code: String) async throws -> Voucher?
+    func applyVoucher(_ value: Double, voucherCode: String) async throws -> Double
 }
 
 struct VouchersController: VouchersControllerProtocol {
@@ -82,6 +83,30 @@ struct VouchersController: VouchersControllerProtocol {
 
     func getVoucher(with code: String) async throws -> Voucher? {
         try await repository.fetchModelByCode(code)
+    }
+    
+    func applyVoucher(_ value: Double, voucherCode: String) async throws -> Double {
+        if let voucher: Voucher = try await repository.fetchModelByCode(voucherCode) {
+            if let monetaryValue = voucher.monetaryDiscount {
+                try await updateVouchersAvailability(voucher)
+                return monetaryValue
+            }
+            
+            if let percentageDiscount = voucher.percentageDiscount {
+                try await updateVouchersAvailability(voucher)
+                return value * (percentageDiscount / 100)
+            }
+        }
+        
+        return .zero
+    }
+    
+    private func updateVouchersAvailability(_ voucher: Voucher) async throws {
+        let copyVoucher = voucher
+        if let count = copyVoucher.availabilityCount, count > .zero {
+            copyVoucher.availabilityCount = count - 1
+            try await repository.update(copyVoucher)
+        }
     }
     
     private func createVoucherSuccessMessage(voucherCode: String) -> String {

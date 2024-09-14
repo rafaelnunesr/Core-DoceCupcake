@@ -7,15 +7,14 @@ enum OrderDbField: String {
     
     case id
     case code
-    case orderNumber = "order_number"
     case createdAt = "created_at"
     case updatedAt = "updated_at"
     case userId = "user_id"
-    case voucherId = "voucher_id"
+    case voucherCode = "voucher_code"
     case paymentId = "payment_id"
     case total = "total"
     case deliveryFee = "delivery_fee"
-    case addressId = "address_id"
+    case addressCode = "address_code"
     case deliveryStatus = "delivery_status"
     case orderStatus = "order_status"
     
@@ -33,9 +32,6 @@ final class Order: DatabaseModelProtocol {
     @Field(key: OrderDbField.code.fieldKey)
     var code: String
     
-    @Field(key: OrderDbField.orderNumber.fieldKey)
-    var orderNumber: Int
-    
     @Timestamp(key: OrderDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
     
@@ -45,8 +41,8 @@ final class Order: DatabaseModelProtocol {
     @Field(key: OrderDbField.userId.fieldKey)
     var userId: UUID
     
-    @OptionalField(key: OrderDbField.voucherId.fieldKey)
-    var voucherId: UUID?
+    @OptionalField(key: OrderDbField.voucherCode.fieldKey)
+    var voucherCode: String?
     
     @Field(key: OrderDbField.paymentId.fieldKey)
     var paymentId: UUID?
@@ -57,8 +53,8 @@ final class Order: DatabaseModelProtocol {
     @Field(key: OrderDbField.deliveryFee.fieldKey)
     var deliveryFee: Double
     
-    @Field(key: OrderDbField.addressId.fieldKey)
-    var addressId: UUID
+    @Field(key: OrderDbField.addressCode.fieldKey)
+    var addressCode: String
     
     @Field(key: OrderDbField.deliveryStatus.fieldKey)
     var deliveryStatus: TransportationStatus
@@ -70,28 +66,26 @@ final class Order: DatabaseModelProtocol {
     
     init(id: UUID? = nil,
          code: String,
-         orderNumber: Int,
          createdAt: Date? = nil,
          updatedAt: Date? = nil,
          userId: UUID,
-         voucherId: UUID? = nil,
+         voucherCode: String? = nil,
          paymentId: UUID,
          total: Double,
          deliveryFee: Double,
-         addressId: UUID,
+         addressCode: String,
          deliveryStatus: TransportationStatus,
          orderStatus: OrderStatus) {
         self.id = id
         self.code = code
-        self.orderNumber = orderNumber
         self.userId = userId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
-        self.voucherId = voucherId
+        self.voucherCode = voucherCode
         self.paymentId = paymentId
         self.total = total
         self.deliveryFee = deliveryFee
-        self.addressId = addressId
+        self.addressCode = addressCode
         self.deliveryStatus = deliveryStatus
         self.orderStatus = orderStatus
     }
@@ -109,14 +103,13 @@ extension Order {
 
 extension Order {
     convenience init(from model: APIOrderRequest, userId: UUID, paymentId: UUID, total: Double) {
-        self.init(code: "", // review this logic
-                  orderNumber: 1, // review this
+        self.init(code: model.orderNumber ?? .empty,
                   userId: userId,
-                  voucherId: model.voucherId,
+                  voucherCode: model.voucherCode,
                   paymentId: paymentId,
                   total: total,
                   deliveryFee: model.deliveryFee,
-                  addressId: model.addressId,
+                  addressCode: model.addressCode,
                   deliveryStatus: .confirmed,
                   orderStatus: .confirmed)
     }
