@@ -2,10 +2,6 @@ import FluentPostgresDriver
 import Foundation
 import Vapor
 
-enum DatabaseError: Error {
-    case unknown
-}
-
 protocol NutritionalControllerProtocol: Sendable {
     func getNutritionalByIds(_ idList: [UUID]) async throws -> [NutritionalInformation]
     func saveNutritionalModel(_ model: NutritionalInformation) async throws -> NutritionalInformation
@@ -43,13 +39,7 @@ struct NutritionalController: NutritionalControllerProtocol {
 
         try await repository.create(model)
 
-        let savedResult = try await repository.getNutritionalByAllFields(model)
-
-        if let savedResult {
-            return savedResult
-        }
-
-        throw DatabaseError.unknown
+        return model
     }
 
     func deleteNutritionalModel(_ model: NutritionalInformation) async throws {

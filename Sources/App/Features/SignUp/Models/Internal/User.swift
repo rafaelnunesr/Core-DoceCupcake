@@ -10,10 +10,6 @@ enum UsersDbField: String {
     case email
     case password
     case imageUrl = "image_url"
-    case state
-    case city
-    case address
-    case addressComplement = "address_complement"
     
     var fieldKey: FieldKey {
         return FieldKey(stringLiteral: self.rawValue)
@@ -40,19 +36,7 @@ final class User: Model {
     
     @OptionalField(key: UsersDbField.imageUrl.fieldKey)
     var imageUrl: String?
-
-    @Field(key: UsersDbField.state.fieldKey)
-    var state: String
-
-    @Field(key: UsersDbField.city.fieldKey)
-    var city: String
-
-    @Field(key: UsersDbField.address.fieldKey)
-    var address: String
-
-    @OptionalField(key: UsersDbField.addressComplement.fieldKey)
-    var addressComplement: String?
-
+    
     internal init() {}
 
     init(id: UUID? = nil, 
@@ -60,21 +44,13 @@ final class User: Model {
          userName: String,
          email: String,
          password: String,
-         imageUrl: String? = nil,
-         state: String,
-         city: String,
-         address: String,
-         addressComplement: String? = nil) {
+         imageUrl: String? = nil) {
         self.id = id
         self.createdAt = createdAt
         self.userName = userName
         self.email = email
         self.password = password
         self.imageUrl = imageUrl
-        self.state = state
-        self.city = city
-        self.address = address
-        self.addressComplement = addressComplement
     }
 }
 
@@ -83,10 +59,6 @@ extension User {
         self.init(userName: model.userName,
                   email: model.email,
                   password: model.password,
-                  imageUrl: model.imageUrl,
-                  state: model.state,
-                  city: model.city,
-                  address: model.address,
-                  addressComplement: model.addressComplement)
+                  imageUrl: model.imageUrl)
     }
 }

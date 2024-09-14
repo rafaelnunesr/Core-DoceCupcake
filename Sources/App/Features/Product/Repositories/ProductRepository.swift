@@ -2,42 +2,40 @@ import FluentPostgresDriver
 import Vapor
 
 protocol ProductRepositoryProtocol: Sendable {
-    func getProduct(with code: String) async throws -> Product?
-    func getProductList() async throws -> [Product]
-    func createProduct(_ product: Product) async throws
-    func updateProduct(_ product: Product) async throws
-    func deleteProduct(_ product: Product) async throws
+    func fetchProduct(with code: String) async throws -> Product?
+    func fetchProducts() async throws -> [Product]
+    func create(_ product: Product) async throws
+    func update(_ product: Product) async throws
+    func delete(_ product: Product) async throws
 }
 
 final class ProductRepository: ProductRepositoryProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let database: Database
 
-    init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
-        database = dependencyProvider.getDatabaseInstance()
+    init(database: Database) {
+        self.database = database
     }
 
-    func getProduct(with code: String) async throws -> Product? {
+    func fetchProduct(with code: String) async throws -> Product? {
         try await Product.query(on: database)
             .filter(\.$code == code)
             .first()
     }
 
-    func getProductList() async throws -> [Product] {
+    func fetchProducts() async throws -> [Product] {
         try await Product.query(on: database)
             .all()
     }
 
-    func createProduct(_ product: Product) async throws {
+    func create(_ product: Product) async throws {
         try await product.create(on: database)
     }
 
-    func updateProduct(_ product: Product) async throws {
+    func update(_ product: Product) async throws {
         try await product.update(on: database)
     }
 
-    func deleteProduct(_ product: Product) async throws {
+    func delete(_ product: Product) async throws {
         try await product.delete(on: database)
     }
 }

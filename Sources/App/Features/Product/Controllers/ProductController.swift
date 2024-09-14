@@ -2,7 +2,12 @@ import FluentPostgresDriver
 import Foundation
 import Vapor
 
-struct ProductController: RouteCollection, Sendable {
+protocol ProductControllerProtocol: RouteCollection, Sendable {
+    func checkProductAvailability(with code: String, and quantity: Double) async throws -> Bool
+    func updateProductAvailability(with code: String, and quantity: Double) async throws
+}
+
+struct ProductController: ProductControllerProtocol {
     private let dependencyProvider: DependencyProviderProtocol
     private let productRepository: ProductRepositoryProtocol
     private let tagsController: ProductTagsControllerProtocol
@@ -29,28 +34,28 @@ struct ProductController: RouteCollection, Sendable {
         
         productRoutes
             .grouped(userSectionValidation)
-            .get(use: getProductList)
+            .get(use: fetchProducts)
         
         productRoutes
             .grouped(userSectionValidation)
-            .get(":productCode", use: getProduct)
+            .get(":productCode", use: fetchProduct)
         
         productRoutes
             .grouped(adminSectionValidation)
-            .post(use: createNewProduct)
+            .post(use: create)
         
         productRoutes
             .grouped(adminSectionValidation)
-            .put(use: updateProduct)
+            .put(use: update)
         
         productRoutes
             .grouped(adminSectionValidation)
-            .delete(use: deleteProduct)
+            .delete(use: delete)
     }
 
     @Sendable
-    private func getProductList(req: Request) async throws -> ProductListResponse {
-        let productList = try await productRepository.getProductList()
+    private func fetchProducts(req: Request) async throws -> ProductListResponse {
+        let productList = try await productRepository.fetchProducts()
         
         let products = try await productList.asyncMap { product in
             try await createAPIProductResponse(for: product)
@@ -60,12 +65,12 @@ struct ProductController: RouteCollection, Sendable {
     }
 
     @Sendable
-    private func getProduct(req: Request) async throws -> APIProductResponse {
+    private func fetchProduct(req: Request) async throws -> APIProductResponse {
         guard let id = req.parameters.get("productCode") else {
             throw APIError.badRequest
         }
 
-        guard let product = try await productRepository.getProduct(with: id) else {
+        guard let product = try await productRepository.fetchProduct(with: id) else {
             throw APIError.notFound
         }
 
@@ -74,7 +79,7 @@ struct ProductController: RouteCollection, Sendable {
     }
 
     @Sendable
-    private func createNewProduct(req: Request) async throws -> GenericMessageResponse {
+    private func create(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
         try await ensureProductDoesNotExist(with: model.code)
@@ -83,16 +88,16 @@ struct ProductController: RouteCollection, Sendable {
         let nutritionalIds = try await createNutricionalInformations(with: model.nutritionalInformations)
 
         let internalProduct = Product(from: model, nutritionalIds: nutritionalIds)
-        try await productRepository.createProduct(internalProduct)
+        try await productRepository.create(internalProduct)
             
         return GenericMessageResponse(message: Constants.productCreated)
     }
 
     @Sendable
-    private func updateProduct(req: Request) async throws -> GenericMessageResponse {
+    private func update(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
-        guard try await productRepository.getProduct(with: model.code) != nil else {
+        guard try await productRepository.fetchProduct(with: model.code) != nil else {
             throw APIError.notFound
         }
         
@@ -101,25 +106,25 @@ struct ProductController: RouteCollection, Sendable {
         let nutritionalIds = try await createNutricionalInformations(with: model.nutritionalInformations)
 
         let internalProduct = Product(from: model, nutritionalIds: nutritionalIds)
-        try await productRepository.updateProduct(internalProduct)
+        try await productRepository.update(internalProduct)
 
         return GenericMessageResponse(message: Constants.productUpdated)
     }
 
     @Sendable
-    private func deleteProduct(req: Request) async throws -> GenericMessageResponse {
+    private func delete(req: Request) async throws -> GenericMessageResponse {
         let model: APIRequestId = try convertRequestDataToModel(req: req)
-        guard let product = try await productRepository.getProduct(with: model.id) else {
+        guard let product = try await productRepository.fetchProduct(with: model.id) else {
             throw APIError.notFound
         }
        
-        try await productRepository.deleteProduct(product)
+        try await productRepository.delete(product)
         
         return GenericMessageResponse(message: Constants.productDeleted)
     }
     
     private func ensureProductDoesNotExist(with code: String) async throws {
-        if try await productRepository.getProduct(with: code) != nil {
+        if try await productRepository.fetchProduct(with: code) != nil {
             throw APIError.conflict
         }
     }
@@ -136,8 +141,8 @@ struct ProductController: RouteCollection, Sendable {
     }
     
     private func createAPIProductResponse(for product: Product) async throws -> APIProductResponse {
-        let tags = try await getProductTags(with: product.tags)
-        let allergicTags = try await getProductTags(with: product.allergicTags)
+        let tags = try await fetchProductTags(with: product.tags)
+        let allergicTags = try await fetchProductTags(with: product.allergicTags)
         let nutritionalModels = try await nutritionalController.getNutritionalByIds(product.nutritionalIds)
 
         return APIProductResponse(
@@ -169,9 +174,23 @@ struct ProductController: RouteCollection, Sendable {
         }
     }
 
-    private func getProductTags(with tags: [String]) async throws -> [APIProductTag] {
-        let models = try await tagsController.getTagsFor(tags)
+    private func fetchProductTags(with tags: [String]) async throws -> [APIProductTag] {
+        let models = try await tagsController.fetchTags(tags)
         return models.map { APIProductTag(from: $0) }
+    }
+    
+    func checkProductAvailability(with code: String, and quantity: Double) async throws -> Bool {
+        guard let product = try await productRepository.fetchProduct(with: code)
+        else { return false }
+        return product.stockCount >= quantity
+    }
+    
+    func updateProductAvailability(with code: String, and quantity: Double) async throws {
+        guard var product = try await productRepository.fetchProduct(with: code)
+        else { throw APIError.internalServerError }
+        product.stockCount -= quantity
+        
+        try await productRepository.update(product)
     }
 
     enum Constants {

@@ -88,7 +88,7 @@ final class VouchersControllerTests: XCTestCase {
         try self.app.test(.GET, route,
                           afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
-            if let bodyResponse: APIVoucherModelList = try convertRequestDataToModel(with: response.body) {
+            if let bodyResponse: APIVoucherListResponse = try convertRequestDataToModel(with: response.body) {
                 XCTAssertEqual(bodyResponse.count, 1)
                 XCTAssertNotNil(bodyResponse.vouchers.first?.createdAt)
                 XCTAssertNotNil(bodyResponse.vouchers.first?.expiryDate)
@@ -184,8 +184,8 @@ extension VouchersControllerTests {
         ["id": "A"]
     }
     
-    var voucherList: APIVoucherModelList {
-        APIVoucherModelList(count: 0, vouchers: [])
+    var voucherList: APIVoucherListResponse {
+        APIVoucherListResponse(count: 0, vouchers: [])
     }
     
     var encoder: JSONEncoder {

@@ -12,7 +12,7 @@ final class ProductControllerFactory: ProductControllerFactoryProtocol {
     }
 
     func makeProductController() throws -> ProductController {
-        let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
+        let productRepository = ProductRepository(database: dependencyProvider.getDatabaseInstance())
         let nutritionalRepository = NutritionalRepository(dependencyProvider: dependencyProvider)
         let tagRepository = Repository(dependencyProvider: dependencyProvider)
         let tagController = ProductTagsController(dependencyProvider: dependencyProvider, 

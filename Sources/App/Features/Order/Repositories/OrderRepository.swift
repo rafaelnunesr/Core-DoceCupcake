@@ -27,7 +27,7 @@ final class OrderRepository: OrderRepositoryProtocol {
     
     func fetchAllOrdersByUserId(_ userId: UUID) async throws -> [Order] {
         try await Order.query(on: database)
-            .filter(\.$user.$id == userId) // check if this works
+            .filter(\.$userId == userId)
             .all()
     }
     

@@ -5,7 +5,7 @@ struct APIOrder: Codable, Content {
     var updatedAt: Date?
     var vouchers: [APIVoucher]
     var address: APIAddress
-    var deliveryStatus: DeliveryStatus
+    var deliveryStatus: TransportationStatus
     var orderStatus: OrderStatus
     var items: [APIOrderItem]
     
@@ -21,13 +21,13 @@ struct APIOrder: Codable, Content {
 }
 
 extension APIOrder {
-    init(from model: Order) {
+    init(from model: Order, address: Address, items: [OrderItem]) {
         createdAt = model.createdAt
         updatedAt = model.updatedAt
         vouchers = []
-        address = APIAddress(from: model.deliveryAddress)
+        self.address = APIAddress(from: address)
         deliveryStatus = model.deliveryStatus
         orderStatus = model.orderStatus
-        items = []
+        self.items = [] // review this
     }
 }

@@ -34,13 +34,13 @@ final class DependencyProvider: DependencyProviderProtocol {
     }
     
     func getUserSessionValidationMiddleware() -> SessionValidationMiddlewareProtocol {
-        let sessionRepository = SessionRepository(dependencyProvider: self)
+        let sessionRepository = SessionRepository(database: getDatabaseInstance())
         let sessionControl = SessionController(dependencyProvider: self, repository: sessionRepository)
         return SessionValidationMiddleware(sessionController: sessionControl)
     }
     
     func getAdminSessionValidationMiddleware() -> AdminValidationMiddlewareProtocol {
-        let sessionRepository = SessionRepository(dependencyProvider: self)
+        let sessionRepository = SessionRepository(database: getDatabaseInstance())
         let sessionControl = SessionController(dependencyProvider: self, repository: sessionRepository)
         return AdminValidationMiddleware(sessionController: sessionControl)
     }
@@ -66,7 +66,7 @@ final class DependencyProvider: DependencyProviderProtocol {
     }
     
     func getSessionController() -> SessionControllerProtocol {
-        let repository = SessionRepository(dependencyProvider: self)
+        let repository = SessionRepository(database: getDatabaseInstance())
         return SessionController(dependencyProvider: self, repository: repository)
     }
 }

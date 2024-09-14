@@ -2,10 +2,7 @@ import Foundation
 import Vapor
 
 protocol CardControllerProtocol {
-    func isCardValid(_ card: CreditCardRequest) -> Bool
-    func fetchCard(for userId: UUID) async throws -> CreditCard?
-    func saveCard(for user: User, card: CreditCardRequest, lastDigits: String) async throws
-    func deleteCard(for userId: UUID) async throws
+    func processOrder(_ creditCard: CreditCardRequest) async throws -> UUID
 }
 
 struct CardController: CardControllerProtocol {
@@ -20,29 +17,21 @@ struct CardController: CardControllerProtocol {
         security = dependencyProvider.getSecurityInstance()
     }
     
-    func isCardValid(_ card: CreditCardRequest) -> Bool {
+    func processOrder(_ creditCard: CreditCardRequest) async throws -> UUID {
+        return UUID()
+    }
+    
+    private func isCardValid(_ card: CreditCardRequest) -> Bool {
         return isCardNumberValid(card.cardNumber) && isExpiryDateValid(expiryMonth: card.expiryMonth, expiryYear: card.expiryYear)
     }
     
-    func fetchCard(for userId: UUID) async throws -> CreditCard? {
-        try await repository.fetchCard(for: userId)
-    }
-    
-    func saveCard(for user: User, card: CreditCardRequest, lastDigits: String) async throws {
+    private func saveCard(for user: User, card: CreditCardRequest, lastDigits: String) async throws {
 //        guard try await fetchCard(for: userId) != nil else {
 //            return
 //        }
         
-        let cardModel = CreditCard(from: card, user: user, lastDigits: lastDigits)
-        try await repository.saveCard(for: cardModel)
-    }
-    
-    func deleteCard(for userId: UUID) async throws {
-        guard let card = try await fetchCard(for: userId) else {
-            throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
-        }
-        
-        try await repository.deleteCard(for: card)
+//        let cardModel = CreditCard(from: card, user: user, lastDigits: lastDigits)
+//        try await repository.saveCard(for: cardModel)
     }
     
     // Generic Luhn Algorithm Implementation

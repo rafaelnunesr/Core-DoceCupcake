@@ -1,6 +1,6 @@
 import Vapor
 
-final class APIValidateVoucher: Content, Codable, Equatable {
+final class APIValidateVoucherResponse: Content, Codable, Equatable {
     var isValid: Bool
     var code: String
     var percentageDiscount: Double?
@@ -24,7 +24,7 @@ final class APIValidateVoucher: Content, Codable, Equatable {
         self.monetaryDiscount = monetaryDiscount
     }
     
-    static func == (lhs: APIValidateVoucher, rhs: APIValidateVoucher) -> Bool {
+    static func == (lhs: APIValidateVoucherResponse, rhs: APIValidateVoucherResponse) -> Bool {
         lhs.isValid == rhs.isValid &&
         lhs.code == rhs.code &&
         lhs.percentageDiscount == rhs.percentageDiscount &&
@@ -32,7 +32,7 @@ final class APIValidateVoucher: Content, Codable, Equatable {
     }
 }
 
-extension APIValidateVoucher {
+extension APIValidateVoucherResponse {
     convenience init(from model: Voucher) {
         var isValid = false
         

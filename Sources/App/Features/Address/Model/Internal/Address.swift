@@ -29,8 +29,8 @@ final class Address: Model {
     @Timestamp(key: AddressDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
 
-    @Parent(key: AddressDbField.userId.fieldKey)
-    var user: User
+    @Field(key: AddressDbField.userId.fieldKey)
+    var userId: UUID
     
     @Field(key: AddressDbField.streetName.fieldKey)
     var streetName: String
@@ -57,7 +57,7 @@ final class Address: Model {
 
     init(id: UUID? = nil, 
          createdAt: Date? = nil,
-         user: User,
+         userId: UUID,
          streetName: String,
          number: String,
          zipCode: String,
@@ -67,7 +67,7 @@ final class Address: Model {
          country: String) {
         self.id = id
         self.createdAt = createdAt
-        self.user = user
+        self.userId = userId
         self.streetName = streetName
         self.number = number
         self.zipCode = zipCode
@@ -75,5 +75,19 @@ final class Address: Model {
         self.state = state
         self.city = city
         self.country = country
+    }
+}
+
+
+extension Address {
+    convenience init(from model: APIAddress, userId: UUID) {
+        self.init(userId: userId,
+                  streetName: model.streetName,
+                  number: model.number,
+                  zipCode: model.zipCode,
+                  complementary: model.complementary,
+                  state: model.state,
+                  city: model.city,
+                  country: model.country)
     }
 }

@@ -11,6 +11,7 @@ struct CreateProductMigration: AsyncMigration {
             .field(ProductDbField.code.fieldKey, .string, .required)
             .field(ProductDbField.name.fieldKey, .string, .required)
             .field(ProductDbField.description.fieldKey, .string, .required)
+            .field(ProductDbField.label.fieldKey, .string)
             .field(ProductDbField.imageUrl.fieldKey, .string)
             .field(ProductDbField.currentPrice.fieldKey, .double, .required)
             .field(ProductDbField.originalPrice.fieldKey, .double)

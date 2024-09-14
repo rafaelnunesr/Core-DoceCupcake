@@ -1,6 +1,6 @@
 import Vapor
 
-struct APIAddress: Content, Decodable {
+struct APIAddress: Content, Codable {
     var streetName: String
     var number: String
     var zipCode: String

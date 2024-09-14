@@ -7,12 +7,10 @@ protocol SignInRepositoryProtocol: Sendable {
 }
 
 final class SignInRepository: SignInRepositoryProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let database: Database
 
-    init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
-        database = dependencyProvider.getDatabaseInstance()
+    init(database: Database) {
+        self.database = database
     }
     
     func fetchUserByEmail(_ email: String) async throws -> User? {

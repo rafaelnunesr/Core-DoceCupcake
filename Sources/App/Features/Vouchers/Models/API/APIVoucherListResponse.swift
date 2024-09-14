@@ -1,6 +1,6 @@
 import Vapor
 
-struct APIVoucherModelList: Content, Codable {
+struct APIVoucherListResponse: Content, Codable {
     let count: Int
     let vouchers: [APIVoucher]
 }

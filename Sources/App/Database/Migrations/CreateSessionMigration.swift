@@ -23,3 +23,4 @@ struct CreateSessionMigration: AsyncMigration {
 
 // swift run App migrate --revert
 // swift run App migrate
+// swift run App insert-mock-data

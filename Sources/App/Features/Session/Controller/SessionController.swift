@@ -10,9 +10,9 @@ enum SessionControlAccess {
 
 protocol SessionControllerProtocol: Sendable {
     func validateSession(req: Request) async throws -> SessionControlAccess
-    func getLoggedUserId(req: Request) async throws -> UUID
-    func createSession(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel?
-    func deleteSession(for userId: UUID) async throws
+    func fetchLoggedUserId(req: Request) async throws -> UUID
+    func create(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel?
+    func delete(for userId: UUID) async throws
 }
 
 struct SessionController: SessionControllerProtocol {
@@ -27,7 +27,7 @@ struct SessionController: SessionControllerProtocol {
 
     func validateSession(req: Request) async throws -> SessionControlAccess {
         let session = try await req.jwt.verify(as: SessionToken.self)
-        let user = try await repository.getSession(for: session.userId)
+        let user = try await repository.fetchSession(for: session.userId)
         
         let expirationTime = session.expiration.value
         let currentTime = Date()
@@ -39,30 +39,30 @@ struct SessionController: SessionControllerProtocol {
         return user.isAdmin ? .admin : .user
     }
     
-    func getLoggedUserId(req: Request) async throws -> UUID {
+    func fetchLoggedUserId(req: Request) async throws -> UUID {
         let session = try await req.jwt.verify(as: SessionToken.self)
-        guard let user = try await repository.getSession(for: session.userId)
+        guard let user = try await repository.fetchSession(for: session.userId)
         else { throw APIError.internalServerError }
         return user.userId
     }
 
-    func createSession(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {
-        try await deleteSession(for: userId)
+    func create(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {
+        try await delete(for: userId)
         
         let sectionToken = createSessionToken(for: userId)
         let token = try await req.jwt.sign(sectionToken)
         let section = InternalSessionModel(expiryAt: sectionToken.expiration.value, userId: sectionToken.userId, token: token, isAdmin: isAdmin)
-        try await repository.createSession(for: section)
+        try await repository.create(for: section)
         
-        return try await repository.getSession(for: userId)
+        return try await repository.fetchSession(for: userId)
     }
 
-    func deleteSession(for userId: UUID) async throws {
-        guard let section = try await repository.getSession(for: userId) else {
+    func delete(for userId: UUID) async throws {
+        guard let section = try await repository.fetchSession(for: userId) else {
             return
         }
 
-        try await repository.deleteSession(for: section)
+        try await repository.delete(for: section)
     }
     
     private func createSessionToken(for userId: UUID) -> SessionToken {

@@ -22,22 +22,27 @@ struct SignUpAdminController: RouteCollection, Sendable {
     @Sendable
     func signup(req: Request) async throws -> GenericMessageResponse {
         var model: SignUpAdminRequest = try convertRequestDataToModel(req: req)
-
-        guard try await repository.getUserId(with: model.email) == nil else {
+        try await validateUserUniqueness(email: model.email)
+        try await validateCredentials(email: model.email, password: model.password)
+        
+        model.password = try security.hashStringValue(model.password)
+        try await repository.create(with: Admin(from: model))
+        return GenericMessageResponse(message: accountCreationMessage(userName: model.userName))
+    }
+    
+    private func validateUserUniqueness(email: String) async throws {
+        guard try await repository.fetchUserId(with: email) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Credentials.userAlreadyRegistered)
         }
-
-        if !security.areCredentialsValid(email: model.email, password: model.password) {
-            throw Abort(.badRequest, reason: APIErrorMessage.Credentials.invalidCredentials)
-        }
-
-        model.password = try security.hashStringValue(model.password)
-        try await repository.createUser(with: Admin(from: model))
-        return GenericMessageResponse(message: Constants.welcomeMessage)
     }
-
-    enum Constants {
-        static let welcomeMessage = "Admin created with success."
+    
+    private func validateCredentials(email: String, password: String) async throws {
+        guard security.areCredentialsValid(email: email, password: password)
+        else { throw Abort(.badRequest, reason: APIErrorMessage.Credentials.invalidCredentials) }
+    }
+    
+    private func accountCreationMessage(userName: String) -> String {
+        "The admin account for \(userName) has been successfully created."
     }
 }
 

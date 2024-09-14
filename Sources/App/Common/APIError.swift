@@ -16,5 +16,8 @@ enum APIError {
     static var badRequest: Abort {
         Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
     }
+    static var paymentError: Abort {
+        Abort(.notAcceptable, reason: APIErrorMessage.Common.badRequest) // change this
+    }
     
 }

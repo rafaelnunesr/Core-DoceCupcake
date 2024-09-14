@@ -9,6 +9,7 @@ enum PathRoutes: String {
     case productTags
     case packages
     case orders
+    case delivery
     
     var path: PathComponent {
         PathComponent(stringLiteral: self.rawValue)

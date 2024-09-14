@@ -5,6 +5,7 @@ struct APIProduct: Codable, Content {
     let code: String
     let name: String
     let description: String
+    var label: String?
     var imageUrl: String?
     let currentPrice: Double
     var originalPrice: Double?
@@ -20,6 +21,7 @@ struct APIProduct: Codable, Content {
         case code
         case name
         case description
+        case label
         case imageUrl = "image_url"
         case currentPrice = "current_price"
         case originalPrice = "original_price"
@@ -39,6 +41,7 @@ extension APIProduct {
         name = model.name
         description = model.description
         imageUrl = model.imageUrl
+        label = model.label
         currentPrice = model.currentPrice
         originalPrice = model.originalPrice
         voucherCode = model.voucherCode

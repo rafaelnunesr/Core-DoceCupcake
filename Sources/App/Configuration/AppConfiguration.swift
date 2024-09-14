@@ -25,6 +25,8 @@ final class AppConfiguration: AppConfigurationProtocol {
         migrationService.addMigrations()
         //app.middleware.use(ErrorHandlingMiddleware())
         
+        //app.commands.use(InsertMockDataCommand(), as: "insert-mock-data")
+        
         do {
             try registerControllers()
         } catch {

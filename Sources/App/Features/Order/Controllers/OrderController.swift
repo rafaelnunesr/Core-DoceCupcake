@@ -3,18 +3,30 @@ import Vapor
 
 struct OrderController: Sendable {
     private let dependencyProvider: DependencyProviderProtocol
-    private let repository: OrderRepositoryProtocol
+    private let orderRepository: OrderRepositoryProtocol
+    private let orderItemRepository: OrderItemRepositoryProtocol
     private let sessionController: SessionControllerProtocol
+    private let addressController: AddressControllerProtocol
+    private let productController: ProductControllerProtocol
+    private let cardController: CardControllerProtocol
     
     private let userSectionValidation: SessionValidationMiddlewareProtocol
     private let adminSectionValidation: AdminValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
-         repository: OrderRepositoryProtocol,
-         sessionController: SessionControllerProtocol) {
+         orderRepository: OrderRepositoryProtocol,
+         orderItemRepository: OrderItemRepositoryProtocol,
+         sessionController: SessionControllerProtocol,
+         addressController: AddressControllerProtocol,
+         productController: ProductControllerProtocol,
+         cardController: CardControllerProtocol) {
         self.dependencyProvider = dependencyProvider
-        self.repository = repository
+        self.orderRepository = orderRepository
+        self.orderItemRepository = orderItemRepository
         self.sessionController = sessionController
+        self.addressController = addressController
+        self.productController = productController
+        self.cardController = cardController
         
         userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
@@ -62,67 +74,105 @@ struct OrderController: Sendable {
             throw APIError.badRequest
         }
         
-        guard let order: Order = try await repository.fetchOrderById(uuid) else {
+        guard let order: Order = try await orderRepository.fetchOrderById(uuid) else {
             throw APIError.notFound
         }
         
-       return APIOrder(from: order)
+        guard let address = try await addressController.fetchAddressByUserId(order.userId)
+        else { throw APIError.internalServerError }
+        
+        let items = try await orderItemRepository.fetchOrdersByOrderId(order.id!) // review this
+        
+       return APIOrder(from: order, address: address, items: items)
     }
     
     @Sendable
     private func getOrderByUserId(req: Request) async throws -> APIOrderList {
-        let userId = try await sessionController.getLoggedUserId(req: req)
+        let userId = try await sessionController.fetchLoggedUserId(req: req)
+        let orders: [Order] = try await orderRepository.fetchAllOrdersByUserId(userId)
         
-        let orders: [Order] = try await repository.fetchAllOrdersByUserId(userId)
+        var ordersList = [APIOrder]()
         
-        let apiOrders = orders.map {
-            APIOrder(from: $0)
+        for order in orders {
+            if let address = try await addressController.fetchAddressByUserId(order.userId) {  // review this
+                let items = try await orderItemRepository.fetchOrdersByOrderId(order.id!)
+                ordersList.append(APIOrder(from: order, address: address, items: items))
+            }
+            
         }
         
-        return APIOrderList(count: apiOrders.count, orders: apiOrders)
+        return APIOrderList(count: ordersList.count, orders: ordersList)
     }
     
     @Sendable
     private func getAllOpenOrders(req: Request) async throws -> APIOrderList {
-        let userId = try await sessionController.getLoggedUserId(req: req)
+        let userId = try await sessionController.fetchLoggedUserId(req: req)
         
-        let orders: [Order] = try await repository.fetchAllOrdersByStatus(.confirmed)
+        let orders: [Order] = try await orderRepository.fetchAllOrdersByStatus(.confirmed)
         
-        let apiOrders = orders.map {
-            APIOrder(from: $0)
+        var ordersList = [APIOrder]()
+        
+        for order in orders {
+            if let address = try await addressController.fetchAddressByUserId(order.userId) {  // review this
+                let items = try await orderItemRepository.fetchOrdersByOrderId(order.id!)
+                ordersList.append(APIOrder(from: order, address: address, items: items))
+            }
+            
         }
         
-        return APIOrderList(count: apiOrders.count, orders: apiOrders)
+        return APIOrderList(count: ordersList.count, orders: ordersList)
     }
     
     @Sendable
     private func getAllClosedOrder(req: Request) async throws -> APIOrderList {
-        let userId = try await sessionController.getLoggedUserId(req: req)
+        let userId = try await sessionController.fetchLoggedUserId(req: req)
         
-        let orders: [Order] = try await repository.fetchAllOrdersByStatus(.closed)
+        let orders: [Order] = try await orderRepository.fetchAllOrdersByStatus(.closed)
         
-        let apiOrders = orders.map {
-            APIOrder(from: $0)
+        var ordersList = [APIOrder]()
+        
+        for order in orders {
+            if let address = try await addressController.fetchAddressByUserId(order.userId) {  // review this
+                let items = try await orderItemRepository.fetchOrdersByOrderId(order.id!)
+                ordersList.append(APIOrder(from: order, address: address, items: items))
+            }
+            
         }
         
-        return APIOrderList(count: apiOrders.count, orders: apiOrders)
+        return APIOrderList(count: ordersList.count, orders: ordersList)
     }
     
     @Sendable
     private func getAllCanceledOrder(req: Request) async throws -> APIOrderList {
-        let userId = try await sessionController.getLoggedUserId(req: req)
+        let userId = try await sessionController.fetchLoggedUserId(req: req)
         
-        let orders: [Order] = try await repository.fetchAllOrdersByStatus(.cancelled)
+        let orders: [Order] = try await orderRepository.fetchAllOrdersByStatus(.cancelled)
         
-        let apiOrders = orders.map {
-            APIOrder(from: $0)
+        var ordersList = [APIOrder]()
+        
+        for order in orders {
+            if let address = try await addressController.fetchAddressByUserId(order.userId) {  // review this
+                let items = try await orderItemRepository.fetchOrdersByOrderId(order.id!)
+                ordersList.append(APIOrder(from: order, address: address, items: items))
+            }
+            
         }
         
-        return APIOrderList(count: apiOrders.count, orders: apiOrders)
+        return APIOrderList(count: ordersList.count, orders: ordersList)
     }
     
     @Sendable
     private func createOrder(req: Request) async throws -> GenericMessageResponse {
+        let model: APIOrderRequest = try convertRequestDataToModel(req: req)
+        
+        try await checkProductsAvailability(model.products)
+        try await updateProductAvailability(model.products)
+        let paymentId = try await cardController.processOrder(model.payment)
+        
+        let userId = try await sessionController.fetchLoggedUserId(req: req)
+        
+        let order = Order(from: model, userId: userId, paymentId: paymentId, total: 0) // review this
+        
         return GenericMessageResponse(message: Constants.orderCreated)
     }
     
@@ -135,6 +185,19 @@ struct OrderController: Sendable {
     private func deleteOrder(req: Request) async throws -> GenericMessageResponse {
         return GenericMessageResponse(message: Constants.orderDeleted)
     }
+    
+    private func checkProductsAvailability(_ products: [APIProductOrderRequest]) async throws {
+        for product in products {
+            guard try await productController.checkProductAvailability(with: product.code, and: product.quantity)
+            else { throw APIError.badRequest }
+        }
+    }
+    
+    private func updateProductAvailability(_ products: [APIProductOrderRequest]) async throws {
+        for product in products {
+            try await productController.updateProductAvailability(with: product.code, and: product.quantity)
+        }
+    }
 
     private enum Constants {
         static let orderCreated = "Order created."
@@ -142,3 +205,20 @@ struct OrderController: Sendable {
         static let orderDeleted = "Order deleted."
     }
 }
+
+/*
+@Sendable
+private func createNewProduct(req: Request) async throws -> GenericMessageResponse {
+    let model: APIProduct = try convertRequestDataToModel(req: req)
+
+    try await ensureProductDoesNotExist(with: model.code)
+    try await validateProductTags(tags: model.tags.map { $0.code }, allergicTags: model.allergicTags.map { $0.code })
+
+    let nutritionalIds = try await createNutricionalInformations(with: model.nutritionalInformations)
+
+    let internalProduct = Product(from: model, nutritionalIds: nutritionalIds)
+    try await productRepository.createProduct(internalProduct)
+        
+    return GenericMessageResponse(message: Constants.productCreated)
+}
+*/

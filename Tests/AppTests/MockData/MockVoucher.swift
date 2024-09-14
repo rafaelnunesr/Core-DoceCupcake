@@ -22,8 +22,8 @@ struct MockAPIVoucher {
 
 struct MockAPIVoucherList {
     static func create(count: Int = 0,
-                       vouchers: [APIVoucher] = []) -> APIVoucherModelList {
-        APIVoucherModelList(count: count, vouchers: vouchers)
+                       vouchers: [APIVoucher] = []) -> APIVoucherListResponse {
+        APIVoucherListResponse(count: count, vouchers: vouchers)
     }
     
     var listA = create(count: 1, 

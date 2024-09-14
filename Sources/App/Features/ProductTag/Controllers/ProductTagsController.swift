@@ -4,7 +4,7 @@ import Vapor
 
 protocol ProductTagsControllerProtocol: RouteCollection, Sendable {
     func areTagCodesValid(_ tagCodeList: [String]) async throws -> Bool
-    func getTagsFor(_ tagCodeList: [String]) async throws -> [ProductTag]
+    func fetchTags(_ tagCodeList: [String]) async throws -> [ProductTag]
 }
 
 struct ProductTagsController: ProductTagsControllerProtocol {
@@ -30,33 +30,33 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         
         productRoutes
             .grouped(userSectionValidation)
-            .get(use: getProductTagsList)
+            .get(use: fetchProductTags)
         
         productRoutes
             .grouped(adminSectionValidation)
-            .post(use: createNewTag)
+            .post(use: create)
         
         productRoutes
             .grouped(adminSectionValidation)
-            .put(use: updateProductTag)
+            .put(use: update)
         
         productRoutes
             .grouped(adminSectionValidation)
-            .delete(use: deleteTag)
+            .delete(use: delete)
     }
     
     @Sendable
-    private func getProductTagsList(req: Request) async throws -> ProductTagListResponse {
+    private func fetchProductTags(req: Request) async throws -> ProductTagListResponse {
         let result: [ProductTag] = try await repository.fetchAllResults()
         let tags = result.map { APIProductTag(from: $0) }
         return ProductTagListResponse(count: tags.count, tags: tags)
     }
 
     @Sendable
-    private func createNewTag(req: Request) async throws -> GenericMessageResponse {
+    private func create(req: Request) async throws -> GenericMessageResponse {
         let model: APIProductTag = try convertRequestDataToModel(req: req)
 
-        guard try await getTag(with: model.code) == nil else {
+        guard try await fetchTag(with: model.code) == nil else {
             throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
         }
 
@@ -66,10 +66,10 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     }
     
     @Sendable
-    private func updateProductTag(req: Request) async throws -> GenericMessageResponse {
+    private func update(req: Request) async throws -> GenericMessageResponse {
         let model: APIProductTag = try convertRequestDataToModel(req: req)
 
-        guard try await getTag(with: model.code) != nil else {
+        guard try await fetchTag(with: model.code) != nil else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
 
@@ -79,10 +79,10 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     }
 
     @Sendable
-    private func deleteTag(req: Request) async throws -> GenericMessageResponse {
+    private func delete(req: Request) async throws -> GenericMessageResponse {
         let model: APIRequestId = try convertRequestDataToModel(req: req)
 
-        guard let tagModel = try await getTag(with: model.id) else {
+        guard let tagModel = try await fetchTag(with: model.id) else {
             throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
         }
 
@@ -91,14 +91,14 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         return GenericMessageResponse(message: Constants.tagDeleted)
     }
 
-    private func getTag(with code: String) async throws -> ProductTag? {
+    private func fetchTag(with code: String) async throws -> ProductTag? {
         let result: ProductTag? = try await repository.fetchModelByCode(code)
         return result
     }
 
     func areTagCodesValid(_ tagCodeList: [String]) async throws -> Bool {
         for code in tagCodeList {
-            guard try await getTag(with: code) != nil else {
+            guard try await fetchTag(with: code) != nil else {
                 return false
             }
         }
@@ -106,11 +106,11 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         return true
     }
 
-    func getTagsFor(_ tagCodeList: [String]) async throws -> [ProductTag] {
+    func fetchTags(_ tagCodeList: [String]) async throws -> [ProductTag] {
         var tagModels = [ProductTag]()
 
         for code in tagCodeList {
-            if let result = try await getTag(with: code) {
+            if let result = try await fetchTag(with: code) {
                 tagModels.append(result)
             }
         }

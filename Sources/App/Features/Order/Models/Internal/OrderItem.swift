@@ -22,11 +22,11 @@ final class OrderItem: Model {
     @ID(key: .id)
     var id: UUID?
 
-    @Parent(key: OrderItemDbField.orderId.fieldKey)
-    var order: Order
+    @Field(key: OrderItemDbField.orderId.fieldKey)
+    var orderId: UUID
 
     @Field(key: OrderItemDbField.productId.fieldKey)
-    var product: Product
+    var productId: UUID
 
     @Field(key: OrderItemDbField.quantity.fieldKey)
     var quantity: Double
@@ -40,14 +40,14 @@ final class OrderItem: Model {
     internal init() { }
 
     init(id: UUID? = nil, 
-         order: Order,
-         product: Product,
+         orderId: UUID,
+         productId: UUID,
          quantity: Double,
          unitValue: Double,
          orderStatus: OrderStatus) {
         self.id = id
-        self.order = order
-        self.product = product
+        self.orderId = orderId
+        self.productId = productId
         self.quantity = quantity
         self.unitValue = unitValue
         self.orderStatus = orderStatus

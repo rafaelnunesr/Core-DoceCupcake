@@ -10,6 +10,7 @@ enum ProductDbField: String {
     case name
     case description
     case imageUrl = "imag_url"
+    case label
     case currentPrice = "current_price"
     case originalPrice = "original_price"
     case voucherCode = "voucher_code"
@@ -45,6 +46,9 @@ final class Product: Model {
     
     @OptionalField(key: ProductDbField.imageUrl.fieldKey)
     var imageUrl: String?
+    
+    @OptionalField(key: ProductDbField.label.fieldKey)
+    var label: String?
 
     @Field(key: ProductDbField.currentPrice.fieldKey)
     var currentPrice: Double
@@ -81,6 +85,7 @@ final class Product: Model {
          name: String,
          description: String,
          imageUrl: String? = nil,
+         label: String? = nil,
          currentPrice: Double,
          originalPrice: Double?,
          voucherCode: String? = nil,
@@ -96,6 +101,7 @@ final class Product: Model {
         self.name = name
         self.description = description
         self.imageUrl = imageUrl
+        self.label = label
         self.currentPrice = currentPrice
         self.originalPrice = originalPrice
         self.voucherCode = voucherCode

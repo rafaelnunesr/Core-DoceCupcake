@@ -59,7 +59,7 @@ struct SignInController: RouteCollection, Sendable {
     }
 
     private func createSectionForUser(userId: UUID, req: Request, isAdmin: Bool) async throws -> ClientTokenResponse {
-        guard let section = try await sessionController.createSession(for: userId, isAdmin: isAdmin, req: req) else {
+        guard let section = try await sessionController.create(for: userId, isAdmin: isAdmin, req: req) else {
             throw Abort(.internalServerError)
         }
         return ClientTokenResponse(token: section.token)
