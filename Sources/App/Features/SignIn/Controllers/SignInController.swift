@@ -3,16 +3,13 @@ import Foundation
 import Vapor
 
 struct SignInController: RouteCollection, Sendable {
-    private let dependencyProvider: DependencyProviderProtocol
     private let repository: SignInRepositoryProtocol
     private let sessionController: SessionControllerProtocol
     private let security: SecurityProtocol
 
     init(dependencyProvider: DependencyProviderProtocol, 
          repository: SignInRepositoryProtocol) {
-        self.dependencyProvider = dependencyProvider
         self.repository = repository
-        
         sessionController = dependencyProvider.getSessionController()
         security = dependencyProvider.getSecurityInstance()
     }
@@ -37,7 +34,7 @@ struct SignInController: RouteCollection, Sendable {
             return try await createSectionForUser(userId: adminId, req: req, isAdmin: true)
         }
         
-        throw Abort(.unauthorized, reason: APIErrorMessage.Credentials.invalidCredentials)
+        throw APIResponseError.Signup.unauthorized
     }
     
     private func getUserId(_ model: SignInRequest) async throws -> UUID? {
@@ -60,7 +57,7 @@ struct SignInController: RouteCollection, Sendable {
 
     private func createSectionForUser(userId: UUID, req: Request, isAdmin: Bool) async throws -> ClientTokenResponse {
         guard let section = try await sessionController.create(for: userId, isAdmin: isAdmin, req: req) else {
-            throw Abort(.internalServerError)
+            throw APIResponseError.Common.internalServerError
         }
         return ClientTokenResponse(token: section.token)
     }

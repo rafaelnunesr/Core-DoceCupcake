@@ -16,12 +16,9 @@ protocol SessionControllerProtocol: Sendable {
 }
 
 struct SessionController: SessionControllerProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let repository: SessionRepositoryProtocol
 
-    init(dependencyProvider: DependencyProviderProtocol,
-         repository: SessionRepositoryProtocol) {
-        self.dependencyProvider = dependencyProvider
+    init(repository: SessionRepositoryProtocol) {
         self.repository = repository
     }
 
@@ -42,7 +39,7 @@ struct SessionController: SessionControllerProtocol {
     func fetchLoggedUserId(req: Request) async throws -> UUID {
         let session = try await req.jwt.verify(as: SessionToken.self)
         guard let user = try await repository.fetchSession(for: session.userId)
-        else { throw APIError.internalServerError }
+        else { throw APIResponseError.Common.internalServerError }
         return user.userId
     }
 
@@ -51,7 +48,10 @@ struct SessionController: SessionControllerProtocol {
         
         let sectionToken = createSessionToken(for: userId)
         let token = try await req.jwt.sign(sectionToken)
-        let section = InternalSessionModel(expiryAt: sectionToken.expiration.value, userId: sectionToken.userId, token: token, isAdmin: isAdmin)
+        let section = InternalSessionModel(expiryAt: sectionToken.expiration.value, 
+                                           userId: sectionToken.userId,
+                                           token: token,
+                                           isAdmin: isAdmin)
         try await repository.create(for: section)
         
         return try await repository.fetchSession(for: userId)
@@ -59,7 +59,7 @@ struct SessionController: SessionControllerProtocol {
 
     func delete(for userId: UUID) async throws {
         guard let section = try await repository.fetchSession(for: userId) else {
-            return
+            throw APIResponseError.Common.internalServerError
         }
 
         try await repository.delete(for: section)

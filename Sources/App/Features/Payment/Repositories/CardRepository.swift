@@ -8,12 +8,10 @@ protocol CardRepositoryProtocol {
 }
 
 final class CardRepository: CardRepositoryProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let database: Database
 
-    init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
-        database = dependencyProvider.getDatabaseInstance()
+    init(database: Database) {
+        self.database = database
     }
     
     func fetchCard(for userId: UUID) async throws -> CreditCard? {

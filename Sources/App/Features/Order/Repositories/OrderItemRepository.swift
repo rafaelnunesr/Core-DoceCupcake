@@ -9,12 +9,10 @@ protocol OrderItemRepositoryProtocol: Sendable {
 }
 
 final class OrderItemRepository: OrderItemRepositoryProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     let database: Database
 
-    init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
-        database = dependencyProvider.getDatabaseInstance()
+    init(database: Database) {
+        self.database = database
     }
     
     func fetchOrdersByOrderId(_ orderId: UUID) async throws -> [OrderItem] {

@@ -8,7 +8,6 @@ protocol ProductControllerProtocol: RouteCollection, Sendable {
 }
 
 struct ProductController: ProductControllerProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let productRepository: ProductRepositoryProtocol
     private let tagsController: ProductTagsControllerProtocol
     private let nutritionalController: NutritionalControllerProtocol
@@ -20,11 +19,9 @@ struct ProductController: ProductControllerProtocol {
          productRepository: ProductRepositoryProtocol,
          tagsController: ProductTagsControllerProtocol,
          nutritionalController: NutritionalControllerProtocol) {
-        self.dependencyProvider = dependencyProvider
         self.productRepository = productRepository
         self.tagsController = tagsController
         self.nutritionalController = nutritionalController
-        
         userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }
@@ -66,13 +63,11 @@ struct ProductController: ProductControllerProtocol {
 
     @Sendable
     private func fetchProduct(req: Request) async throws -> APIProductResponse {
-        guard let id = req.parameters.get("productCode") else {
-            throw APIError.badRequest
-        }
+        guard let id = req.parameters.get("productCode") 
+        else { throw APIResponseError.Common.badRequest }
 
-        guard let product = try await productRepository.fetchProduct(with: id) else {
-            throw APIError.notFound
-        }
+        guard let product = try await productRepository.fetchProduct(with: id) 
+        else { throw APIResponseError.Common.notFound }
 
         let productResponse = try await createAPIProductResponse(for: product)
         return productResponse
@@ -97,9 +92,8 @@ struct ProductController: ProductControllerProtocol {
     private func update(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
-        guard try await productRepository.fetchProduct(with: model.code) != nil else {
-            throw APIError.notFound
-        }
+        guard try await productRepository.fetchProduct(with: model.code) != nil 
+        else { throw APIResponseError.Common.notFound }
         
         try await validateProductTags(tags: model.tags.map { $0.code }, allergicTags: model.allergicTags.map { $0.code })
 
@@ -115,7 +109,7 @@ struct ProductController: ProductControllerProtocol {
     private func delete(req: Request) async throws -> GenericMessageResponse {
         let model: APIRequestId = try convertRequestDataToModel(req: req)
         guard let product = try await productRepository.fetchProduct(with: model.id) else {
-            throw APIError.notFound
+            throw APIResponseError.Common.notFound
         }
        
         try await productRepository.delete(product)
@@ -125,7 +119,7 @@ struct ProductController: ProductControllerProtocol {
     
     private func ensureProductDoesNotExist(with code: String) async throws {
         if try await productRepository.fetchProduct(with: code) != nil {
-            throw APIError.conflict
+            throw APIResponseError.Common.conflict
         }
     }
     
@@ -135,9 +129,8 @@ struct ProductController: ProductControllerProtocol {
 
         let (tagsResult, allergicTagsResult) = try await (areTagsValid, areAllergicTagsValid)
         
-        guard tagsResult, allergicTagsResult else {
-            throw Abort(.badRequest, reason: APIErrorMessage.Product.invalidProductTag)
-        }
+        guard tagsResult, allergicTagsResult 
+        else { throw APIResponseError.Product.invalidProductTag }
     }
     
     private func createAPIProductResponse(for product: Product) async throws -> APIProductResponse {
@@ -164,7 +157,7 @@ struct ProductController: ProductControllerProtocol {
         async let areAllergiesValid = tagsController.areTagCodesValid(allergies)
 
         guard try await areTagsValid, try await areAllergiesValid else {
-            throw Abort(.badRequest, reason: APIErrorMessage.Product.invalidProductTag)
+            throw APIResponseError.Product.invalidProductTag
         }
     }
     
@@ -187,7 +180,7 @@ struct ProductController: ProductControllerProtocol {
     
     func updateProductAvailability(with code: String, and quantity: Double) async throws {
         guard var product = try await productRepository.fetchProduct(with: code)
-        else { throw APIError.internalServerError }
+        else { throw APIResponseError.Common.internalServerError }
         product.stockCount -= quantity
         
         try await productRepository.update(product)

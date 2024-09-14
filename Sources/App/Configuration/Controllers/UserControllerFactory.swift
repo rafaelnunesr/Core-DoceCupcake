@@ -17,8 +17,9 @@ final class UserControllerFactory: UserControllerFactoryProtocol {
     }
 
     func makeUserSignUpController() throws -> SignUpUserController {
-        let repository = SignUpUserRepository(database: dependencyProvider.getDatabaseInstance())
-        let addressRepository = AddressRepository(dependencyProvider: dependencyProvider)
+        let database = dependencyProvider.getDatabaseInstance()
+        let repository = SignUpUserRepository(database: database)
+        let addressRepository = AddressRepository(database: database)
         let addressController = AddressController(repository: addressRepository)
         return SignUpUserController(dependencyProvider: dependencyProvider,
                                     repository: repository,

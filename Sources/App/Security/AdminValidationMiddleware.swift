@@ -15,9 +15,8 @@ struct AdminValidationMiddleware: AdminValidationMiddlewareProtocol {
         return try await next.respond(to: req)
         
         // undo
-        guard try await sessionController.validateSession(req: req) == .admin else {
-            throw Abort(.unauthorized, reason: APIErrorMessage.Common.unauthorized)
-        }
+        guard try await sessionController.validateSession(req: req) == .admin 
+        else { throw APIResponseError.Common.unauthorized }
 
         return try await next.respond(to: req)
     }

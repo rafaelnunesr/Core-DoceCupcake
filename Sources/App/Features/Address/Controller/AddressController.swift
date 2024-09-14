@@ -33,7 +33,7 @@ final class AddressController: AddressControllerProtocol {
     
     func delete(_ addressUuid: UUID) async throws {
         guard let address = try await repository.fetchAddressById(addressUuid)
-        else { throw APIError.notFound }
+        else { throw APIResponseError.Common.notFound }
         try await repository.delete(address)
     }
 }

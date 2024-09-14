@@ -6,7 +6,6 @@ protocol PackagingControllerProtocol: RouteCollection, Sendable {
 }
 
 struct PackagingController: PackagingControllerProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let repository: RepositoryProtocol
     
     private let userSectionValidation: SessionValidationMiddlewareProtocol
@@ -14,9 +13,7 @@ struct PackagingController: PackagingControllerProtocol {
 
     init(dependencyProvider: DependencyProviderProtocol,
          repository: RepositoryProtocol) {
-        self.dependencyProvider = dependencyProvider
         self.repository = repository
-        
         userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }
@@ -48,9 +45,8 @@ struct PackagingController: PackagingControllerProtocol {
     private func createPackage(req: Request) async throws -> GenericMessageResponse {
         let model: APIPackage = try convertRequestDataToModel(req: req)
 
-        guard try await getPackage(with: model.code) == nil else {
-            throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
-        }
+        guard try await getPackage(with: model.code) == nil 
+        else { throw APIResponseError.Common.conflict }
 
         try await repository.create(Package(from: model))
 
@@ -61,9 +57,8 @@ struct PackagingController: PackagingControllerProtocol {
     private func deletePackage(req: Request) async throws -> GenericMessageResponse {
         let model: APIRequestId = try convertRequestDataToModel(req: req)
 
-        guard let package = try await getPackage(with: model.id) else {
-            throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
-        }
+        guard let package = try await getPackage(with: model.id) 
+        else { throw APIResponseError.Common.notFound }
 
         try await repository.delete(package)
 

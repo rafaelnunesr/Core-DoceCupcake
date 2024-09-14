@@ -2,7 +2,7 @@ import Vapor
 
 func convertRequestDataToModel<T: Decodable>(req: Request) throws -> T {
     guard let bodyData = req.body.data else {
-        throw Abort(.badRequest, reason: APIErrorMessage.Common.badRequest)
+        throw APIResponseError.Common.badRequest
     }
 
     let decoder = JSONDecoder()

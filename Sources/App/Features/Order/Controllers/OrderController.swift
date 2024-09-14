@@ -2,7 +2,6 @@ import FluentPostgresDriver
 import Vapor
 
 struct OrderController: Sendable {
-    private let dependencyProvider: DependencyProviderProtocol
     private let orderRepository: OrderRepositoryProtocol
     private let orderItemRepository: OrderItemRepositoryProtocol
     private let sessionController: SessionControllerProtocol
@@ -20,14 +19,12 @@ struct OrderController: Sendable {
          addressController: AddressControllerProtocol,
          productController: ProductControllerProtocol,
          cardController: CardControllerProtocol) {
-        self.dependencyProvider = dependencyProvider
         self.orderRepository = orderRepository
         self.orderItemRepository = orderItemRepository
         self.sessionController = sessionController
         self.addressController = addressController
         self.productController = productController
         self.cardController = cardController
-        
         userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }
@@ -70,16 +67,14 @@ struct OrderController: Sendable {
     
     @Sendable
     private func getOrderById(req: Request) async throws -> APIOrder {
-        guard let id = req.parameters.get("orderID"), let uuid = UUID(uuidString: id) else {
-            throw APIError.badRequest
-        }
+        guard let id = req.parameters.get("orderID"), let uuid = UUID(uuidString: id) 
+        else { throw APIResponseError.Common.badRequest }
         
-        guard let order: Order = try await orderRepository.fetchOrderById(uuid) else {
-            throw APIError.notFound
-        }
+        guard let order: Order = try await orderRepository.fetchOrderById(uuid) 
+        else { throw APIResponseError.Common.notFound }
         
         guard let address = try await addressController.fetchAddressByUserId(order.userId)
-        else { throw APIError.internalServerError }
+        else { throw APIResponseError.Common.internalServerError }
         
         let items = try await orderItemRepository.fetchOrdersByOrderId(order.id!) // review this
         
@@ -189,7 +184,7 @@ struct OrderController: Sendable {
     private func checkProductsAvailability(_ products: [APIProductOrderRequest]) async throws {
         for product in products {
             guard try await productController.checkProductAvailability(with: product.code, and: product.quantity)
-            else { throw APIError.badRequest }
+            else { throw APIResponseError.Common.badRequest }
         }
     }
     

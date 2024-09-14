@@ -10,12 +10,10 @@ protocol AddressRepositoryProtocol: Sendable {
 }
 
 final class AddressRepository: AddressRepositoryProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let database: Database
 
-    init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
-        database = dependencyProvider.getDatabaseInstance()
+    init(database: Database) {
+        self.database = database
     }
 
     func fetchAddressById(_ id: UUID) async throws -> Address? {

@@ -6,13 +6,11 @@ protocol CardControllerProtocol {
 }
 
 struct CardController: CardControllerProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let repository: CardRepositoryProtocol
     private var security: SecurityProtocol
     
     init(dependencyProvider: DependencyProviderProtocol, 
          repository: CardRepositoryProtocol) {
-        self.dependencyProvider = dependencyProvider
         self.repository = repository
         security = dependencyProvider.getSecurityInstance()
     }

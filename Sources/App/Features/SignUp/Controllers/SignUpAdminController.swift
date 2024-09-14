@@ -2,15 +2,12 @@ import FluentPostgresDriver
 import Vapor
 
 struct SignUpAdminController: RouteCollection, Sendable {
-    private let dependencyProvider: DependencyProviderProtocol
     private let repository: SignUpAdminRepositoryProtocol
     private let security: SecurityProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
          repository: SignUpAdminRepositoryProtocol) {
-        self.dependencyProvider = dependencyProvider
         self.repository = repository
-        
         security = dependencyProvider.getSecurityInstance()
     }
 
@@ -32,13 +29,13 @@ struct SignUpAdminController: RouteCollection, Sendable {
     
     private func validateUserUniqueness(email: String) async throws {
         guard try await repository.fetchUserId(with: email) == nil else {
-            throw Abort(.conflict, reason: APIErrorMessage.Credentials.userAlreadyRegistered)
+            throw APIResponseError.Signup.conflict
         }
     }
     
     private func validateCredentials(email: String, password: String) async throws {
         guard security.areCredentialsValid(email: email, password: password)
-        else { throw Abort(.badRequest, reason: APIErrorMessage.Credentials.invalidCredentials) }
+        else { throw APIResponseError.Signup.unauthorized }
     }
     
     private func accountCreationMessage(userName: String) -> String {

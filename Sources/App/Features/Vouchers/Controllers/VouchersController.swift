@@ -5,7 +5,6 @@ protocol VouchersControllerProtocol: RouteCollection, Sendable {
 }
 
 struct VouchersController: VouchersControllerProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let repository: RepositoryProtocol
     
     private let sessionValidation: SessionValidationMiddlewareProtocol
@@ -13,7 +12,6 @@ struct VouchersController: VouchersControllerProtocol {
 
     init(dependencyProvider: DependencyProviderProtocol,
          repository: RepositoryProtocol) {
-        self.dependencyProvider = dependencyProvider
         self.repository = repository
         
         sessionValidation = dependencyProvider.getUserSessionValidationMiddleware()
@@ -45,9 +43,8 @@ struct VouchersController: VouchersControllerProtocol {
         let model: APIRequestCode = try convertRequestDataToModel(req: req)
         let result: Voucher? = try await repository.fetchModelByCode(model.code)
         
-        guard let result else {
-            throw APIError.notFound
-        }
+        guard let result 
+        else { throw APIResponseError.Common.notFound }
         
         return APIValidateVoucherResponse(from: result)
     }
@@ -63,9 +60,8 @@ struct VouchersController: VouchersControllerProtocol {
     private func create(req: Request) async throws -> GenericMessageResponse {
         let model: APIVoucher = try convertRequestDataToModel(req: req)
 
-        guard try await getVoucher(with: model.code) == nil else {
-            throw APIError.conflict
-        }
+        guard try await getVoucher(with: model.code) == nil 
+        else { throw APIResponseError.Common.conflict }
 
         try await repository.create(Voucher(from: model))
 
@@ -76,9 +72,8 @@ struct VouchersController: VouchersControllerProtocol {
     private func delete(req: Request) async throws -> GenericMessageResponse {
         let model: APIRequestCode = try convertRequestDataToModel(req: req)
 
-        guard let voucher = try await getVoucher(with: model.code) else {
-            throw APIError.notFound
-        }
+        guard let voucher = try await getVoucher(with: model.code)
+        else { throw APIResponseError.Common.notFound }
 
         try await repository.delete(voucher)
 

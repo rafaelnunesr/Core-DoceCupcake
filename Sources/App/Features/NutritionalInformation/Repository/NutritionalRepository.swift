@@ -6,12 +6,10 @@ protocol NutritionalRepositoryProtocol: RepositoryProtocol {
 }
 
 final class NutritionalRepository: NutritionalRepositoryProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     let database: Database
 
-    init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
-        database = dependencyProvider.getDatabaseInstance()
+    init(database: Database) {
+        self.database = database
     }
 
     func getNutritionalByAllFields(_ model: NutritionalInformation) async throws -> NutritionalInformation? {

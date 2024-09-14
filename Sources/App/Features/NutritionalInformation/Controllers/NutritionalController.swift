@@ -9,12 +9,9 @@ protocol NutritionalControllerProtocol: Sendable {
 }
 
 struct NutritionalController: NutritionalControllerProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let repository: NutritionalRepositoryProtocol
 
-    init(dependencyProvider: DependencyProviderProtocol,
-         repository: NutritionalRepositoryProtocol) {
-        self.dependencyProvider = dependencyProvider
+    init(repository: NutritionalRepositoryProtocol) {
         self.repository = repository
     }
 

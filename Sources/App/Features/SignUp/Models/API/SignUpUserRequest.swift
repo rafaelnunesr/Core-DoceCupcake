@@ -15,7 +15,7 @@ struct SignUpUserRequest: Codable {
         case userName = "user_name"
         case email
         case password
-        case imageUrl
+        case imageUrl = "image_url"
         case streetName = "street_name"
         case addressNumber = "address_number"
         case zipCode = "zip_code"

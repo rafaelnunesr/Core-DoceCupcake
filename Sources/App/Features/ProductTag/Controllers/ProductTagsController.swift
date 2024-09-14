@@ -8,7 +8,6 @@ protocol ProductTagsControllerProtocol: RouteCollection, Sendable {
 }
 
 struct ProductTagsController: ProductTagsControllerProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
     private let repository: RepositoryProtocol
     private let security: SecurityProtocol
     
@@ -17,9 +16,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
 
     init(dependencyProvider: DependencyProviderProtocol,
          repository: RepositoryProtocol) {
-        self.dependencyProvider = dependencyProvider
         self.repository = repository
-        
         userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
         security = dependencyProvider.getSecurityInstance()
@@ -57,7 +54,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         let model: APIProductTag = try convertRequestDataToModel(req: req)
 
         guard try await fetchTag(with: model.code) == nil else {
-            throw Abort(.conflict, reason: APIErrorMessage.Common.conflict)
+            throw APIResponseError.Common.conflict
         }
 
         try await repository.create(ProductTag(from: model))
@@ -70,7 +67,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         let model: APIProductTag = try convertRequestDataToModel(req: req)
 
         guard try await fetchTag(with: model.code) != nil else {
-            throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
+            throw APIResponseError.Common.notFound
         }
 
         try await repository.update(ProductTag(from: model))
@@ -83,7 +80,7 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         let model: APIRequestId = try convertRequestDataToModel(req: req)
 
         guard let tagModel = try await fetchTag(with: model.id) else {
-            throw Abort(.notFound, reason: APIErrorMessage.Common.notFound)
+            throw APIResponseError.Common.notFound
         }
 
         try await repository.delete(tagModel)

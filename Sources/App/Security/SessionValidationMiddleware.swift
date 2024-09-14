@@ -16,9 +16,8 @@ struct SessionValidationMiddleware: SessionValidationMiddlewareProtocol {
         
         // undo
         
-        guard try await sessionController.validateSession(req: req) != .unowned else {
-            throw Abort(.unauthorized, reason: APIErrorMessage.Common.unauthorized)
-        }
+        guard try await sessionController.validateSession(req: req) != .unowned 
+        else { throw APIResponseError.Common.unauthorized }
 
         return try await next.respond(to: req)
     }
