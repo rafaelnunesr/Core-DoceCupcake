@@ -5,7 +5,7 @@ struct APIOrderRequest: Codable {
     let products: [APIProductOrderRequest]
     let deliveryFee: Double
     var voucherCode: String?
-    let addressCode: String
+    let addressId: UUID
     let payment: CreditCardRequest
 }
 

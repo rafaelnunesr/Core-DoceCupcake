@@ -14,7 +14,7 @@ enum OrderDbField: String {
     case paymentId = "payment_id"
     case total = "total"
     case deliveryFee = "delivery_fee"
-    case addressCode = "address_code"
+    case addressId = "address_id"
     case deliveryStatus = "delivery_status"
     case orderStatus = "order_status"
     
@@ -29,14 +29,14 @@ final class Order: DatabaseModelProtocol {
     @ID(key: .id)
     var id: UUID?
     
-    @Field(key: OrderDbField.code.fieldKey)
-    var code: String
-    
     @Timestamp(key: OrderDbField.createdAt.fieldKey, on: .create)
     var createdAt: Date?
     
     @Timestamp(key: OrderDbField.updatedAt.fieldKey, on: .none)
     var updatedAt: Date?
+    
+    @Field(key: OrderDbField.code.fieldKey)
+    var code: String
 
     @Field(key: OrderDbField.userId.fieldKey)
     var userId: UUID
@@ -53,8 +53,8 @@ final class Order: DatabaseModelProtocol {
     @Field(key: OrderDbField.deliveryFee.fieldKey)
     var deliveryFee: Double
     
-    @Field(key: OrderDbField.addressCode.fieldKey)
-    var addressCode: String
+    @Field(key: OrderDbField.addressId.fieldKey)
+    var addressId: UUID
     
     @Field(key: OrderDbField.deliveryStatus.fieldKey)
     var deliveryStatus: TransportationStatus
@@ -73,7 +73,7 @@ final class Order: DatabaseModelProtocol {
          paymentId: UUID,
          total: Double,
          deliveryFee: Double,
-         addressCode: String,
+         addressId: UUID,
          deliveryStatus: TransportationStatus,
          orderStatus: OrderStatus) {
         self.id = id
@@ -85,7 +85,7 @@ final class Order: DatabaseModelProtocol {
         self.paymentId = paymentId
         self.total = total
         self.deliveryFee = deliveryFee
-        self.addressCode = addressCode
+        self.addressId = addressId
         self.deliveryStatus = deliveryStatus
         self.orderStatus = orderStatus
     }
@@ -109,7 +109,7 @@ extension Order {
                   paymentId: paymentId,
                   total: total,
                   deliveryFee: model.deliveryFee,
-                  addressCode: model.addressCode,
+                  addressId: model.addressId,
                   deliveryStatus: .confirmed,
                   orderStatus: .confirmed)
     }
