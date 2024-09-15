@@ -44,11 +44,13 @@ struct SessionController: SessionControllerProtocol {
     }
 
     func create(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {
-        try await delete(for: userId)
+        if try await repository.fetchSession(for: userId) != nil {
+            try await delete(for: userId)
+        }
         
         let sectionToken = createSessionToken(for: userId)
         let token = try await req.jwt.sign(sectionToken)
-        let section = InternalSessionModel(expiryAt: sectionToken.expiration.value, 
+        let section = InternalSessionModel(expiryAt: sectionToken.expiration.value,
                                            userId: sectionToken.userId,
                                            token: token,
                                            isAdmin: isAdmin)

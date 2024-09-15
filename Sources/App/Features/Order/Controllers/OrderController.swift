@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-struct OrderController: Sendable {
+struct OrderController: RouteCollection, Sendable {
     private let orderRepository: OrderRepositoryProtocol
     private let orderItemRepository: OrderItemRepositoryProtocol
     private let sessionController: SessionControllerProtocol
@@ -70,10 +70,11 @@ struct OrderController: Sendable {
     
     @Sendable
     private func fetchOrderByNumber(req: Request) async throws -> APIOrder {
-        guard let orderNumber = req.parameters.get("orderNumber")
+        guard let orderNumber = req.parameters.get("orderNumber"),
+                let number = Int(orderNumber)
         else { throw APIResponseError.Common.badRequest }
         
-        guard let order: Order = try await orderRepository.fetchOrderByNumber(orderNumber),
+        guard let order: Order = try await orderRepository.fetchOrderByNumber(number),
               let orderId = order.id
         else { throw APIResponseError.Common.notFound }
         

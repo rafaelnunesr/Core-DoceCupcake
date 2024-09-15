@@ -27,12 +27,7 @@ struct SignUpUserController: RouteCollection, Sendable {
         try await validateCredentials(email: model.email, password: model.password)
         
         model.password = try security.hashStringValue(model.password)
-        let user = User(from: model)
-        
-        guard let userId = user.id
-        else { throw APIResponseError.Common.internalServerError }
-        
-        try await repository.create(with: User(from: model))
+        let userId = try await repository.create(with: User(from: model))
         
         try await saveUserAddress(model, userId: userId)
         return GenericMessageResponse(message: accountCreationMessage(userName: model.userName))
@@ -51,7 +46,7 @@ struct SignUpUserController: RouteCollection, Sendable {
     private func saveUserAddress(_ model: SignUpUserRequest, userId: UUID) async throws {
         let address = Address(userId: userId,
                               streetName: model.streetName,
-                              number: model.streetName,
+                              number: model.addressNumber,
                               zipCode: model.zipCode,
                               state: model.state,
                               city: model.city,

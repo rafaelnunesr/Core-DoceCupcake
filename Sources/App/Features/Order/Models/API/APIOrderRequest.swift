@@ -1,7 +1,7 @@
 import Foundation
 
 struct APIOrderRequest: Codable {
-    var orderNumber: String?
+    var orderNumber: Int?
     let products: [APIProductOrderRequest]
     let deliveryFee: Double
     var voucherCode: String?

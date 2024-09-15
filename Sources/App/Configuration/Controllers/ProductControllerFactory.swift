@@ -1,3 +1,5 @@
+import Fluent
+
 protocol ProductControllerFactoryProtocol {
     func makeProductController() throws -> ProductController
     func makeProductTagsController() throws -> ProductTagsController
@@ -15,8 +17,8 @@ final class ProductControllerFactory: ProductControllerFactoryProtocol {
         let database = dependencyProvider.getDatabaseInstance()
         let productRepository = ProductRepository(database: database)
         let nutritionalRepository = NutritionalRepository(database: database)
-        let tagRepository = Repository(dependencyProvider: dependencyProvider)
-        let tagController = ProductTagsController(dependencyProvider: dependencyProvider, 
+        let tagRepository = Repository(database: database)
+        let tagController = ProductTagsController(dependencyProvider: dependencyProvider,
                                                   repository: tagRepository)
         let nutritionalController = NutritionalController(repository: nutritionalRepository)
         return ProductController(dependencyProvider: dependencyProvider,
@@ -26,7 +28,8 @@ final class ProductControllerFactory: ProductControllerFactoryProtocol {
     }
 
     func makeProductTagsController() throws -> ProductTagsController {
-        let repository = Repository(dependencyProvider: dependencyProvider)
+        let database = dependencyProvider.getDatabaseInstance()
+        let repository = Repository(database: database)
         return ProductTagsController(dependencyProvider: dependencyProvider, repository: repository)
     }
 

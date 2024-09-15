@@ -6,7 +6,7 @@ enum OrderDbField: String {
     case schema = "order"
     
     case id
-    case code
+    case number
     case createdAt = "created_at"
     case updatedAt = "updated_at"
     case userId = "user_id"
@@ -23,7 +23,7 @@ enum OrderDbField: String {
     }
 }
 
-final class Order: DatabaseModelProtocol {
+final class Order: Model {
     static let schema = OrderDbField.schema.rawValue
 
     @ID(key: .id)
@@ -35,8 +35,8 @@ final class Order: DatabaseModelProtocol {
     @Timestamp(key: OrderDbField.updatedAt.fieldKey, on: .none)
     var updatedAt: Date?
     
-    @Field(key: OrderDbField.code.fieldKey)
-    var code: String
+    @Field(key: OrderDbField.number.fieldKey)
+    var number: Int
 
     @Field(key: OrderDbField.userId.fieldKey)
     var userId: UUID
@@ -65,7 +65,7 @@ final class Order: DatabaseModelProtocol {
     internal init() { }
     
     init(id: UUID? = nil,
-         code: String,
+         number: Int,
          createdAt: Date? = nil,
          updatedAt: Date? = nil,
          userId: UUID,
@@ -77,7 +77,7 @@ final class Order: DatabaseModelProtocol {
          deliveryStatus: TransportationStatus,
          orderStatus: OrderStatus) {
         self.id = id
-        self.code = code
+        self.number = number
         self.userId = userId
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -92,18 +92,8 @@ final class Order: DatabaseModelProtocol {
 }
 
 extension Order {
-    static var codeKey: KeyPath<Order, Field<String>> {
-        \Order.$code
-    }
-
-    static var idKey: KeyPath<Order, IDProperty<Order, UUID>> {
-        \Order.$id
-    }
-}
-
-extension Order {
     convenience init(from model: APIOrderRequest, userId: UUID, paymentId: UUID, total: Double) {
-        self.init(code: model.orderNumber ?? .empty,
+        self.init(number: model.orderNumber ?? .zero,
                   userId: userId,
                   voucherCode: model.voucherCode,
                   paymentId: paymentId,

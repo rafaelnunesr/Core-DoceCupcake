@@ -66,20 +66,21 @@ struct ProductTagsController: ProductTagsControllerProtocol {
     private func update(req: Request) async throws -> GenericMessageResponse {
         let model: APIProductTag = try convertRequestDataToModel(req: req)
 
-        guard try await fetchTag(with: model.code) != nil else {
+        guard let productTag = try await fetchTag(with: model.code) else {
             throw APIResponseError.Common.notFound
         }
 
-        try await repository.update(ProductTag(from: model))
+        productTag.description = model.description
+        try await repository.update(productTag)
 
         return GenericMessageResponse(message: Constants.tagUpdated)
     }
 
     @Sendable
     private func delete(req: Request) async throws -> GenericMessageResponse {
-        let model: APIRequestId = try convertRequestDataToModel(req: req)
+        let model: APIRequestCode = try convertRequestDataToModel(req: req)
 
-        guard let tagModel = try await fetchTag(with: model.id) else {
+        guard let tagModel = try await fetchTag(with: model.code) else {
             throw APIResponseError.Common.notFound
         }
 

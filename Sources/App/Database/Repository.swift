@@ -11,12 +11,10 @@ protocol RepositoryProtocol: Sendable {
 }
 
 final class Repository: RepositoryProtocol {
-    private let dependencyProvider: DependencyProviderProtocol
-    let database: Database
+    private let database: Database
 
-    init(dependencyProvider: DependencyProviderProtocol) {
-        self.dependencyProvider = dependencyProvider
-        database = dependencyProvider.getDatabaseInstance()
+    init(database: Database) {
+        self.database = database
     }
 
     func fetchAllResults<T: DatabaseModelProtocol>() async throws -> [T] {

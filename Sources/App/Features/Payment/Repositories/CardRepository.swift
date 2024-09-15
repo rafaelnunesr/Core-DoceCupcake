@@ -1,7 +1,7 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol CardRepositoryProtocol {
+protocol CardRepositoryProtocol: Sendable {
     func fetchCard(for userId: UUID) async throws -> CreditCard?
     func saveCard(for card: CreditCard) async throws
     func deleteCard(for card: CreditCard) async throws

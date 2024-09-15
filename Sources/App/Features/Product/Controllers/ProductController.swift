@@ -93,23 +93,34 @@ struct ProductController: ProductControllerProtocol {
     private func update(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
-        guard try await productRepository.fetchProduct(with: model.code) != nil 
+        guard let product = try await productRepository.fetchProduct(with: model.code)
         else { throw APIResponseError.Common.notFound }
         
         try await validateProductTags(tags: model.tags.map { $0.code }, allergicTags: model.allergicTags.map { $0.code })
 
         let nutritionalIds = try await createNutricionalInformations(with: model.nutritionalInformations)
+        
+        product.name = model.name
+        product.description = model.description
+        product.imageUrl = model.imageUrl
+        product.currentPrice = model.currentPrice
+        product.originalPrice = model.originalPrice
+        product.voucherCode = model.voucherCode
+        product.stockCount = product.stockCount
+        product.tags = model.tags.map { $0.code }
+        product.tags = model.allergicTags.map { $0.code }
+        product.nutritionalIds = nutritionalIds
+        product.isNew = model.isNew
 
-        let internalProduct = Product(from: model, nutritionalIds: nutritionalIds)
-        try await productRepository.update(internalProduct)
+        try await productRepository.update(product)
 
         return GenericMessageResponse(message: Constants.productUpdated)
     }
 
     @Sendable
     private func delete(req: Request) async throws -> GenericMessageResponse {
-        let model: APIRequestId = try convertRequestDataToModel(req: req)
-        guard let product = try await productRepository.fetchProduct(with: model.id) else {
+        let model: APIRequestCode = try convertRequestDataToModel(req: req)
+        guard let product = try await productRepository.fetchProduct(with: model.code) else {
             throw APIResponseError.Common.notFound
         }
        

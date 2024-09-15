@@ -16,7 +16,7 @@ final class AppConfiguration: AppConfigurationProtocol {
         
         migrationService = dependencyProvider.getMigrationServiceInstance()
         controllerFactory = dependencyProvider.getControllerFactory()
-       configService = dependencyProvider.getConfigurationServiceInstance()
+        configService = dependencyProvider.getConfigurationServiceInstance()
     }
 
     func initialSetup() async throws {

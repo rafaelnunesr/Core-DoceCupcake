@@ -10,7 +10,8 @@ final class VoucherControllerFactory: VoucherControllerFactoryProtocol {
     }
 
     func makeVoucherController() throws -> VouchersController {
-        let repository = Repository(dependencyProvider: dependencyProvider)
+        let database = dependencyProvider.getDatabaseInstance()
+        let repository = Repository(database: database)
         return VouchersController(dependencyProvider: dependencyProvider, repository: repository)
     }
 }

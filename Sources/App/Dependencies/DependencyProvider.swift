@@ -48,17 +48,21 @@ final class DependencyProvider: DependencyProviderProtocol {
     func getMigrationServiceInstance() -> MigrationServiceProtocol {
         let userMigrationService = UserMigrationService(app: app)
         let productMigrationService = ProductMigrationService(app: app)
+        let ordersMigrationService = OrdersMigrationService(app: app)
         return MigrationService(userMigrationService: userMigrationService,
-                                productMigrationService: productMigrationService)
+                                productMigrationService: productMigrationService,
+                                ordersMigrationService: ordersMigrationService)
     }
     
     func getControllerFactory() -> ControllerFactoryProtocol {
         let userController = UserControllerFactory(dependencyProvider: self)
         let productController = ProductControllerFactory(dependencyProvider: self)
         let voucherController = VoucherControllerFactory(dependencyProvider: self)
+        let ordersController = OrdersControllerFactory(dependencyProvider: self)
         return ControllerFactory(userControllerFactory: userController,
                                  productControllerFactory: productController,
-                                 voucherControllerFactory: voucherController)
+                                 voucherControllerFactory: voucherController,
+                                 ordersControllerFactory: ordersController)
     }
     
     func getConfigurationServiceInstance() -> ConfigurationServiceProtocol {

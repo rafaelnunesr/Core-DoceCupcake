@@ -3,7 +3,7 @@ import Vapor
 
 protocol SignUpUserRepositoryProtocol: Sendable {
     func fetchUserId(with email: String) async throws -> UUID?
-    func create(with user: User) async throws
+    func create(with user: User) async throws -> UUID
 }
 
 final class SignUpUserRepository: SignUpUserRepositoryProtocol {
@@ -19,7 +19,8 @@ final class SignUpUserRepository: SignUpUserRepositoryProtocol {
             .first()?.id
     }
 
-    func create(with user: User) async throws {
+    func create(with user: User) async throws -> UUID {
         try await user.create(on: database)
+        return try user.requireID()
     }
 }

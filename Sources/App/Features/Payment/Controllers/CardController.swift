@@ -1,7 +1,7 @@
 import Foundation
 import Vapor
 
-protocol CardControllerProtocol {
+protocol CardControllerProtocol: Sendable {
     func processOrder(_ creditCard: CreditCardRequest) async throws -> UUID
 }
 
