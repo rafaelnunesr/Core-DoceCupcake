@@ -19,7 +19,7 @@ final class OrderRepository: OrderRepositoryProtocol {
     
     func fetchAllOrdersByStatus(_ status: OrderStatus) async throws -> [Order] {
         try await Order.query(on: database)
-            .filter(\.$orderStatus == status)
+            .filter(\.$orderStatus == status.rawValue)
             .all()
     }
     

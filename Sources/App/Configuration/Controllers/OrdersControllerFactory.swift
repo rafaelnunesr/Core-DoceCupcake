@@ -21,6 +21,7 @@ final class OrdersControllerFactory: OrdersControllerFactoryProtocol {
         let productController = createProductController()
         let cardController = createCardController()
         let vouchersController = createVouchersController()
+        let deliveryController = createDeliveryController()
         
         return OrderController(dependencyProvider: dependencyProvider, 
                                orderRepository: orderRepository,
@@ -29,23 +30,24 @@ final class OrdersControllerFactory: OrdersControllerFactoryProtocol {
                                addressController: addressController,
                                productController: productController,
                                cardController: cardController,
-                               vouchersController: vouchersController)
+                               vouchersController: vouchersController, 
+                               deliveryController: deliveryController)
         
     }
     
-    private func createSessionController() -> SessionController {
+    private func createSessionController() -> SessionControllerProtocol {
         let database = dependencyProvider.getDatabaseInstance()
         let sessionRepository = SessionRepository(database: database)
         return SessionController(repository: sessionRepository)
     }
     
-    private func createAddressController() -> AddressController {
+    private func createAddressController() -> AddressControllerProtocol {
         let database = dependencyProvider.getDatabaseInstance()
         let addressRepository = AddressRepository(database: database)
         return AddressController(repository: addressRepository)
     }
     
-    private func createProductController() -> ProductController {
+    private func createProductController() -> ProductControllerProtocol {
         let database = dependencyProvider.getDatabaseInstance()
         let productRepository = ProductRepository(database: database)
         let tagsRepository = Repository(database: database)
@@ -58,15 +60,19 @@ final class OrdersControllerFactory: OrdersControllerFactoryProtocol {
                                  nutritionalController: nutritionalController)
     }
     
-    private func createCardController() -> CardController {
+    private func createCardController() -> CardControllerProtocol {
         let database = dependencyProvider.getDatabaseInstance()
         let cardRepository = CardRepository(database: database)
         return CardController(dependencyProvider: dependencyProvider, repository: cardRepository)
     }
     
-    private func createVouchersController() -> VouchersController {
+    private func createVouchersController() -> VouchersControllerProtocol {
         let database = dependencyProvider.getDatabaseInstance()
         let vouchersRepository = Repository(database: database)
         return VouchersController(dependencyProvider: dependencyProvider, repository: vouchersRepository)
+    }
+    
+    private func createDeliveryController() -> DeliveryControllerProtocol {
+        return DeliveryController()
     }
 }

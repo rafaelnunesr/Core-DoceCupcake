@@ -26,8 +26,8 @@ extension APIOrder {
         updatedAt = model.updatedAt
         vouchers = []
         self.address = APIAddress(from: address)
-        deliveryStatus = model.deliveryStatus
-        orderStatus = model.orderStatus
+        deliveryStatus = TransportationStatus(rawValue: model.deliveryStatus) ?? .pending
+        orderStatus = OrderStatus(rawValue: model.orderStatus) ?? .confirmed
         self.items = [] // review this
     }
 }

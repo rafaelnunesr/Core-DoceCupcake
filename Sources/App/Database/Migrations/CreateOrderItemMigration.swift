@@ -12,7 +12,7 @@ struct CreateOrderItemMigration: AsyncMigration {
                    .references(ProductDbField.schema.rawValue, ProductDbField.id.fieldKey))
             .field(OrderItemDbField.quantity.fieldKey, .double, .required)
             .field(OrderItemDbField.unitValue.fieldKey, .double, .required)
-            .field(OrderItemDbField.orderStatus.fieldKey, .string, .required)
+            .field(OrderItemDbField.orderStatus.fieldKey, .int, .required)
             .create()
     }
     

@@ -57,15 +57,15 @@ final class Order: Model {
     var addressId: UUID
     
     @Field(key: OrderDbField.deliveryStatus.fieldKey)
-    var deliveryStatus: TransportationStatus
+    var deliveryStatus: Int
     
     @Field(key: OrderDbField.orderStatus.fieldKey)
-    var orderStatus: OrderStatus
+    var orderStatus: Int
     
     internal init() { }
     
     init(id: UUID? = nil,
-         number: Int,
+         number: Int = 0,
          createdAt: Date? = nil,
          updatedAt: Date? = nil,
          userId: UUID,
@@ -74,8 +74,8 @@ final class Order: Model {
          total: Double,
          deliveryFee: Double,
          addressId: UUID,
-         deliveryStatus: TransportationStatus,
-         orderStatus: OrderStatus) {
+         deliveryStatus: Int,
+         orderStatus: Int) {
         self.id = id
         self.number = number
         self.userId = userId
@@ -92,15 +92,14 @@ final class Order: Model {
 }
 
 extension Order {
-    convenience init(from model: APIOrderRequest, userId: UUID, paymentId: UUID, total: Double) {
-        self.init(number: model.orderNumber ?? .zero,
-                  userId: userId,
+    convenience init(from model: APIOrderRequest, userId: UUID, paymentId: UUID, total: Double, deliveryFee: Double) {
+        self.init(userId: userId,
                   voucherCode: model.voucherCode,
                   paymentId: paymentId,
                   total: total,
-                  deliveryFee: model.deliveryFee,
+                  deliveryFee: deliveryFee,
                   addressId: model.addressId,
-                  deliveryStatus: .confirmed,
-                  orderStatus: .confirmed)
+                  deliveryStatus: TransportationStatus.confirmed.rawValue,
+                  orderStatus: OrderStatus.confirmed.rawValue)
     }
 }

@@ -9,6 +9,7 @@ struct OrderController: RouteCollection, Sendable {
     private let productController: ProductControllerProtocol
     private let cardController: CardControllerProtocol
     private let vouchersController: VouchersControllerProtocol
+    private let deliveryController: DeliveryControllerProtocol
     
     private let userSectionValidation: SessionValidationMiddlewareProtocol
     private let adminSectionValidation: AdminValidationMiddlewareProtocol
@@ -20,7 +21,8 @@ struct OrderController: RouteCollection, Sendable {
          addressController: AddressControllerProtocol,
          productController: ProductControllerProtocol,
          cardController: CardControllerProtocol,
-         vouchersController: VouchersControllerProtocol) {
+         vouchersController: VouchersControllerProtocol,
+         deliveryController: DeliveryControllerProtocol) {
         self.orderRepository = orderRepository
         self.orderItemRepository = orderItemRepository
         self.sessionController = sessionController
@@ -28,6 +30,7 @@ struct OrderController: RouteCollection, Sendable {
         self.productController = productController
         self.cardController = cardController
         self.vouchersController = vouchersController
+        self.deliveryController = deliveryController
         userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }
@@ -41,19 +44,19 @@ struct OrderController: RouteCollection, Sendable {
         
         ordersRoutes
             .grouped(userSectionValidation)
-            .get("/all", use: fetchOrderByUserId)
+            .get("all", use: fetchOrderByUserId)
         
         ordersRoutes
             .grouped(adminSectionValidation)
-            .get("/open", use: fetchAllOpenOrders)
+            .get("open", use: fetchAllOpenOrders)
         
         ordersRoutes
             .grouped(adminSectionValidation)
-            .get("/closed", use: fetchAllClosedOrder)
+            .get("closed", use: fetchAllClosedOrder)
         
         ordersRoutes
             .grouped(adminSectionValidation)
-            .get("/cancelled", use: fetchAllCancelledOrder)
+            .get("cancelled", use: fetchAllCancelledOrder)
         
         ordersRoutes
             .grouped(userSectionValidation)
@@ -119,8 +122,34 @@ struct OrderController: RouteCollection, Sendable {
         
         let userId = try await sessionController.fetchLoggedUserId(req: req)
         let total = try await calculateTotal(model.products, voucherCode: model.voucherCode)
+        let address = try await addressController.fetchAddressById(model.addressId)
+        let deliveryFee = deliveryController.calculateDeliveryFee(zipcode: address?.zipCode ?? .empty)
         
-        let order = Order(from: model, userId: userId, paymentId: paymentId, total: total)
+        let order = Order(from: model, userId: userId, paymentId: paymentId, total: total, deliveryFee: deliveryFee)
+        try await orderRepository.create(order)
+        
+        guard let createdOrder = try await orderRepository.fetchOrderByNumber(order.number)
+        else {
+            try await orderRepository.delete(order)
+            throw APIResponseError.Common.internalServerError
+        }
+        
+        for product in model.products {
+            guard let orderId = order.id,
+                  let productResult = try await productController.fetchProduct(with: product.code),
+                  let productId = productResult.id
+            else {
+                try await orderRepository.delete(order)
+                throw APIResponseError.Common.internalServerError
+            }
+            
+            let item = OrderItem(orderId: orderId,
+                                 productId: productId,
+                                 quantity: product.quantity,
+                                 unitValue: productResult.currentPrice,
+                                 orderStatus: OrderStatus.confirmed.rawValue)
+            try await orderItemRepository.create(item)
+        }
         
         return GenericMessageResponse(message: Constants.orderCreated)
     }
@@ -134,8 +163,8 @@ struct OrderController: RouteCollection, Sendable {
         
         let copyOrder = order
         copyOrder.updatedAt = Date()
-        copyOrder.deliveryStatus = model.deliveryStatus
-        copyOrder.orderStatus = model.orderStatus
+        copyOrder.deliveryStatus = model.deliveryStatus.rawValue
+        copyOrder.orderStatus = model.orderStatus.rawValue
     
         try await orderRepository.update(copyOrder)
         

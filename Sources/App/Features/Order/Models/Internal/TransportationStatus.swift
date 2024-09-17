@@ -1,11 +1,11 @@
-enum TransportationStatus: String, Codable {
-    case pending = "Pending"
-    case confirmed = "Confirmed"
-    case dispatched = "Dispatched"
-    case outForDelivery = "Out for Delivery"
-    case delivered = "Delivered"
-    case cancelled = "Cancelled"
-    case failed = "Failed"
+enum TransportationStatus: Int, Codable {
+    case pending = 1
+    case confirmed
+    case dispatched
+    case outForDelivery
+    case delivered
+    case cancelled
+    case failed
 
     var description: String {
         switch self {

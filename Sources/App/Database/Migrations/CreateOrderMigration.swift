@@ -17,10 +17,11 @@ struct CreateOrderMigration: AsyncMigration {
             .field(OrderDbField.paymentId.fieldKey, .uuid, .required,
                    .references(CreditCardDbField.schema.rawValue, CreditCardDbField.id.fieldKey))
             .field(OrderDbField.total.fieldKey, .double, .required)
+            .field(OrderDbField.deliveryFee.fieldKey, .double, .required)
             .field(OrderDbField.addressId.fieldKey, .uuid, .required,
                    .references(AddressDbField.schema.rawValue, AddressDbField.id.fieldKey))
-            .field(OrderDbField.deliveryStatus.fieldKey, .string, .required)
-            .field(OrderDbField.orderStatus.fieldKey, .string, .required)
+            .field(OrderDbField.deliveryStatus.fieldKey, .int, .required)
+            .field(OrderDbField.orderStatus.fieldKey, .int, .required)
             .create()
     }
     

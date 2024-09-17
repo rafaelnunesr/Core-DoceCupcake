@@ -14,6 +14,6 @@ extension APIOrderItem {
         self.product = product
         quantity = model.quantity
         unitValue = model.unitValue
-        orderStatus = model.orderStatus
+        orderStatus = OrderStatus(rawValue: model.orderStatus) ?? .cancelled
     }
 }

@@ -35,7 +35,7 @@ final class OrderItem: Model {
     var unitValue: Double
     
     @Field(key: OrderItemDbField.orderStatus.fieldKey)
-    var orderStatus: OrderStatus
+    var orderStatus: Int
 
     internal init() { }
 
@@ -44,7 +44,7 @@ final class OrderItem: Model {
          productId: UUID,
          quantity: Double,
          unitValue: Double,
-         orderStatus: OrderStatus) {
+         orderStatus: Int) {
         self.id = id
         self.orderId = orderId
         self.productId = productId
