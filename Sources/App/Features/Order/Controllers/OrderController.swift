@@ -85,8 +85,15 @@ struct OrderController: RouteCollection, Sendable {
         else { throw APIResponseError.Common.internalServerError }
         
         let items = try await orderItemRepository.fetchOrdersByOrderId(orderId)
+        var products = [APIOrderItem]()
         
-       return APIOrder(from: order, address: address, items: items)
+        for item in items {
+            if let product = try await productController.fetchProduct(with: item.productId) {
+                products.append(APIOrderItem(from: item, product: APIProduct(from: product)))
+            }
+        }
+        
+       return APIOrder(from: order, address: address, items: products)
     }
     
     @Sendable
@@ -116,11 +123,12 @@ struct OrderController: RouteCollection, Sendable {
     private func create(req: Request) async throws -> GenericMessageResponse {
         let model: APIOrderRequest = try convertRequestDataToModel(req: req)
         
+        let userId = try await sessionController.fetchLoggedUserId(req: req)
         try await checkProductsAvailability(model.products)
         try await updateProductAvailability(model.products)
-        let paymentId = try await cardController.processOrder(model.payment)
+        guard let paymentId = try await cardController.processOrder(model.payment, userId: userId)
+        else { throw APIResponseError.Payment.paymentError }
         
-        let userId = try await sessionController.fetchLoggedUserId(req: req)
         let total = try await calculateTotal(model.products, voucherCode: model.voucherCode)
         let address = try await addressController.fetchAddressById(model.addressId)
         let deliveryFee = deliveryController.calculateDeliveryFee(zipcode: address?.zipCode ?? .empty)
@@ -203,6 +211,11 @@ struct OrderController: RouteCollection, Sendable {
             if let orderId = order.id,
                 let address = try await addressController.fetchAddressByUserId(order.userId) {
                 let items = try await orderItemRepository.fetchOrdersByOrderId(orderId)
+                
+                let products = [APIOrderItem]()
+                for item in items {
+                    products.append(APIOrderItem(from: item, product: APIProduct(from: item)))
+                }
                 ordersList.append(APIOrder(from: order, address: address, items: items))
             }
             

@@ -4,6 +4,7 @@ import Vapor
 
 protocol ProductControllerProtocol: RouteCollection, Sendable {
     func fetchProduct(with code: String) async throws -> Product?
+    func fetchProduct(with productId: UUID) async throws -> Product?
     func checkProductAvailability(with code: String, and quantity: Double) async throws -> Bool
     func updateProductAvailability(with code: String, and quantity: Double) async throws
 }
@@ -186,6 +187,10 @@ struct ProductController: ProductControllerProtocol {
     
     func fetchProduct(with code: String) async throws -> Product? {
         try await productRepository.fetchProduct(with: code)
+    }
+    
+    func fetchProduct(with productId: UUID) async throws -> Product? {
+        try await productRepository.fetchProduct(with: productId)
     }
     
     func checkProductAvailability(with code: String, and quantity: Double) async throws -> Bool {

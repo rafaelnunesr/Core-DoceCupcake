@@ -2,7 +2,7 @@ import Foundation
 import Vapor
 
 protocol CardControllerProtocol: Sendable {
-    func processOrder(_ creditCard: CreditCardRequest) async throws -> UUID
+    func processOrder(_ card: CreditCardRequest, userId: UUID) async throws -> UUID?
 }
 
 struct CardController: CardControllerProtocol {
@@ -15,39 +15,34 @@ struct CardController: CardControllerProtocol {
         security = dependencyProvider.getSecurityInstance()
     }
     
-    func processOrder(_ creditCard: CreditCardRequest) async throws -> UUID {
-        return UUID()
+    func processOrder(_ card: CreditCardRequest, userId: UUID) async throws -> UUID? {
+        if isCardValid(card) {
+            return try await saveCard(for: userId, card: card, lastDigits: String(card.cardNumber.suffix(4)))
+        }
+        throw APIResponseError.Common.badRequest // improve this
     }
     
     private func isCardValid(_ card: CreditCardRequest) -> Bool {
         return isCardNumberValid(card.cardNumber) && isExpiryDateValid(expiryMonth: card.expiryMonth, expiryYear: card.expiryYear)
     }
     
-    private func saveCard(for user: User, card: CreditCardRequest, lastDigits: String) async throws {
-//        guard try await fetchCard(for: userId) != nil else {
-//            return
-//        }
+    private func saveCard(for userId: UUID, card: CreditCardRequest, lastDigits: String) async throws -> UUID? {
+        if let card = try await repository.fetchCard(for: card.cardNumber) {
+            return card.id
+        }
         
-//        let cardModel = CreditCard(from: card, user: user, lastDigits: lastDigits)
-//        try await repository.saveCard(for: cardModel)
+        let model = CreditCard(from: card, userId: userId, lastDigits: lastDigits)
+        try await repository.saveCard(for: model)
+        
+        if let card = try await repository.fetchCard(for: card.cardNumber) {
+            return card.id
+        }
+        
+        return nil
     }
     
-    // Generic Luhn Algorithm Implementation
     private func isCardNumberValid(_ cardNumber: String) -> Bool {
-        let digits = cardNumber.compactMap { Int(String($0)) }
-        guard digits.count >= 13 && digits.count <= 19 else { return false }
-        
-        var sum = 0
-        let reversedDigits = digits.reversed()
-        for (index, digit) in reversedDigits.enumerated() {
-            if index % 2 == 1 {
-                let doubledDigit = digit * 2
-                sum += doubledDigit > 9 ? doubledDigit - 9 : doubledDigit
-            } else {
-                sum += digit
-            }
-        }
-        return sum % 10 == 0
+        return cardNumber.count >= 13 && cardNumber.count <= 19
     }
     
     private func isExpiryDateValid(expiryMonth: Int, expiryYear: Int) -> Bool {

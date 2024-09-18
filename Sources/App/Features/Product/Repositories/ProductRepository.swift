@@ -3,6 +3,7 @@ import Vapor
 
 protocol ProductRepositoryProtocol: Sendable {
     func fetchProduct(with code: String) async throws -> Product?
+    func fetchProduct(with id: UUID) async throws -> Product?
     func fetchProducts() async throws -> [Product]
     func create(_ product: Product) async throws
     func update(_ product: Product) async throws
@@ -19,6 +20,12 @@ final class ProductRepository: ProductRepositoryProtocol {
     func fetchProduct(with code: String) async throws -> Product? {
         try await Product.query(on: database)
             .filter(\.$code == code)
+            .first()
+    }
+    
+    func fetchProduct(with id: UUID) async throws -> Product? {
+        try await Product.query(on: database)
+            .filter(\.$id == id)
             .first()
     }
 

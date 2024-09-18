@@ -36,7 +36,7 @@ struct APIProduct: Codable, Content {
 }
 
 extension APIProduct {
-    init(from model: Product, nutritionalInfos: [APINutritionalInformation]) {
+    init(from model: Product, nutritionalInfos: [APINutritionalInformation] = []) {
         code = model.code
         name = model.name
         description = model.description

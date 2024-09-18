@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Vapor
 
 protocol CardRepositoryProtocol: Sendable {
-    func fetchCard(for userId: UUID) async throws -> CreditCard?
+    func fetchCard(for cardNumber: String) async throws -> CreditCard?
     func saveCard(for card: CreditCard) async throws
     func deleteCard(for card: CreditCard) async throws
 }
@@ -14,9 +14,9 @@ final class CardRepository: CardRepositoryProtocol {
         self.database = database
     }
     
-    func fetchCard(for userId: UUID) async throws -> CreditCard? {
+    func fetchCard(for cardNumber: String) async throws -> CreditCard? {
         try await CreditCard.query(on: database)
-            .filter(\.$userId == userId)
+            .filter(\.$cardNumber == cardNumber)
             .first()
     }
     

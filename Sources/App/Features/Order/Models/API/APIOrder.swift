@@ -21,13 +21,13 @@ struct APIOrder: Codable, Content {
 }
 
 extension APIOrder {
-    init(from model: Order, address: Address, items: [OrderItem]) {
+    init(from model: Order, address: Address, items: [APIOrderItem]) {
         createdAt = model.createdAt
         updatedAt = model.updatedAt
         vouchers = []
         self.address = APIAddress(from: address)
         deliveryStatus = TransportationStatus(rawValue: model.deliveryStatus) ?? .pending
         orderStatus = OrderStatus(rawValue: model.orderStatus) ?? .confirmed
-        self.items = [] // review this
+        self.items = items
     }
 }

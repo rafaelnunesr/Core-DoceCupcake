@@ -12,10 +12,6 @@ struct SessionValidationMiddleware: SessionValidationMiddlewareProtocol {
     }
 
     func respond(to req: Request, chainingTo next: AsyncResponder) async throws -> Response {
-        return try await next.respond(to: req)
-        
-        // undo
-        
         guard try await sessionController.validateSession(req: req) != .unowned 
         else { throw APIResponseError.Common.unauthorized }
 

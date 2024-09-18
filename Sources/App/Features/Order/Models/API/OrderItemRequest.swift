@@ -10,7 +10,7 @@ struct APIOrderItem: Codable, Content {
 
 extension APIOrderItem {
     init(from model: OrderItem, product: APIProduct) {
-        orderId = model.id ?? UUID() // review this logic
+        orderId = model.id ?? UUID()
         self.product = product
         quantity = model.quantity
         unitValue = model.unitValue
