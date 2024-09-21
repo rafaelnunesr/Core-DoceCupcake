@@ -28,7 +28,7 @@ struct VouchersController: VouchersControllerProtocol {
         
         vouchersRoutes
             .grouped(adminSectionValidation)
-            .get("/all", use: fetchVouchers)
+            .get("all", use: fetchVouchers)
         
         vouchersRoutes
             .grouped(adminSectionValidation)

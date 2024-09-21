@@ -3,13 +3,11 @@ import Foundation
 struct APIOrderRequest: Codable {
     let products: [APIProductOrderRequest]
     var voucherCode: String?
-    let addressId: UUID
     let payment: CreditCardRequest
     
     enum CodingKeys: String, CodingKey {
         case products
         case voucherCode = "voucher_code"
-        case addressId = "address_id"
         case payment
     }
 }

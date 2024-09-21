@@ -9,7 +9,7 @@ struct CreateOrderMigration: AsyncMigration {
             .id()
             .field(OrderDbField.createdAt.fieldKey, .datetime)
             .field(OrderDbField.updatedAt.fieldKey, .datetime)
-            .field(OrderDbField.number.fieldKey, .int, .required)
+            .field(OrderDbField.number.fieldKey, .string, .required)
             .field(OrderDbField.userId.fieldKey, .uuid, .required,
                    .references(UsersDbField.schema.rawValue, UsersDbField.id.fieldKey))
             .field(OrderDbField.voucherCode.fieldKey, .string,

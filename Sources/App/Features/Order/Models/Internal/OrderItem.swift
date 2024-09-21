@@ -5,7 +5,7 @@ enum OrderItemDbField: String {
     case schema = "order_item"
     
     case id
-    case orderId = "oder_id"
+    case orderId = "order_id"
     case productId = "product_id"
     case quantity
     case unitValue = "unit_value"

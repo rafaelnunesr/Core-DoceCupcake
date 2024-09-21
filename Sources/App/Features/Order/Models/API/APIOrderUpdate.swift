@@ -1,5 +1,5 @@
 struct APIOrderUpdate: Codable {
-    var orderNumber: Int
+    var orderNumber: String
     var orderStatus: OrderStatus
     var deliveryStatus: TransportationStatus
     

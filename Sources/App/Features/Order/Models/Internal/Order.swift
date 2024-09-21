@@ -3,7 +3,7 @@ import Fluent
 import Vapor
 
 enum OrderDbField: String {
-    case schema = "order"
+    case schema = "order_"
     
     case id
     case number
@@ -36,7 +36,7 @@ final class Order: Model {
     var updatedAt: Date?
     
     @Field(key: OrderDbField.number.fieldKey)
-    var number: Int
+    var number: String
 
     @Field(key: OrderDbField.userId.fieldKey)
     var userId: UUID
@@ -65,7 +65,7 @@ final class Order: Model {
     internal init() { }
     
     init(id: UUID? = nil,
-         number: Int = 0,
+         number: String,
          createdAt: Date? = nil,
          updatedAt: Date? = nil,
          userId: UUID,
@@ -92,13 +92,14 @@ final class Order: Model {
 }
 
 extension Order {
-    convenience init(from model: APIOrderRequest, userId: UUID, paymentId: UUID, total: Double, deliveryFee: Double) {
-        self.init(userId: userId,
+    convenience init(from model: APIOrderRequest, number: String, userId: UUID, paymentId: UUID, total: Double, deliveryFee: Double, addressId: UUID) {
+        self.init(number: number,
+                  userId: userId,
                   voucherCode: model.voucherCode,
                   paymentId: paymentId,
                   total: total,
                   deliveryFee: deliveryFee,
-                  addressId: model.addressId,
+                  addressId: addressId,
                   deliveryStatus: TransportationStatus.confirmed.rawValue,
                   orderStatus: OrderStatus.confirmed.rawValue)
     }
