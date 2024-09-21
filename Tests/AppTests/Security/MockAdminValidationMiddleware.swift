@@ -13,7 +13,7 @@ struct MockAdminValidationMiddleware: AdminValidationMiddlewareProtocol {
     func respond(to req: Request, chainingTo next: AsyncResponder) async throws -> Response {
         switch responseStatus {
         case .unauthorized:
-            throw Abort(.unauthorized, reason: APIErrorMessage.Common.unauthorized)
+            throw Abort(.unauthorized, reason: .empty)
         case .success:
             return try await next.respond(to: req)
         }

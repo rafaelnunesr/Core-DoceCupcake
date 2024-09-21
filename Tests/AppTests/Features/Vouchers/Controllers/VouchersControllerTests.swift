@@ -37,7 +37,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.unauthorized)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         
         try self.app.test(.GET, route, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
@@ -51,7 +51,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.unauthorized)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         
         try self.app.test(.POST, route, 
                           beforeRequest: { request in
@@ -68,7 +68,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.unauthorized)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
@@ -107,15 +107,13 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.conflict)
-        
         try self.app.test(.POST, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent, using: encoder)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
+            XCTAssertEqual(bodyResponse, ErrorResponseHelper.conflictError)
         })
     }
     
@@ -123,7 +121,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = GenericMessageResponse(message: VouchersController.Constants.voucherCreated)
+        let expectedResponse = GenericMessageResponse(message: .empty)
         
         try self.app.test(.POST, route,
                           beforeRequest: { request in
@@ -139,7 +137,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.notFound)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
@@ -156,7 +154,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = GenericMessageResponse(message: VouchersController.Constants.voucherDeleted)
+        let expectedResponse = GenericMessageResponse(message: .empty)
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in

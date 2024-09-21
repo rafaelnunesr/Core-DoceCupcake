@@ -5,11 +5,12 @@ import Foundation
 final class MockSignUpUserRepository: SignUpUserRepositoryProtocol {
     var user: User?
 
-    func getUserId(with email: String) async throws -> UUID? {
+    func fetchUserId(with email: String) async throws -> UUID? {
         user?.id
     }
 
-    func createUser(with user: User) async throws {
+    func create(with user: User) async throws -> UUID {
         self.user = user
+        return try user.requireID()
     }
 }

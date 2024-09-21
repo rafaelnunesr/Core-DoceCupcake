@@ -32,7 +32,6 @@ final class SignInControllerTests: XCTestCase {
     }
     
     func test_signIn_with_invalid_request() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.invalidCredentials)
         mockSecurity.isValid = false
         
         try self.app.test(.POST, PathRoutes.signin.rawValue,
@@ -41,20 +40,18 @@ final class SignInControllerTests: XCTestCase {
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
+            XCTAssertEqual(bodyResponse, ErrorResponseHelper.invalidEmailOrPassword)
         })
     }
     
     func test_signIn_with_unknown_user() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.invalidCredentials)
-        
         try self.app.test(.POST, PathRoutes.signin.rawValue,
         beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
+            XCTAssertEqual(bodyResponse, ErrorResponseHelper.invalidEmailOrPassword)
         })
     }
     

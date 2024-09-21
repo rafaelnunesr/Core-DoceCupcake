@@ -39,7 +39,6 @@ final class SignUpAdminControllerTests: XCTestCase {
     }
     
     func test_when_admin_exists_should_return_conflict_error() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.userAlreadyRegistered)
         mockRepository.admin = MockAdmin().mary
         
         try self.app.test(.POST, route,
@@ -48,12 +47,11 @@ final class SignUpAdminControllerTests: XCTestCase {
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
+            XCTAssertEqual(bodyResponse, ErrorResponseHelper.userAlreadyRegistered)
         })
     }
     
     func test_when_credentials_are_invalid_should_return_bad_request_error() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.invalidCredentials)
         mockSecurity.isValid = false
         
         try self.app.test(.POST, route,
@@ -62,12 +60,12 @@ final class SignUpAdminControllerTests: XCTestCase {
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .badRequest)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
+            XCTAssertEqual(bodyResponse, ErrorResponseHelper.invalidEmailOrPassword)
         })
     }
     
     func test_create_admin_with_valid_data() throws {
-        let expectedResponse = GenericMessageResponse(message: SignUpAdminController.Constants.welcomeMessage)
+        let expectedResponse = GenericMessageResponse(message: .empty)
         
         try self.app.test(.POST, route,
                           beforeRequest: { request in

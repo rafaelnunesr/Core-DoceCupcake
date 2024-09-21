@@ -57,7 +57,7 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.unauthorized)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         
         try self.app.test(.POST, route,
                           beforeRequest: { request in
@@ -92,15 +92,13 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.conflict)
-        
         try self.app.test(.POST, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
+            XCTAssertEqual(bodyResponse, ErrorResponseHelper.conflictError)
         })
     }
     
@@ -111,7 +109,7 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.unauthorized)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         
         try self.app.test(.PUT, route,
                           beforeRequest: { request in
@@ -128,15 +126,13 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.notFound)
-        
         try self.app.test(.PUT, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
+            XCTAssertEqual(bodyResponse, ErrorResponseHelper.notFound)
         })
     }
     
@@ -165,7 +161,7 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.unauthorized)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
@@ -182,7 +178,7 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Common.notFound)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in

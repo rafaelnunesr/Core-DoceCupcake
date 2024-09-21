@@ -12,7 +12,7 @@ struct MockProductTagsController: ProductTagsControllerProtocol {
         areTagsValid
     }
 
-    func getTagsFor(_ tagCodeList: [String]) async throws -> [ProductTag] {
+    func fetchTags(_ tagCodeList: [String]) async throws -> [ProductTag] {
         if let productTag {
             return [productTag]
         }

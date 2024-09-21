@@ -14,7 +14,7 @@ final class SessionControllerTests: XCTestCase {
         mockRepository = MockSessionRepository()
         mockSecurity = MockSecurity()
         mockDependencyProvider = MockDependencyProvider(app: app, security: mockSecurity)
-        sut = SessionController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
+        sut = SessionController(repository: mockRepository)
     }
     
     override func tearDown() async throws {

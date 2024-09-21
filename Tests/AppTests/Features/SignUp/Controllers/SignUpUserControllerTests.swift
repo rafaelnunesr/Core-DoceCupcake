@@ -7,14 +7,16 @@ final class SignUpUserControllerTests: XCTestCase {
     private var sut: SignUpUserController!
     private var mockRepository: MockSignUpUserRepository!
     private var mockSecurity: MockSecurity!
+    private var mockAddressController: MockAddressController!
     private var mockDependencyProvider: MockDependencyProvider!
     
     override func setUp() async throws {
         app = try await Application.make(.testing)
         mockRepository = MockSignUpUserRepository()
         mockSecurity = MockSecurity()
+        mockAddressController = MockAddressController()
         mockDependencyProvider = MockDependencyProvider(app: app, security: mockSecurity)
-        sut = SignUpUserController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
+        sut = SignUpUserController(dependencyProvider: mockDependencyProvider, repository: mockRepository, addressController: mockAddressController)
         
         try app.register(collection: sut)
     }
@@ -38,7 +40,7 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_when_user_exists_should_return_conflict_error() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.userAlreadyRegistered)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         mockRepository.user = MockUser().john
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,
@@ -52,7 +54,7 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_when_credentials_are_invalid_should_return_bad_request_error() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: APIErrorMessage.Credentials.invalidCredentials)
+        let expectedResponse = ErrorResponse(error: true, reason: .empty)
         mockSecurity.isValid = false
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,
@@ -66,7 +68,7 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_create_user_with_valid_data() throws {
-        let expectedResponse = GenericMessageResponse(message: SignUpUserController.Constants.welcomeMessage)
+        let expectedResponse = GenericMessageResponse(message: .empty)
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,
                           beforeRequest: { request in

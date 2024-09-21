@@ -6,7 +6,7 @@ final class MockSessionController: SessionControllerProtocol {
     var session: InternalSessionModel?
     var sessionResult = SessionControlAccess.unowned
 
-    func createSession(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {
+    func create(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {
         return session
     }
     
@@ -14,7 +14,11 @@ final class MockSessionController: SessionControllerProtocol {
         sessionResult
     }
     
-    func deleteSession(for userId: UUID) async throws {
+    func delete(for userId: UUID) async throws {
         session = nil
+    }
+    
+    func fetchLoggedUserId(req: Vapor.Request) async throws -> UUID {
+        session?.userId ?? UUID()
     }
 }

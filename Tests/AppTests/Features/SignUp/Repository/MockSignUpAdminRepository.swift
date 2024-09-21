@@ -5,11 +5,11 @@ import Foundation
 final class MockSignUpAdminRepository: SignUpAdminRepositoryProtocol {
     var admin: Admin?
 
-    func getUserId(with email: String) async throws -> UUID? {
+    func fetchUserId(with email: String) async throws -> UUID? {
         admin?.id
     }
 
-    func createUser(with user: Admin) async throws {
-        admin = user
+    func create(with admin: Admin) async throws {
+        self.admin = admin
     }
 }

@@ -14,7 +14,7 @@ final class NutritionalControllerTests: XCTestCase {
         mockRepository = MockNutricionalRepository()
         mockSecurity = MockSecurity()
         mockDependencyProvider = MockDependencyProvider(app: app, security: mockSecurity)
-        sut = NutritionalController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
+        sut = NutritionalController(repository: mockRepository)
     }
     
     override func tearDown() async throws {
