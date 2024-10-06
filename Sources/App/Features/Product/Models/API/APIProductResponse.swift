@@ -11,9 +11,11 @@ struct APIProductResponse: Codable, Content {
     let stockCount: Double
     let launchDate: Date?
     var tags: [APIProductTag]
-    var allergicTags: [APIProductTag]
+    var allergicInfo: AllergicInfo
     var nutritionalInformations: [APINutritionalInformation]
     let isNew: Bool
+    let isHighlightedSale: Bool
+    let isHighlightedNew: Bool
     
     enum CodingKeys: String, CodingKey {
         case code
@@ -25,16 +27,17 @@ struct APIProductResponse: Codable, Content {
         case stockCount = "stock_count"
         case launchDate = "launch_date"
         case tags
-        case allergicTags = "allergic_tags"
+        case allergicInfo = "allergic_info"
         case nutritionalInformations = "nutritional_informations"
         case isNew = "is_new"
+        case isHighlightedSale = "is_highlighted_sale"
+        case isHighlightedNew = "is_highlighted_new"
     }
 }
 
 extension APIProductResponse {
     init(from model: Product,
          tags: [APIProductTag],
-         allergicTags: [APIProductTag],
          nutritionalInfos: [APINutritionalInformation]) {
         code = model.code
         name = model.name
@@ -45,9 +48,11 @@ extension APIProductResponse {
         stockCount = model.stockCount
         launchDate = model.launchDate
         self.tags = tags
-        self.allergicTags = allergicTags
+        allergicInfo = model.allergicInfo
         nutritionalInformations = nutritionalInfos
         isNew = model.isNew
+        isHighlightedNew = model.isHighlightedNew
+        isHighlightedSale = model.isHighlightedSale
     }
 }
 

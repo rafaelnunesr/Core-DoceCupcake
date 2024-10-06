@@ -19,9 +19,11 @@ struct CreateProductMigration: AsyncMigration {
             .field(ProductDbField.stockCount.fieldKey, .double, .required)
             .field(ProductDbField.launchDate.fieldKey, .datetime)
             .field(ProductDbField.tags.fieldKey, .array(of: .string), .required)
-            .field(ProductDbField.allergicTags.fieldKey, .array(of: .string), .required)
+            .field(ProductDbField.allergicInfo.fieldKey, .json, .required)
             .field(ProductDbField.nutritionalIds.fieldKey, .array(of: .uuid), .required)
             .field(ProductDbField.isNew.fieldKey, .bool, .required)
+            .field(ProductDbField.isHighlightedNew.fieldKey, .bool)
+            .field(ProductDbField.isHighlightedSale.fieldKey, .bool)
             .unique(on: ProductDbField.code.fieldKey)
             .create()
     }

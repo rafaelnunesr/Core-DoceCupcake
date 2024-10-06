@@ -60,7 +60,13 @@ struct ProductController: ProductControllerProtocol {
             try await createAPIProductResponse(for: product)
         }
         
-        return ProductListResponse(count: products.count, products: products)
+        let highlightedSaleProduct = products.first { $0.isHighlightedSale }
+        let highlightedNewProduct = products.first { $0.isHighlightedNew }
+        
+        return ProductListResponse(count: products.count,
+                                   products: products,
+                                   highlightedSaleProduct: highlightedSaleProduct,
+                                   highlightedNewProduct: highlightedNewProduct)
     }
 
     @Sendable
@@ -80,7 +86,7 @@ struct ProductController: ProductControllerProtocol {
         let model: APIProduct = try convertRequestDataToModel(req: req)
 
         try await ensureProductDoesNotExist(with: model.code)
-        try await validateProductTags(tags: model.tags.map { $0.code }, allergicTags: model.allergicTags.map { $0.code })
+        try await validateProductTags(tags: model.tags.map { $0.code })
 
         let nutritionalIds = try await createNutricionalInformations(with: model.nutritionalInformations)
 
@@ -97,7 +103,7 @@ struct ProductController: ProductControllerProtocol {
         guard let product = try await productRepository.fetchProduct(with: model.code)
         else { throw APIResponseError.Common.notFound }
         
-        try await validateProductTags(tags: model.tags.map { $0.code }, allergicTags: model.allergicTags.map { $0.code })
+        try await validateProductTags(tags: model.tags.map { $0.code })
 
         let nutritionalIds = try await createNutricionalInformations(with: model.nutritionalInformations)
         
@@ -109,7 +115,7 @@ struct ProductController: ProductControllerProtocol {
         product.voucherCode = model.voucherCode
         product.stockCount = product.stockCount
         product.tags = model.tags.map { $0.code }
-        product.tags = model.allergicTags.map { $0.code }
+        product.allergicInfo = model.allergicInfo
         product.nutritionalIds = nutritionalIds
         product.isNew = model.isNew
 
@@ -136,25 +142,22 @@ struct ProductController: ProductControllerProtocol {
         }
     }
     
-    private func validateProductTags(tags: [String], allergicTags: [String]) async throws {
+    private func validateProductTags(tags: [String]) async throws {
         async let areTagsValid = tagsController.areTagCodesValid(tags)
-        async let areAllergicTagsValid = tagsController.areTagCodesValid(allergicTags)
 
-        let (tagsResult, allergicTagsResult) = try await (areTagsValid, areAllergicTagsValid)
+        let tagsResult = try await (areTagsValid)
         
-        guard tagsResult, allergicTagsResult 
+        guard tagsResult
         else { throw APIResponseError.Product.invalidProductTag }
     }
     
     private func createAPIProductResponse(for product: Product) async throws -> APIProductResponse {
         let tags = try await fetchProductTags(with: product.tags)
-        let allergicTags = try await fetchProductTags(with: product.allergicTags)
         let nutritionalModels = try await nutritionalController.getNutritionalByIds(product.nutritionalIds)
 
         return APIProductResponse(
             from: product,
             tags: tags,
-            allergicTags: allergicTags,
             nutritionalInfos: nutritionalModels.map { APINutritionalInformation(from: $0) }
         )
     }

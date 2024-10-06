@@ -17,9 +17,11 @@ enum ProductDbField: String {
     case stockCount = "stock_count"
     case launchDate = "launch_date"
     case tags = "tags"
-    case allergicTags = "allergic_tags"
+    case allergicInfo = "allergic_info"
     case nutritionalIds = "nutritional_ids"
     case isNew = "is_new"
+    case isHighlightedSale = "highlighted_sale"
+    case isHighlightedNew = "highlighted_new"
     
     var fieldKey: FieldKey {
         return FieldKey(stringLiteral: self.rawValue)
@@ -68,15 +70,21 @@ final class Product: Model {
     @Field(key: ProductDbField.tags.fieldKey)
     var tags: [String]
 
-    @Field(key: ProductDbField.allergicTags.fieldKey)
-    var allergicTags: [String]
+    @Field(key: ProductDbField.allergicInfo.fieldKey)
+    var allergicInfo: AllergicInfo
 
     @Field(key: ProductDbField.nutritionalIds.fieldKey)
     var nutritionalIds: [UUID]
     
     @Field(key: ProductDbField.isNew.fieldKey)
     var isNew: Bool
-
+    
+    @Field(key: ProductDbField.isHighlightedSale.fieldKey)
+    var isHighlightedSale: Bool
+    
+    @Field(key: ProductDbField.isHighlightedNew.fieldKey)
+    var isHighlightedNew: Bool
+    
     internal init() { }
 
     init(id: UUID? = nil,
@@ -92,9 +100,11 @@ final class Product: Model {
          stockCount: Double,
          launchDate: Date?,
          tags: [String],
-         allergicTags: [String],
-         nutritionalIds: [UUID], 
-         isNew: Bool = false) {
+         allergicInfo: AllergicInfo,
+         nutritionalIds: [UUID],
+         isNew: Bool = false,
+         isHighlightedSale: Bool = false,
+         isHighlightedNew: Bool = false) {
         self.id = id
         self.code = code
         self.createdAt = createdAt
@@ -108,9 +118,11 @@ final class Product: Model {
         self.stockCount = stockCount
         self.launchDate = launchDate
         self.tags = tags
-        self.allergicTags = allergicTags
+        self.allergicInfo = allergicInfo
         self.nutritionalIds = nutritionalIds
         self.isNew = isNew
+        self.isHighlightedSale = isHighlightedSale
+        self.isHighlightedNew = isHighlightedNew
     }
 }
 
@@ -126,8 +138,10 @@ extension Product {
                   stockCount: product.stockCount,
                   launchDate: product.launchDate,
                   tags: product.tags.map { $0.code },
-                  allergicTags: product.allergicTags.map { $0.code },
-                  nutritionalIds: nutritionalIds, 
-                  isNew: product.isNew)
+                  allergicInfo: product.allergicInfo,
+                  nutritionalIds: nutritionalIds,
+                  isNew: product.isNew,
+                  isHighlightedSale: product.isHighlightSale,
+                  isHighlightedNew: product.isHighlightNew)
     }
 }

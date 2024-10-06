@@ -13,9 +13,11 @@ struct APIProduct: Codable, Content {
     let stockCount: Double
     let launchDate: Date?
     var tags: [APITag]
-    var allergicTags: [APITag]
+    var allergicInfo: AllergicInfo
     var nutritionalInformations: [APINutritionalInformation]
     let isNew: Bool
+    let isHighlightSale: Bool
+    let isHighlightNew: Bool
     
     enum CodingKeys: String, CodingKey {
         case code
@@ -29,9 +31,11 @@ struct APIProduct: Codable, Content {
         case stockCount = "stock_count"
         case launchDate = "launch_date"
         case tags
-        case allergicTags = "allergic_tags"
+        case allergicInfo = "allergic_info"
         case nutritionalInformations = "nutritional_informations"
         case isNew = "is_new"
+        case isHighlightSale = "is_highlight_sale"
+        case isHighlightNew = "is_highlight_new"
     }
 }
 
@@ -48,8 +52,10 @@ extension APIProduct {
         stockCount = model.stockCount
         launchDate = model.launchDate
         tags = model.tags.map { APITag(code: $0) }
-        allergicTags = model.allergicTags.map { APITag(code: $0) }
+        allergicInfo = model.allergicInfo
         nutritionalInformations = nutritionalInfos
         isNew = model.isNew
+        isHighlightNew = model.isHighlightedNew
+        isHighlightSale = model.isHighlightedSale
     }
 }
