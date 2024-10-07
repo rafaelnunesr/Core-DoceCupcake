@@ -12,7 +12,7 @@ extension String {
     }
 
     @inlinable var isValidPassword: Bool {
-        let passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
+        let passwordRegex = "^(?=.*[A-Za-z]).{8,}$"
         let passwordPred = NSPredicate(format:"SELF MATCHES %@", passwordRegex)
         return passwordPred.evaluate(with: self)
     }

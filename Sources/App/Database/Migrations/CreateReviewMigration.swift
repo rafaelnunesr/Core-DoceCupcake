@@ -7,9 +7,9 @@ struct CreateReviewMigration: AsyncMigration {
         try await database.schema(databaseName)
             .id()
             .field(ReviewDbField.createdAt.fieldKey, .datetime)
-            .field(ReviewDbField.orderId.fieldKey, .string, .required,
+            .field(ReviewDbField.orderId.fieldKey, .uuid, .required,
                 .references(OrderDbField.schema.rawValue, OrderDbField.id.fieldKey))
-            .field(ReviewDbField.userId.fieldKey, .string, .required,
+            .field(ReviewDbField.userId.fieldKey, .uuid, .required,
                    .references(UsersDbField.schema.rawValue, UsersDbField.id.fieldKey))
             .field(ReviewDbField.productId.fieldKey, .uuid, .required,
                    .references(ProductDbField.schema.rawValue, ProductDbField.id.fieldKey))

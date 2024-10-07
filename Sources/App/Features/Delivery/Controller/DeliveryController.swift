@@ -5,16 +5,26 @@ protocol DeliveryControllerProtocol: Sendable, RouteCollection {
 }
 
 final class DeliveryController: DeliveryControllerProtocol {
+    private let userSectionValidation: SessionValidationMiddlewareProtocol
+    
+    init(userSectionValidation: SessionValidationMiddlewareProtocol) {
+        self.userSectionValidation = userSectionValidation
+    }
+    
     func boot(routes: RoutesBuilder) throws {
         let productRoutes = routes.grouped(PathRoutes.delivery.path)
         
-        productRoutes.get(use: getDeliveryFee)
+        productRoutes
+            .grouped(userSectionValidation)
+            .get(":zipcode", use: getDeliveryFee)
     }
     
     @Sendable
     private func getDeliveryFee(req: Request) async throws -> Double {
-        let delivery: APIDeliveryRequest = try convertRequestDataToModel(req: req)
-        return calculateDeliveryFee(zipcode: delivery.zipcode)
+        guard let zipcode = req.parameters.get("zipcode")
+        else { throw APIResponseError.Common.badRequest }
+        
+        return calculateDeliveryFee(zipcode: zipcode)
     }
     
     func calculateDeliveryFee(zipcode: String) -> Double {

@@ -19,6 +19,7 @@
 //        try insertMockProducts(db)
 //        try insertMockPackages(db)
 //        
+//        
 //        context.console.print("Mock data inserted successfully!")
 //    }
 //
@@ -28,35 +29,28 @@
 //// MARK: - CREATE USERS
 //extension InsertMockDataCommand {
 //    private func insertMockUsers(_ db: Database) throws {
-//        let password = try security.hashStringValue("123456789Aa#")
+//        let password = try security.hashStringValue("12345678A")
+//        
 //        let john = User(id: UUID(),
 //                        createdAt: Date(),
 //                        userName: "John Smith",
 //                        email: "john@email.com",
 //                        password: password,
-//                        imageUrl: nil,
-//                        state: "Sao Paulo",
-//                        city: "Sao Paulo",
-//                        address: "Stree B",
-//                        addressComplement: nil)
+//                        imageUrl: nil)
 //        
 //        let mary = User(id: UUID(),
 //                        createdAt: Date(),
 //                        userName: "Mary Scott",
 //                        email: "mary@email.com",
 //                        password: password,
-//                        imageUrl: nil,
-//                        state: "Sao Paulo",
-//                        city: "Sao Paulo",
-//                        address: "Street B",
-//                        addressComplement: nil)
+//                        imageUrl: nil)
 //        
 //        _ = john.create(on: db)
 //        _ = mary.create(on: db)
 //    }
 //    
 //    private func insertMockAdmins(_ db: Database) throws {
-//        let password = try security.hashStringValue("123456789Aa#")
+//        let password = try security.hashStringValue("12345678A")
 //        let john = Admin(id: UUID(),
 //                        createdAt: Date(),
 //                        userName: "John Smith",
@@ -74,6 +68,36 @@
 //    }
 //}
 //
+//// MARK: - CREATE ADDRESS
+//extension InsertMockDataCommand {
+//    private func insertMockAddresses(_ db: Database, userId: UUID) throws {
+//        let firstAddress = Address(id: UUID(),
+//                                   createdAt: Date(),
+//                                   userId: userId,
+//                                   streetName: "Main Street",
+//                                   number: "1234",
+//                                   zipCode: "90210",
+//                                   complementary: "",
+//                                   state: "CA",
+//                                   city: "Anytown",
+//                                   country: "USA")
+//        
+//        let secondAddress = Address(id: UUID(),
+//                                    createdAt: Date(),
+//                                    userId: userId,
+//                                    streetName: "Second Street",
+//                                    number: "9874",
+//                                    zipCode: "5612230",
+//                                    complementary: "",
+//                                    state: "CA",
+//                                    city: "Anytown",
+//                                    country: "USA")
+//        
+//        _ = firstAddress.create(on: db)
+//        _ = secondAddress.create(on: db)
+//    }
+//}
+//    
 //// MARK: - CREATE PRODUCT TAGS
 //extension InsertMockDataCommand {
 //    private func insertMockProductTags(_ db: Database) throws {
@@ -139,19 +163,21 @@
 //        _ = nutritionalC.create(on: db)
 //        _ = nutritionalD.create(on: db)
 //        
+//        let allergicInfo = AllergicInfo(hasEggs: true, hasMilk: true)
+//        
 //        let productA = Product(id: UUID(),
 //                               createdAt: Date(),
 //                               code: "789456123",
 //                               name: "Cupcake dark chocolate",
 //                               description: "A delicious cupcake with dark chocolate",
-//                               imageUrl: nil,
+//                               imageUrl: "https://github.com/rafaelnunesr/Image/blob/main/cupkcake.png?raw=true",
 //                               currentPrice: 9.99,
 //                               originalPrice: 14.99,
 //                               voucherCode: "10_OFF",
 //                               stockCount: 50,
 //                               launchDate: Date(),
 //                               tags: ["C-01", "C-04"],
-//                               allergicTags: [],
+//                               allergicInfo: allergicInfo,
 //                               nutritionalIds: [nutritionalA.id!, nutritionalB.id!, nutritionalC.id!],
 //                               isNew: true)
 //        
@@ -160,14 +186,14 @@
 //                               code: "789123456",
 //                               name: "Cupcake light chocolate",
 //                               description: "A delicious cupcake with light chocolate",
-//                               imageUrl: nil,
+//                               imageUrl: "https://github.com/rafaelnunesr/Image/blob/main/cupcake2.png?raw=true",
 //                               currentPrice: 13.49,
 //                               originalPrice: 15.29,
 //                               voucherCode: "50_OFF",
 //                               stockCount: 18,
 //                               launchDate: Date(),
 //                               tags: ["C-02", "C-03"],
-//                               allergicTags: ["C-02", "C-03"],
+//                               allergicInfo: allergicInfo,
 //                               nutritionalIds: [nutritionalA.id!, nutritionalB.id!, nutritionalD.id!],
 //                               isNew: false)
 //        
@@ -176,14 +202,14 @@
 //                               code: "789654321",
 //                               name: "Cupcake with strawberries",
 //                               description: "A delicious cupcake with strawberries",
-//                               imageUrl: nil,
+//                               imageUrl: "https://github.com/rafaelnunesr/Image/blob/main/cupkcake.png?raw=true",
 //                               currentPrice: 9.99,
 //                               originalPrice: 14.99,
 //                               voucherCode: "10_OFF",
 //                               stockCount: 50,
 //                               launchDate: Date(),
 //                               tags: ["C-01", "C-04"],
-//                               allergicTags: ["C-04"],
+//                               allergicInfo: allergicInfo,
 //                               nutritionalIds: [nutritionalA.id!, nutritionalB.id!, nutritionalC.id!, nutritionalD.id!],
 //                               isNew: true)
 //        
@@ -192,14 +218,14 @@
 //                               code: "789415263",
 //                               name: "Cupcake with orange",
 //                               description: "A delicious cupcake with orange",
-//                               imageUrl: nil,
+//                               imageUrl: "https://github.com/rafaelnunesr/Image/blob/main/cupcake2.png?raw=true",
 //                               currentPrice: 4.99,
 //                               originalPrice: 9.99,
 //                               voucherCode: "50_OFF",
 //                               stockCount: 77,
 //                               launchDate: Date(),
 //                               tags: ["C-03", "C-04", "C-05"],
-//                               allergicTags: ["C-03", "C-04"],
+//                               allergicInfo: allergicInfo,
 //                               nutritionalIds: [nutritionalB.id!, nutritionalC.id!, nutritionalD.id!],
 //                               isNew: false)
 //        
@@ -208,14 +234,14 @@
 //                               code: "789362514",
 //                               name: "Cupcake raspberries",
 //                               description: "A delicious cupcake with raspberries",
-//                               imageUrl: nil,
+//                               imageUrl: "https://github.com/rafaelnunesr/Image/blob/main/cupkcake.png?raw=true",
 //                               currentPrice: 7.99,
 //                               originalPrice: 9.99,
 //                               voucherCode: "30_OFF",
 //                               stockCount: 54,
 //                               launchDate: Date(),
 //                               tags: ["C-01", "C-05"],
-//                               allergicTags: ["C-05"],
+//                               allergicInfo: allergicInfo,
 //                               nutritionalIds: [nutritionalA.id!, nutritionalC.id!, nutritionalD.id!],
 //                               isNew: false)
 //        

@@ -20,7 +20,15 @@ final class MockProductRepository: ProductRepositoryProtocol {
         
         return []
     }
-
+    
+    func fetchProducts(with value: String) async throws -> [Product] {
+        if let result {
+            return [result]
+        }
+        
+        return []
+    }
+    
     func create(_ product: Product) async throws {
         result = product
     }

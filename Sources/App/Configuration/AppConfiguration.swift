@@ -25,6 +25,7 @@ final class AppConfiguration: AppConfigurationProtocol {
         migrationService.addMigrations()
         //app.middleware.use(ErrorHandlingMiddleware())
         
+        // remove this code in production
         //app.commands.use(InsertMockDataCommand(), as: "insert-mock-data")
         
         do {

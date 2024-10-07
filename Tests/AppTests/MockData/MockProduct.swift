@@ -15,7 +15,7 @@ struct MockProduct {
                        stockCount: Double = 1,
                        launchDate: TimeInterval? = Date().timeIntervalSince1970,
                        tags: [String] = [],
-                       allergicTags: [String] = [],
+                       allergicInfo: AllergicInfo = AllergicInfo(),
                        nutritionalIds: [UUID] = [],
                        isNew: Bool = true) -> Product {
         Product(id: id,
@@ -30,7 +30,7 @@ struct MockProduct {
                 stockCount: stockCount,
                 launchDate: Date(timeIntervalSince1970: createdAt ?? 0),
                 tags: tags,
-                allergicTags: allergicTags,
+                allergicInfo: allergicInfo,
                 nutritionalIds: nutritionalIds,
                 isNew: isNew)
     }

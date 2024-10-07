@@ -73,6 +73,6 @@ final class OrdersControllerFactory: OrdersControllerFactoryProtocol {
     }
     
     private func createDeliveryController() -> DeliveryControllerProtocol {
-        return DeliveryController()
+        return DeliveryController(userSectionValidation: dependencyProvider.getUserSessionValidationMiddleware())
     }
 }
