@@ -4,7 +4,7 @@ protocol OrdersControllerFactoryProtocol {
     func makeOrderController() throws -> OrderController
 }
 
-final class OrdersControllerFactory: OrdersControllerFactoryProtocol {
+struct OrdersControllerFactory: OrdersControllerFactoryProtocol {
     private let dependencyProvider: DependencyProviderProtocol
 
     init(dependencyProvider: DependencyProviderProtocol) {
@@ -26,7 +26,6 @@ final class OrdersControllerFactory: OrdersControllerFactoryProtocol {
         return OrderController(dependencyProvider: dependencyProvider, 
                                orderRepository: orderRepository,
                                orderItemRepository: orderItemRepository,
-                               sessionController: sessionController,
                                addressController: addressController,
                                productController: productController,
                                cardController: cardController,

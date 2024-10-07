@@ -8,7 +8,7 @@ protocol AddressControllerProtocol: Sendable {
     func delete(_ addressUuid: UUID) async throws
 }
 
-final class AddressController: AddressControllerProtocol {
+struct AddressController: AddressControllerProtocol {
     private var repository: AddressRepositoryProtocol
     
     init(repository: AddressRepositoryProtocol) {

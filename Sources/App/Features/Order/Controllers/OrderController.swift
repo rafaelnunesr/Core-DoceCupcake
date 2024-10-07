@@ -20,7 +20,6 @@ struct OrderController: RouteCollection, Sendable {
     init(dependencyProvider: DependencyProviderProtocol,
          orderRepository: OrderRepositoryProtocol,
          orderItemRepository: OrderItemRepositoryProtocol,
-         sessionController: SessionControllerProtocol,
          addressController: AddressControllerProtocol,
          productController: ProductControllerProtocol,
          cardController: CardControllerProtocol,
@@ -29,12 +28,12 @@ struct OrderController: RouteCollection, Sendable {
         database = dependencyProvider.getDatabaseInstance()
         self.orderRepository = orderRepository
         self.orderItemRepository = orderItemRepository
-        self.sessionController = sessionController
         self.addressController = addressController
         self.productController = productController
         self.cardController = cardController
         self.vouchersController = vouchersController
         self.deliveryController = deliveryController
+        self.sessionController = dependencyProvider.getSessionController()
         self.userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         self.adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
     }

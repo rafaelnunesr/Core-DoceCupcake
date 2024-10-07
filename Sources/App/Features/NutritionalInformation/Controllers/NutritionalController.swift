@@ -28,7 +28,7 @@ struct NutritionalController: NutritionalControllerProtocol {
     }
 
     func save(_ model: NutritionalInformation) async throws -> NutritionalInformation {
-        let result = try await repository.getNutritionalByAllFields(model)
+        let result = try await repository.fetchNutritionalByAllFields(model)
 
         if let result {
             return result

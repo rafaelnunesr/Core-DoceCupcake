@@ -6,7 +6,7 @@ protocol ProductControllerFactoryProtocol {
     //func makeProductReviewController() throws -> ReviewController
 }
 
-final class ProductControllerFactory: ProductControllerFactoryProtocol {
+struct ProductControllerFactory: ProductControllerFactoryProtocol {
     private let dependencyProvider: DependencyProviderProtocol
 
     init(dependencyProvider: DependencyProviderProtocol) {

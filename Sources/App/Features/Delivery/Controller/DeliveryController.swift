@@ -4,7 +4,7 @@ protocol DeliveryControllerProtocol: Sendable, RouteCollection {
     func calculateDeliveryFee(zipcode: String) -> Double
 }
 
-final class DeliveryController: DeliveryControllerProtocol {
+struct DeliveryController: DeliveryControllerProtocol {
     private let userSectionValidation: SessionValidationMiddlewareProtocol
     
     init(userSectionValidation: SessionValidationMiddlewareProtocol) {

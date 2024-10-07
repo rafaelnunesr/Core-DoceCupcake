@@ -2,7 +2,7 @@ import Foundation
 
 @testable import App
 
-final class MockAddressController: AddressControllerProtocol {
+struct MockAddressController: AddressControllerProtocol {
     var address: Address?
     
     func fetchAddressById(_ id: UUID) async throws -> Address? {

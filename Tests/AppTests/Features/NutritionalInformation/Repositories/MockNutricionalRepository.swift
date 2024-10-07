@@ -5,7 +5,7 @@ import Foundation
 final class MockNutricionalRepository: NutritionalRepositoryProtocol {
     var result: (any DatabaseModelProtocol)?
     
-    func getNutritionalByAllFields(_ model: NutritionalInformation) async throws -> NutritionalInformation? {
+    func fetchNutritionalByAllFields(_ model: NutritionalInformation) async throws -> NutritionalInformation? {
         if let result = result as? NutritionalInformation {
             return result
         }

@@ -4,7 +4,7 @@ protocol UserControllerFactoryProtocol {
     func makeAdminSignUpController() throws -> SignUpAdminController
 }
 
-final class UserControllerFactory: UserControllerFactoryProtocol {
+struct UserControllerFactory: UserControllerFactoryProtocol {
     private let dependencyProvider: DependencyProviderProtocol
 
     init(dependencyProvider: DependencyProviderProtocol) {
