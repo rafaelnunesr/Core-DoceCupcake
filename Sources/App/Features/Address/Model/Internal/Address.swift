@@ -78,7 +78,6 @@ final class Address: Model {
     }
 }
 
-
 extension Address {
     convenience init(from model: APIAddress, userId: UUID) {
         self.init(userId: userId,

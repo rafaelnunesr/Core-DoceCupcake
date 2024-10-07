@@ -70,7 +70,6 @@ struct PackagingController: PackagingControllerProtocol {
         return result
     }
 
-
     enum Constants {
         static let packageCreated = "Package created."
         static let packageDeleted = "Package deleted."

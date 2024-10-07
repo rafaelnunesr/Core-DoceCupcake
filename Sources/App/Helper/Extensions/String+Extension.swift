@@ -22,5 +22,9 @@ extension String {
         dateFormatter.dateFormat = "MM/dd/yyyy"
         return dateFormatter.date(from: self)
     }
+    
+    @inlinable var uuid: UUID {
+        UUID(uuidString: self) ?? UUID()
+    }
 }
 

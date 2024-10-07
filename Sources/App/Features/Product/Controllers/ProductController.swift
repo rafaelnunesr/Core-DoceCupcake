@@ -40,6 +40,10 @@ struct ProductController: ProductControllerProtocol {
             .get(":productCode", use: fetchProduct)
         
         productRoutes
+            .grouped(userSectionValidation)
+            .get("search", use: searchProduct)
+        
+        productRoutes
             .grouped(adminSectionValidation)
             .post(use: create)
         
@@ -79,6 +83,21 @@ struct ProductController: ProductControllerProtocol {
 
         let productResponse = try await createAPIProductResponse(for: product)
         return productResponse
+    }
+    
+    @Sendable
+    private func searchProduct(req: Request) async throws -> ProductListResponse {
+        guard let query = req.query[String.self, at: "query"]
+        else { throw APIResponseError.Common.badRequest }
+        
+        let productList = try await productRepository.fetchProducts(with: query)
+        
+        let products = try await productList.asyncMap { product in
+            try await createAPIProductResponse(for: product)
+        }
+        
+        return ProductListResponse(count: products.count,
+                                   products: products)
     }
 
     @Sendable

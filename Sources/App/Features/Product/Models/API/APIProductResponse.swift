@@ -2,6 +2,7 @@ import Foundation
 import Vapor
 
 struct APIProductResponse: Codable, Content {
+    let id: UUID
     let code: String
     let name: String
     let description: String
@@ -18,6 +19,7 @@ struct APIProductResponse: Codable, Content {
     let isHighlightedNew: Bool
     
     enum CodingKeys: String, CodingKey {
+        case id
         case code
         case name
         case description
@@ -39,6 +41,7 @@ extension APIProductResponse {
     init(from model: Product,
          tags: [APIProductTag],
          nutritionalInfos: [APINutritionalInformation]) {
+        id = model.id ?? UUID()
         code = model.code
         name = model.name
         description = model.description
