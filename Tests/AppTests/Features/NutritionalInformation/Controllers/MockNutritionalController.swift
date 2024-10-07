@@ -5,7 +5,7 @@ import Foundation
 final class MockNutritionalController: NutritionalControllerProtocol {
     var information: NutritionalInformation?
     
-    func getNutritionalByIds(_ idList: [UUID]) async throws -> [NutritionalInformation] {
+    func fetchNutritionalByIds(_ idList: [UUID]) async throws -> [NutritionalInformation] {
         if let information {
             return [information]
         }
@@ -13,11 +13,11 @@ final class MockNutritionalController: NutritionalControllerProtocol {
         return []
     }
 
-    func saveNutritionalModel(_ model: NutritionalInformation) async throws -> NutritionalInformation {
+    func save(_ model: NutritionalInformation) async throws -> NutritionalInformation {
         model
     }
 
-    func deleteNutritionalModel(_ model: NutritionalInformation) async throws {
+    func delete(_ model: NutritionalInformation) async throws {
         information = nil
     }
 }

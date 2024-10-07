@@ -172,7 +172,7 @@ struct ProductController: ProductControllerProtocol {
     
     private func createAPIProductResponse(for product: Product) async throws -> APIProductResponse {
         let tags = try await fetchProductTags(with: product.tags)
-        let nutritionalModels = try await nutritionalController.getNutritionalByIds(product.nutritionalIds)
+        let nutritionalModels = try await nutritionalController.fetchNutritionalByIds(product.nutritionalIds)
 
         return APIProductResponse(
             from: product,
@@ -183,7 +183,7 @@ struct ProductController: ProductControllerProtocol {
     
     private func createNutricionalInformations(with nutritionalInformations: [APINutritionalInformation]) async throws -> [UUID] {
         try await nutritionalInformations.asyncCompactMap { information in
-            try await nutritionalController.saveNutritionalModel(NutritionalInformation(from: information)).id
+            try await nutritionalController.save(NutritionalInformation(from: information)).id
         }
     }
     
@@ -198,7 +198,7 @@ struct ProductController: ProductControllerProtocol {
     
     private func saveNutritional(for nutritionals: [APINutritionalInformation]) async throws -> [UUID] {
         try await nutritionals.asyncCompactMap {
-            try await nutritionalController.saveNutritionalModel(NutritionalInformation(from: $0)).id
+            try await nutritionalController.save(NutritionalInformation(from: $0)).id
         }
     }
 

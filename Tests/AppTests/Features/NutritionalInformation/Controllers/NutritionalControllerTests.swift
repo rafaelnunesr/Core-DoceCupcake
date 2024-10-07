@@ -30,7 +30,7 @@ final class NutritionalControllerTests: XCTestCase {
         let nutritionalInformation = MockNutritionalInformation().infoA
         mockRepository.result = nutritionalInformation
         
-        let result = try await sut.getNutritionalByIds([UUID()])
+        let result = try await sut.fetchNutritionalByIds([UUID()])
         XCTAssertEqual(result.first?.code, nutritionalInformation.code)
         XCTAssertEqual(result.first?.name, nutritionalInformation.name)
         XCTAssertEqual(result.first?.quantityDescription, nutritionalInformation.quantityDescription)
@@ -40,7 +40,7 @@ final class NutritionalControllerTests: XCTestCase {
     func test_save_new_nutritional_information_should_return_correct_values() async throws {
         let nutritionalInformation = MockNutritionalInformation().infoA
         
-        let result = try await sut.saveNutritionalModel(nutritionalInformation)
+        let result = try await sut.save(nutritionalInformation)
         XCTAssertEqual(result.code, nutritionalInformation.code)
         XCTAssertEqual(result.name, nutritionalInformation.name)
         XCTAssertEqual(result.quantityDescription, nutritionalInformation.quantityDescription)
@@ -51,10 +51,18 @@ final class NutritionalControllerTests: XCTestCase {
         let nutritionalInformation = MockNutritionalInformation().infoA
         mockRepository.result = nutritionalInformation
         
-        let result = try await sut.saveNutritionalModel(nutritionalInformation)
+        let result = try await sut.save(nutritionalInformation)
         XCTAssertEqual(result.code, nutritionalInformation.code)
         XCTAssertEqual(result.name, nutritionalInformation.name)
         XCTAssertEqual(result.quantityDescription, nutritionalInformation.quantityDescription)
         XCTAssertEqual(result.dailyRepresentation, nutritionalInformation.dailyRepresentation)
+    }
+    
+    func test_delete_nutritional_information() async throws {
+        let nutritionalInformation = MockNutritionalInformation().infoA
+        mockRepository.result = nutritionalInformation
+        
+        try await sut.delete(nutritionalInformation)
+        XCTAssertNil(mockRepository.result)
     }
 }
