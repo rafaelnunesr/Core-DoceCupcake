@@ -53,7 +53,7 @@ struct OrderController: RouteCollection, Sendable {
     }
 
     private func setupAdminRoutes(on routes: RoutesBuilder) {
-        routes.get("open", use: fetchAllOrders(with: .confirmed))
+        routes.get("opened", use: fetchAllOrders(with: .confirmed))
         routes.get("closed", use: fetchAllOrders(with: .closed))
         routes.get("cancelled", use: fetchAllOrders(with: .cancelled))
         routes.put(use: update)
@@ -94,7 +94,11 @@ struct OrderController: RouteCollection, Sendable {
             guard let paymentId = try await cardController.processOrder(orderRequest.payment, userId: userId) else {
                 throw APIResponseError.Payment.paymentError
             }
-            let order = try await create(from: orderRequest, userId: userId, zipCode: address.zipCode, paymentId: paymentId, addressId: address.requireID())
+            let order = try await create(from: orderRequest,
+                                         userId: userId,
+                                         zipCode: address.zipCode,
+                                         paymentId: paymentId,
+                                         addressId: address.requireID())
             
             for product in orderRequest.products {
                 guard let prd = try await productController.fetchProduct(with: product.code)
@@ -228,6 +232,5 @@ struct OrderController: RouteCollection, Sendable {
     private enum Constants {
         static let orderCreated = "Order created."
         static let orderUpdated = "Order updated."
-        static let orderDeleted = "Order deleted."
     }
 }

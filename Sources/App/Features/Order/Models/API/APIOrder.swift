@@ -12,7 +12,7 @@ struct APIOrder: Codable, Content {
     var deliveryFee: Double
     
     enum CodingKeys: String, CodingKey {
-        case number
+        case number = "number"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case address

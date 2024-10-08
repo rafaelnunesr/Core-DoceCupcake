@@ -16,7 +16,7 @@ struct MockProductController: ProductControllerProtocol {
     }
     
     func checkProductAvailability(with code: String, and quantity: Double) async throws -> Bool {
-        false
+        true
     }
     
     func updateProductAvailability(with code: String, and quantity: Double) async throws {}

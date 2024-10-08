@@ -1,4 +1,6 @@
-struct APIOrderUpdate: Codable {
+import Vapor
+
+struct APIOrderUpdate: Codable, Content {
     var orderNumber: String
     var orderStatus: OrderStatus
     var deliveryStatus: TransportationStatus

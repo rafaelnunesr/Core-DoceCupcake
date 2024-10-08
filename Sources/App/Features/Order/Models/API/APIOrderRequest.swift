@@ -1,6 +1,7 @@
 import Foundation
+import Vapor
 
-struct APIOrderRequest: Codable {
+struct APIOrderRequest: Codable, Content {
     let products: [APIProductOrderRequest]
     var voucherCode: String?
     let payment: CreditCardRequest
