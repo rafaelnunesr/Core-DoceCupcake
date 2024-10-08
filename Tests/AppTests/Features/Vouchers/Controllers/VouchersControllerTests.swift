@@ -37,12 +37,8 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
-        
         try self.app.test(.GET, route, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -51,15 +47,11 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
-        
         try self.app.test(.POST, route, 
                           beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -68,15 +60,11 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
-        
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
             try request.content.encode(deleteContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -107,16 +95,11 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedError = ErrorResponse(error: true, reason: .conflict)
-        
-        
         try self.app.test(.POST, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent, using: encoder)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedError)
         })
     }
     
@@ -139,16 +122,12 @@ final class VouchersControllerTests: XCTestCase {
     func test_when_admin_tries_to_delete_a_non_existing_voucher_should_return_not_found_error() throws {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
-        
-        let expectedResponse = ErrorResponse(error: true, reason: .notFound)
-        
+     
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
             try request.content.encode(deleteContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     

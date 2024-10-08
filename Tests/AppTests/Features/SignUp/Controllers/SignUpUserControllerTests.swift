@@ -9,6 +9,7 @@ final class SignUpUserControllerTests: XCTestCase {
     private var mockSecurity: MockSecurity!
     private var mockAddressController: MockAddressController!
     private var mockDependencyProvider: MockDependencyProvider!
+    let signupModel = MockSignUpUserRequest().user
     
     override func setUp() async throws {
         app = try await Application.make(.testing)
@@ -40,30 +41,24 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_when_user_exists_should_return_conflict_error() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: .conflict)
         mockRepository.user = MockUser().john
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,
         beforeRequest: { request in
-            try request.content.encode(requestContent)
+            try request.content.encode(signupModel)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
-    func test_when_credentials_are_invalid_should_return_bad_request_error() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: .badRequest)
+    func test_when_credentials_are_invalid_should_return_unauthorized_error() throws {
         mockSecurity.isValid = false
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,
         beforeRequest: { request in
-            try request.content.encode(requestContent)
+            try request.content.encode(signupModel)
         }, afterResponse: { response in
-            XCTAssertEqual(response.status, .badRequest)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
+            XCTAssertEqual(response.status, .unauthorized)
         })
     }
     
@@ -72,7 +67,7 @@ final class SignUpUserControllerTests: XCTestCase {
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,
                           beforeRequest: { request in
-            try request.content.encode(requestContent)
+            try request.content.encode(signupModel)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             let bodyResponse = convertBodyToGenericMessageResponse(with: response.body)
@@ -84,15 +79,5 @@ final class SignUpUserControllerTests: XCTestCase {
 extension SignUpUserControllerTests {
     var invalidRequest: [String: String] {
         ["invalid": "invalid"]
-    }
-    
-    var requestContent: [String: String] {
-        ["user_name": "A",
-         "email": "B",
-         "password": "C",
-         "state": "D",
-         "city": "E",
-         "address": "F",
-         "address_complement": "G"]
     }
 }

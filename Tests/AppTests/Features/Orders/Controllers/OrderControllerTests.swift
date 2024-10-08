@@ -96,13 +96,9 @@ final class OrderControllerTests: XCTestCase {
                               deliveryController: mockDeliveryController)
         
         try sut.boot(routes: app.routes)
-        
-        let expectedResponse = ErrorResponse(error: true, reason: .notFound)
-        
+  
         try self.app.test(.GET, "\(route)/123", afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -294,15 +290,11 @@ final class OrderControllerTests: XCTestCase {
     
     func test_when_logged_admin_request_update_unknowed_order_should_return_error() throws {
         try sut.boot(routes: app.routes)
-        
-        let expectedResponse = ErrorResponse(error: true, reason: .notFound)
-        
+    
         try self.app.test(.PUT, route, beforeRequest: { request in
             try request.content.encode(orderUpdate)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     

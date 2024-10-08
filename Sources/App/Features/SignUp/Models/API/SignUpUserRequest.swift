@@ -1,4 +1,6 @@
-struct SignUpUserRequest: Codable {
+import Vapor
+
+struct SignUpUserRequest: Codable, Content {
     let userName: String
     let email: String
     var password: String

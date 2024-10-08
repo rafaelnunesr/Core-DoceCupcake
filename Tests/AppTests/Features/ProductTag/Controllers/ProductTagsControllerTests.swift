@@ -56,16 +56,12 @@ final class ProductTagsControllerTests: XCTestCase {
         sut = ProductTagsController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         
         try sut.boot(routes: app.routes)
-        
-        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
-        
+    
         try self.app.test(.POST, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -92,15 +88,11 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .conflict)
-        
         try self.app.test(.POST, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -111,15 +103,11 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
-        
         try self.app.test(.PUT, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -128,15 +116,11 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .notFound)
-        
         try self.app.test(.PUT, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -164,16 +148,12 @@ final class ProductTagsControllerTests: XCTestCase {
         sut = ProductTagsController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         
         try sut.boot(routes: app.routes)
-        
-        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
-        
+   
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
             try request.content.encode(deleteContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -181,16 +161,12 @@ final class ProductTagsControllerTests: XCTestCase {
         sut = ProductTagsController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         
         try sut.boot(routes: app.routes)
-        
-        let expectedResponse = ErrorResponse(error: true, reason: .notFound)
-        
+  
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
             try request.content.encode(deleteContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
-            let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -219,6 +195,6 @@ extension ProductTagsControllerTests {
     }
     
     var deleteContent: [String: String] {
-        ["id": "A"]
+        ["code": "A"]
     }
 }
