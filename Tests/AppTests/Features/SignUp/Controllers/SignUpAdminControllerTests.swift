@@ -41,18 +41,22 @@ final class SignUpAdminControllerTests: XCTestCase {
     func test_when_admin_exists_should_return_conflict_error() throws {
         mockRepository.admin = MockAdmin().mary
         
+        let expectedError = ErrorResponse(error: true, reason: .conflict)
+        
         try self.app.test(.POST, route,
         beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, ErrorResponseHelper.userAlreadyRegistered)
+            XCTAssertEqual(bodyResponse, expectedError)
         })
     }
     
     func test_when_credentials_are_invalid_should_return_bad_request_error() throws {
         mockSecurity.isValid = false
+        
+        let expectedError = ErrorResponse(error: true, reason: .badRequest)
         
         try self.app.test(.POST, route,
         beforeRequest: { request in
@@ -60,7 +64,7 @@ final class SignUpAdminControllerTests: XCTestCase {
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .badRequest)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, ErrorResponseHelper.invalidEmailOrPassword)
+            XCTAssertEqual(bodyResponse, expectedError)
         })
     }
     

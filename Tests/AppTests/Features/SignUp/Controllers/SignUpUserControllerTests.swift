@@ -40,7 +40,7 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_when_user_exists_should_return_conflict_error() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .conflict)
         mockRepository.user = MockUser().john
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,
@@ -54,7 +54,7 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_when_credentials_are_invalid_should_return_bad_request_error() throws {
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .badRequest)
         mockSecurity.isValid = false
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,

@@ -37,7 +37,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
         
         try self.app.test(.GET, route, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
@@ -51,7 +51,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
         
         try self.app.test(.POST, route, 
                           beforeRequest: { request in
@@ -68,7 +68,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
@@ -107,13 +107,16 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
+        let expectedError = ErrorResponse(error: true, reason: .conflict)
+        
+        
         try self.app.test(.POST, route,
                           beforeRequest: { request in
             try request.content.encode(requestContent, using: encoder)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, ErrorResponseHelper.conflictError)
+            XCTAssertEqual(bodyResponse, expectedError)
         })
     }
     
@@ -137,7 +140,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .notFound)
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in

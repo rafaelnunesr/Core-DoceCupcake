@@ -29,7 +29,7 @@ final class DeliveryControllerTests: XCTestCase {
         sut = DeliveryController(userSectionValidation: mockDependencyProvider.getUserSessionValidationMiddleware())
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
         
         try self.app.test(.GET, "\(route)/123", afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)

@@ -34,24 +34,28 @@ final class SignInControllerTests: XCTestCase {
     func test_signIn_with_invalid_request() throws {
         mockSecurity.isValid = false
         
+        let expectedError = ErrorResponse(error: true, reason: .unauthorized)
+        
         try self.app.test(.POST, PathRoutes.signin.rawValue,
         beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, ErrorResponseHelper.invalidEmailOrPassword)
+            XCTAssertEqual(bodyResponse, expectedError)
         })
     }
     
     func test_signIn_with_unknown_user() throws {
+        let expectedError = ErrorResponse(error: true, reason: .unauthorized)
+        
         try self.app.test(.POST, PathRoutes.signin.rawValue,
         beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, ErrorResponseHelper.invalidEmailOrPassword)
+            XCTAssertEqual(bodyResponse, expectedError)
         })
     }
     

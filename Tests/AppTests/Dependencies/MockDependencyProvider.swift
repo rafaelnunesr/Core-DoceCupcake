@@ -21,6 +21,8 @@ final class MockDependencyProvider: DependencyProviderProtocol {
         self.security = security
         self.sessionValidationMiddleware = sessionValidationMiddleware
         self.adminValidationMiddleware = adminValidationMiddleware
+        
+        app.databases.use(.postgres(configuration: .init(hostname: .empty, username: .empty, tls: .disable)), as: .psql)
     }
 
     func getDatabaseInstance() -> any Database {

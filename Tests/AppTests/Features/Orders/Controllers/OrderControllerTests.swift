@@ -14,6 +14,7 @@ final class OrderControllerTests: XCTestCase {
     private var mockDeliveryController: MockDeliveryController!
     private var mockSecurity: MockSecurity!
     private var mockDependencyProvider: MockDependencyProvider!
+    private var route = PathRoutes.orders.rawValue
     
     override func setUp() async throws {
         app = try await Application.make(.testing)
@@ -50,4 +51,102 @@ final class OrderControllerTests: XCTestCase {
         mockSecurity = nil
         mockDependencyProvider = nil
     }
+    
+    func test_when_logged_user_request_valid_order_id_should_return_order_details() throws {
+        let order = MockOrder().orderA
+        mockOrderRepository.result = order
+        mockAddressController.address = MockAddress().addressA
+        mockOrderItemRepository.result = MockOrderItem().itemA
+        mockProductController.product = MockProduct().productA
+        
+        sut = OrderController(dependencyProvider: mockDependencyProvider,
+                              orderRepository: mockOrderRepository,
+                              orderItemRepository: mockOrderItemRepository,
+                              addressController: mockAddressController,
+                              productController: mockProductController,
+                              cardController: mockCardController,
+                              vouchersController: mockVouchersController,
+                              deliveryController: mockDeliveryController)
+        
+        try sut.boot(routes: app.routes)
+        
+        try self.app.test(.GET, "\(route)/123", afterResponse: { response in
+            XCTAssertEqual(response.status, .ok)
+            
+            if let bodyResponse: APIOrder = try convertRequestDataToModel(with: response.body) {
+                XCTAssertEqual(bodyResponse.number, order.number)
+                XCTAssertEqual(bodyResponse.createdAt, order.createdAt)
+                XCTAssertEqual(bodyResponse.updatedAt, order.updatedAt)
+                XCTAssertEqual(bodyResponse.deliveryStatus.rawValue, order.deliveryStatus)
+                XCTAssertEqual(bodyResponse.orderStatus.rawValue, order.orderStatus)
+                XCTAssertNotNil(bodyResponse.address)
+                XCTAssertFalse(bodyResponse.items.isEmpty)
+            }
+        })
+    }
+    
+    func test_when_logged_user_request_not_valid_order_id_should_return_error() throws {
+        sut = OrderController(dependencyProvider: mockDependencyProvider,
+                              orderRepository: mockOrderRepository,
+                              orderItemRepository: mockOrderItemRepository,
+                              addressController: mockAddressController,
+                              productController: mockProductController,
+                              cardController: mockCardController,
+                              vouchersController: mockVouchersController,
+                              deliveryController: mockDeliveryController)
+        
+        try sut.boot(routes: app.routes)
+        
+        let expectedResponse = ErrorResponse(error: true, reason: .notFound)
+        
+        try self.app.test(.GET, "\(route)/123", afterResponse: { response in
+            XCTAssertEqual(response.status, .notFound)
+            let bodyResponse = convertBodyToErrorResponse(with: response.body)
+            XCTAssertEqual(bodyResponse, expectedResponse)
+        })
+    }
+    
+    func test_when_logged_user_request_all_orders_should_return_orders_details_list() throws {
+//        let order = MockOrder().orderA
+//        mockOrderRepository.result = order
+//        mockAddressController.address = MockAddress().addressA
+//        mockOrderItemRepository.result = MockOrderItem().itemA
+//        mockProductController.product = MockProduct().productA
+//        
+//        sut = OrderController(dependencyProvider: mockDependencyProvider,
+//                              orderRepository: mockOrderRepository,
+//                              orderItemRepository: mockOrderItemRepository,
+//                              addressController: mockAddressController,
+//                              productController: mockProductController,
+//                              cardController: mockCardController,
+//                              vouchersController: mockVouchersController,
+//                              deliveryController: mockDeliveryController)
+//        
+//        try sut.boot(routes: app.routes)
+//        
+//        try self.app.test(.GET, "\(route)/open", afterResponse: { response in
+//            XCTAssertEqual(response.status, .ok)
+//            
+//            if let bodyResponse: APIOrder = try convertRequestDataToModel(with: response.body) {
+//                XCTAssertEqual(bodyResponse.number, order.number)
+//                XCTAssertEqual(bodyResponse.createdAt, order.createdAt)
+//                XCTAssertEqual(bodyResponse.updatedAt, order.updatedAt)
+//                XCTAssertEqual(bodyResponse.deliveryStatus.rawValue, order.deliveryStatus)
+//                XCTAssertEqual(bodyResponse.orderStatus.rawValue, order.orderStatus)
+//                XCTAssertNotNil(bodyResponse.address)
+//                XCTAssertFalse(bodyResponse.items.isEmpty)
+//            }
+//        })
+    }
+    
+    func test_when_logged_user_create_order_should_return_generic_message() throws {}
+    
+    func test_when_logged_admin_request_all_open_orders_should_return_all_open_orders() throws {}
+    
+    func test_when_logged_admin_request_all_closed_orders_should_return_all_closed_orders() throws {}
+    
+    func test_when_logged_admin_request_update_order_should_return_generic_message() throws {}
+    
+    func test_when_logged_admin_request_update_unknowed_order_should_return_error() throws {}
+    
 }

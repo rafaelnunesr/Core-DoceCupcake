@@ -57,7 +57,7 @@ final class PackagingControllerTests: XCTestCase {
         sut = PackagingController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
         
         try self.app.test(.POST, route, beforeRequest: { request in
             try request.content.encode(requestContent)
@@ -73,7 +73,7 @@ final class PackagingControllerTests: XCTestCase {
         sut = PackagingController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = ErrorResponse(error: true, reason: .empty)
+        let expectedResponse = ErrorResponse(error: true, reason: .unauthorized)
         
         try self.app.test(.DELETE, route, beforeRequest: { request in
             try request.content.encode(deleteContent)
@@ -89,12 +89,14 @@ final class PackagingControllerTests: XCTestCase {
         sut = PackagingController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
+        let expectedResponse = ErrorResponse(error: true, reason: .conflict)
+        
         try self.app.test(.POST, route, beforeRequest: { request in
             try request.content.encode(requestContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .conflict)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, ErrorResponseHelper.conflictError)
+            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
@@ -117,12 +119,14 @@ final class PackagingControllerTests: XCTestCase {
         sut = PackagingController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
+        let expectedResponse = ErrorResponse(error: true, reason: .notFound)
+        
         try self.app.test(.DELETE, route, beforeRequest: { request in
             try request.content.encode(deleteContent)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
             let bodyResponse = convertBodyToErrorResponse(with: response.body)
-            XCTAssertEqual(bodyResponse, ErrorResponseHelper.notFound)
+            XCTAssertEqual(bodyResponse, expectedResponse)
         })
     }
     
