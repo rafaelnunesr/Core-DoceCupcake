@@ -37,7 +37,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        try self.app.test(.GET, route, afterResponse: { response in
+        try self.app.test(.GET, "\(route)/all", afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
         })
     }
@@ -62,7 +62,7 @@ final class VouchersControllerTests: XCTestCase {
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
-            try request.content.encode(deleteContent)
+            try request.content.encode(requestContentWithCode)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
         })
@@ -73,7 +73,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        try self.app.test(.GET, route,
+        try self.app.test(.GET, "\(route)/all",
                           afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             if let bodyResponse: APIVoucherListResponse = try convertRequestDataToModel(with: response.body) {
@@ -107,7 +107,7 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = GenericMessageResponse(message: .empty)
+        let expectedResponse = GenericMessageResponse(message: "The voucher with the code A has been created successfully.")
         
         try self.app.test(.POST, route,
                           beforeRequest: { request in
@@ -125,7 +125,7 @@ final class VouchersControllerTests: XCTestCase {
      
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
-            try request.content.encode(deleteContent)
+            try request.content.encode(requestContentWithCode)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
         })
@@ -136,11 +136,11 @@ final class VouchersControllerTests: XCTestCase {
         sut = VouchersController(dependencyProvider: mockDependencyProvider, repository: mockRepository)
         try sut.boot(routes: app.routes)
         
-        let expectedResponse = GenericMessageResponse(message: .empty)
+        let expectedResponse = GenericMessageResponse(message: "The voucher with the code A has been deleted successfully.")
         
         try self.app.test(.DELETE, route,
                           beforeRequest: { request in
-            try request.content.encode(deleteContent)
+            try request.content.encode(requestContentWithCode)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             let bodyResponse = convertBodyToGenericMessageResponse(with: response.body)
@@ -155,13 +155,13 @@ extension VouchersControllerTests {
             createdAt: Date(),
             expiryDate: Date(),
             code: "A",
-            percentageDiscount: 10,
-            monetaryDiscount: 0,
+            percentageDiscount: 10.0,
+            monetaryDiscount: 0.0,
             availabilityCount: 1)
     }
     
-    var deleteContent: [String: String] {
-        ["id": "A"]
+    var requestContentWithCode: [String: String] {
+        ["code": "A"]
     }
     
     var voucherList: APIVoucherListResponse {

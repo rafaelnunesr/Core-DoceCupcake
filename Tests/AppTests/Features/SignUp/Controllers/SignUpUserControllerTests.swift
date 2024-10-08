@@ -63,7 +63,14 @@ final class SignUpUserControllerTests: XCTestCase {
     }
     
     func test_create_user_with_valid_data() throws {
-        let expectedResponse = GenericMessageResponse(message: .empty)
+        let expectedResponse = GenericMessageResponse(message: "The account for John Smith has been successfully created.")
+        mockAddressController.address = MockAddress().addressA
+        mockSecurity.isValid = true
+        
+        sut = SignUpUserController(dependencyProvider: mockDependencyProvider,
+                                   repository: mockRepository,
+                                   addressController: mockAddressController)
+        try sut.boot(routes: app.routes)
         
         try self.app.test(.POST, PathRoutes.signup.rawValue,
                           beforeRequest: { request in

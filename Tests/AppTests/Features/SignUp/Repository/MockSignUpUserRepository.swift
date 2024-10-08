@@ -11,6 +11,6 @@ final class MockSignUpUserRepository: SignUpUserRepositoryProtocol {
 
     func create(with user: User) async throws -> UUID {
         self.user = user
-        return try user.requireID()
+        return user.id ?? UUID()
     }
 }
