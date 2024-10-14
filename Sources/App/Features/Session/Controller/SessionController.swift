@@ -7,8 +7,7 @@ enum SessionControlAccess {
     case admin
     case unowned
 }
-
-protocol SessionControllerProtocol: Sendable {
+protocol SessionControllerProtocol: RouteCollection, Sendable {
     func validateSession(req: Request) async throws -> SessionControlAccess
     func fetchLoggedUserId(req: Request) async throws -> UUID
     func create(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel?
@@ -21,7 +20,18 @@ struct SessionController: SessionControllerProtocol {
     init(repository: SessionRepositoryProtocol) {
         self.repository = repository
     }
-
+    
+    func boot(routes: RoutesBuilder) throws {
+        let sessionRoutes = routes.grouped(PathRoutes.session.path)
+        sessionRoutes.post(use: validateSessionToken)
+    }
+    
+    @Sendable
+    private func validateSessionToken(req: Request) async throws -> Bool {
+        let model: APIRequestCode = try convertRequestDataToModel(req: req)
+        return try await validateSession(req: req) != .unowned
+    }
+    
     func validateSession(req: Request) async throws -> SessionControlAccess {
         let session = try await req.jwt.verify(as: SessionToken.self)
         let user = try await repository.fetchSession(for: session.userId)

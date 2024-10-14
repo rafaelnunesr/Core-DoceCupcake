@@ -2,6 +2,7 @@ protocol UserControllerFactoryProtocol {
     func makeSignInController() throws -> SignInController
     func makeUserSignUpController() throws -> SignUpUserController
     func makeAdminSignUpController() throws -> SignUpAdminController
+    func makeSessionController() throws -> SessionController
 }
 
 struct UserControllerFactory: UserControllerFactoryProtocol {
@@ -29,5 +30,10 @@ struct UserControllerFactory: UserControllerFactoryProtocol {
     func makeAdminSignUpController() throws -> SignUpAdminController {
         let repository = SignUpAdminRepository(database: dependencyProvider.getDatabaseInstance())
         return SignUpAdminController(dependencyProvider: dependencyProvider, repository: repository)
+    }
+    
+    func makeSessionController() throws -> SessionController {
+        let repository = SessionRepository(database: dependencyProvider.getDatabaseInstance())
+        return SessionController(repository: repository)
     }
 }

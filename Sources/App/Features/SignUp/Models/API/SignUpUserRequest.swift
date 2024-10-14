@@ -5,6 +5,7 @@ struct SignUpUserRequest: Codable, Content {
     let email: String
     var password: String
     var imageUrl: String?
+    let phoneNumber: String
     let streetName: String
     let addressNumber: String
     let zipCode: String
@@ -18,6 +19,7 @@ struct SignUpUserRequest: Codable, Content {
         case email
         case password
         case imageUrl = "image_url"
+        case phoneNumber = "phone_number"
         case streetName = "street_name"
         case addressNumber = "address_number"
         case zipCode = "zip_code"

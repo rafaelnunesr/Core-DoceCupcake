@@ -38,8 +38,8 @@ final class ProductRepository: ProductRepositoryProtocol {
     func fetchProducts(with value: String) async throws -> [Product] {
         try await Product.query(on: database)
             .group(.or) { or in
-                or.filter(\.$code == value)
-                or.filter(\.$name == value)
+                or.filter(\.$code ~~ value)
+                or.filter(\.$name ~~ value)
             }
             .all()
     }

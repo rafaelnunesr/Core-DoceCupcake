@@ -10,6 +10,7 @@ enum UsersDbField: String {
     case email
     case password
     case imageUrl = "image_url"
+    case phoneNumber = "phone_number"
     
     var fieldKey: FieldKey {
         return FieldKey(stringLiteral: self.rawValue)
@@ -37,6 +38,9 @@ final class User: Model {
     @OptionalField(key: UsersDbField.imageUrl.fieldKey)
     var imageUrl: String?
     
+    @Field(key: UsersDbField.phoneNumber.fieldKey)
+    var phoneNumber: String
+    
     internal init() {}
 
     init(id: UUID? = nil, 
@@ -44,13 +48,15 @@ final class User: Model {
          userName: String,
          email: String,
          password: String,
-         imageUrl: String? = nil) {
+         imageUrl: String? = nil,
+         phoneNumber: String) {
         self.id = id
         self.createdAt = createdAt
         self.userName = userName
         self.email = email
         self.password = password
         self.imageUrl = imageUrl
+        self.phoneNumber = phoneNumber
     }
 }
 
@@ -59,6 +65,7 @@ extension User {
         self.init(userName: model.userName,
                   email: model.email,
                   password: model.password,
-                  imageUrl: model.imageUrl)
+                  imageUrl: model.imageUrl,
+                  phoneNumber: model.phoneNumber)
     }
 }

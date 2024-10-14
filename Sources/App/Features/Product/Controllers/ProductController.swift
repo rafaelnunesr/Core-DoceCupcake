@@ -90,7 +90,7 @@ struct ProductController: ProductControllerProtocol {
         guard let query = req.query[String.self, at: "query"]
         else { throw APIResponseError.Common.badRequest }
         
-        let productList = try await productRepository.fetchProducts(with: query)
+        let productList = try await productRepository.fetchProducts(with: query.lowercased())
         
         let products = try await productList.asyncMap { product in
             try await createAPIProductResponse(for: product)

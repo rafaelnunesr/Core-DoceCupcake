@@ -11,6 +11,7 @@ struct CreateUsersMigration: AsyncMigration {
             .field(UsersDbField.email.fieldKey, .string, .required)
             .field(UsersDbField.password.fieldKey, .string, .required)
             .field(UsersDbField.imageUrl.fieldKey, .string)
+            .field(UsersDbField.phoneNumber.fieldKey, .string)
             .unique(on: UsersDbField.email.fieldKey)
             .create()
     }
