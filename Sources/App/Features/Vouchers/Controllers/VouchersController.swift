@@ -24,7 +24,7 @@ struct VouchersController: VouchersControllerProtocol {
         
         vouchersRoutes
             .grouped(sessionValidation)
-            .get(use: fetchVoucher)
+            .get(":voucherCode", use: fetchVoucher)
         
         vouchersRoutes
             .grouped(adminSectionValidation)
@@ -41,8 +41,10 @@ struct VouchersController: VouchersControllerProtocol {
     
     @Sendable
     private func fetchVoucher(req: Request) async throws -> APIValidateVoucherResponse {
-        let model: APIRequestCode = try convertRequestDataToModel(req: req)
-        let result: Voucher? = try await repository.fetchModelByCode(model.code)
+        guard let voucherCode = req.parameters.get("voucherCode")
+        else { throw APIResponseError.Common.badRequest }
+
+        let result: Voucher? = try await repository.fetchModelByCode(voucherCode)
         
         guard let result 
         else { throw APIResponseError.Common.notFound }
