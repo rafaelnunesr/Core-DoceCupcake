@@ -43,7 +43,11 @@ struct OrdersControllerFactory: OrdersControllerFactoryProtocol {
     private func createAddressController() -> AddressControllerProtocol {
         let database = dependencyProvider.getDatabaseInstance()
         let addressRepository = AddressRepository(database: database)
-        return AddressController(repository: addressRepository)
+        let sessionController = createSessionController()
+        let sessionValidation = dependencyProvider.getUserSessionValidationMiddleware()
+        return AddressController(repository: addressRepository,
+                                 sessionValidation: sessionValidation,
+                                 sessionController: sessionController)
     }
     
     private func createProductController() -> ProductControllerProtocol {

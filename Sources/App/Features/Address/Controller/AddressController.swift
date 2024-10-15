@@ -1,6 +1,6 @@
 import Vapor
 
-protocol AddressControllerProtocol: Sendable {
+protocol AddressControllerProtocol: RouteCollection, Sendable {
     func fetchAddressById(_ id: UUID) async throws -> Address?
     func fetchAddressByUserId(_ userId: UUID) async throws -> Address?
     func create(_ address: Address) async throws
@@ -11,10 +11,33 @@ protocol AddressControllerProtocol: Sendable {
 struct AddressController: AddressControllerProtocol {
     private var repository: AddressRepositoryProtocol
     
-    init(repository: AddressRepositoryProtocol) {
+    private let sessionValidation: SessionValidationMiddlewareProtocol
+    private let sessionController: SessionControllerProtocol
+    
+    init(repository: AddressRepositoryProtocol,
+         sessionValidation: SessionValidationMiddlewareProtocol,
+         sessionController: SessionControllerProtocol) {
         self.repository = repository
+        self.sessionValidation = sessionValidation
+        self.sessionController = sessionController
     }
     
+    func boot(routes: RoutesBuilder) throws {
+        let addressRoutes = routes.grouped(PathRoutes.address.path)
+
+        addressRoutes
+            .grouped(sessionValidation)
+            .get(use: fetchAddress)
+    }
+    
+    @Sendable
+    private func fetchAddress(req: Request) async throws -> APIAddress {
+        let userId = try await sessionController.fetchLoggedUserId(req: req)
+        guard let address = try await fetchAddressByUserId(userId)
+        else { throw APIResponseError.Common.internalServerError }
+        return APIAddress(from: address)
+    }
+
     func fetchAddressById(_ id: UUID) async throws -> Address? {
         try await repository.fetchAddressById(id)
     }

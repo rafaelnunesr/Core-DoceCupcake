@@ -12,6 +12,7 @@ enum PathRoutes: String {
     case delivery
     case review
     case session
+    case address
     
     var path: PathComponent {
         PathComponent(stringLiteral: self.rawValue)
