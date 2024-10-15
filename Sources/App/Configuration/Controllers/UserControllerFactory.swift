@@ -3,7 +3,6 @@ protocol UserControllerFactoryProtocol {
     func makeUserSignUpController() throws -> SignUpUserController
     func makeAdminSignUpController() throws -> SignUpAdminController
     func makeSessionController() throws -> SessionController
-    func makeAddressController() throws -> AddressController
 }
 
 struct UserControllerFactory: UserControllerFactoryProtocol {
@@ -40,19 +39,5 @@ struct UserControllerFactory: UserControllerFactoryProtocol {
     func makeSessionController() throws -> SessionController {
         let repository = SessionRepository(database: dependencyProvider.getDatabaseInstance())
         return SessionController(repository: repository)
-    }
-    
-    func makeAddressController() throws -> AddressController {
-        let database = dependencyProvider.getDatabaseInstance()
-        let repository = AddressRepository(database: database)
-        
-        let sessionValidation = dependencyProvider.getUserSessionValidationMiddleware()
-        
-        let sessionRepository = SessionRepository(database: database)
-        let sessionController = SessionController(repository: sessionRepository)
-    
-        return AddressController(repository: repository,
-                                 sessionValidation: sessionValidation,
-                                 sessionController: sessionController)
     }
 }

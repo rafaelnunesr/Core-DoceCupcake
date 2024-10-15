@@ -9,15 +9,21 @@ final class ControllerFactory: ControllerFactoryProtocol {
     private let productControllerFactory: ProductControllerFactoryProtocol
     private let voucherControllerFactory: VoucherControllerFactoryProtocol
     private let ordersControllerFactory: OrdersControllerFactoryProtocol
+    private let deliveryControllerFactory: DeliveryControllerFactoryProtocol
+    private let addressControllerFactory: AddressControllerFactoryProtocol
 
     init(userControllerFactory: UserControllerFactoryProtocol,
          productControllerFactory: ProductControllerFactoryProtocol,
          voucherControllerFactory: VoucherControllerFactoryProtocol,
-         ordersControllerFactory: OrdersControllerFactoryProtocol) {
+         ordersControllerFactory: OrdersControllerFactoryProtocol,
+         deliveryControllerFactory: DeliveryControllerFactoryProtocol,
+         addressControllerFactory: AddressControllerFactoryProtocol) {
         self.userControllerFactory = userControllerFactory
         self.productControllerFactory = productControllerFactory
         self.voucherControllerFactory = voucherControllerFactory
         self.ordersControllerFactory = ordersControllerFactory
+        self.deliveryControllerFactory = deliveryControllerFactory
+        self.addressControllerFactory = addressControllerFactory
     }
 
     func makeControllers() throws -> [RouteCollection] {
@@ -26,13 +32,16 @@ final class ControllerFactory: ControllerFactoryProtocol {
             try userControllerFactory.makeUserSignUpController(),
             try userControllerFactory.makeAdminSignUpController(),
             try userControllerFactory.makeSessionController(),
-            try userControllerFactory.makeAddressController(),
             try productControllerFactory.makeProductController(),
             try productControllerFactory.makeProductTagsController(),
             //try productControllerFactory.makeProductReviewController(),
             try voucherControllerFactory.makeVoucherController(),
             
-            try ordersControllerFactory.makeOrderController()
+            try ordersControllerFactory.makeOrderController(),
+            
+            try deliveryControllerFactory.makeDeliveryController(),
+            
+            try addressControllerFactory.makeAddressController()
         ]
     }
 }
