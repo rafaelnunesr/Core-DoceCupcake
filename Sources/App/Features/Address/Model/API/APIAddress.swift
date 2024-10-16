@@ -4,7 +4,7 @@ struct APIAddress: Content, Codable {
     var streetName: String
     var number: String
     var zipCode: String
-    var complementary: String?
+    var complementary: String
     var state: String
     var city: String
     var country: String

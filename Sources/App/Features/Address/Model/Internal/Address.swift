@@ -41,8 +41,8 @@ final class Address: Model {
     @Field(key: AddressDbField.zipCode.fieldKey)
     var zipCode: String
     
-    @OptionalField(key: AddressDbField.complementary.fieldKey)
-    var complementary: String?
+    @Field(key: AddressDbField.complementary.fieldKey)
+    var complementary: String
     
     @Field(key: AddressDbField.state.fieldKey)
     var state: String
@@ -61,7 +61,7 @@ final class Address: Model {
          streetName: String,
          number: String,
          zipCode: String,
-         complementary: String? = nil,
+         complementary: String,
          state: String,
          city: String,
          country: String) {

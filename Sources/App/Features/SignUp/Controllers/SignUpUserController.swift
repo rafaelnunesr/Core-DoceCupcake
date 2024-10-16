@@ -48,6 +48,7 @@ struct SignUpUserController: RouteCollection, Sendable {
                               streetName: model.streetName,
                               number: model.addressNumber,
                               zipCode: model.zipCode,
+                              complementary: model.addressComplement,
                               state: model.state,
                               city: model.city,
                               country: model.country)

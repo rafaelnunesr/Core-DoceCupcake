@@ -79,21 +79,23 @@ struct OrderController: RouteCollection, Sendable {
 
         return APIOrderList(count: orderList.count, orders: orderList)
     }
-
+    
     @Sendable
-    private func create(req: Request) async throws -> GenericMessageResponse {
+    private func create(req: Request) async throws -> APIOrder {
         let orderRequest: APIOrderRequest = try req.content.decode(APIOrderRequest.self)
         let userId = try await sessionController.fetchLoggedUserId(req: req)
         let address = try await addressController.fetchAddressByUserId(userId)
         
-        guard let address
-        else { throw APIResponseError.Common.badRequest }
+        guard let address else {
+            throw APIResponseError.Common.badRequest
+        }
         
         return try await database.transaction { database in
             try await validateAndProcessOrder(orderRequest, userId: userId)
             guard let paymentId = try await cardController.processOrder(orderRequest.payment, userId: userId) else {
                 throw APIResponseError.Payment.paymentError
             }
+            
             let order = try await create(from: orderRequest,
                                          userId: userId,
                                          zipCode: address.zipCode,
@@ -101,22 +103,25 @@ struct OrderController: RouteCollection, Sendable {
                                          addressId: address.requireID())
             
             for product in orderRequest.products {
-                guard let prd = try await productController.fetchProduct(with: product.code)
-                else { throw APIResponseError.Common.internalServerError }
+                guard let prd = try await productController.fetchProduct(with: product.code) else {
+                    throw APIResponseError.Common.internalServerError
+                }
                 
                 try await orderItemRepository.create(OrderItem(orderId: order.requireID(),
-                                                               productId: prd.requireID(), 
+                                                               productId: prd.requireID(),
                                                                quantity: product.quantity,
                                                                unitValue: prd.currentPrice,
                                                                orderStatus: 1))
             }
             
-            return GenericMessageResponse(message: Constants.orderCreated)
+            let items = try await fetchOrderItems(for: order)
+            let apiOrder = APIOrder(from: order, address: address, items: items)
+            return apiOrder
         }
     }
-    
+
     @Sendable
-    private func update(req: Request) async throws -> GenericMessageResponse {
+    private func update(req: Request) async throws -> APIOrder {
         let model: APIOrderUpdate = try req.content.decode(APIOrderUpdate.self)
         let order = try await fetchOrder(by: model.orderNumber)
 
@@ -124,8 +129,61 @@ struct OrderController: RouteCollection, Sendable {
         order.orderStatus = model.orderStatus.rawValue
         order.updatedAt = Date()
         try await orderRepository.update(order)
-        return GenericMessageResponse(message: Constants.orderUpdated)
+        
+        let address = try await fetchAddress(for: order)
+        let items = try await fetchOrderItems(for: order)
+        
+        let apiOrder = APIOrder(from: order, address: address, items: items)
+        return apiOrder
     }
+
+
+//    @Sendable
+//    private func create(req: Request) async throws -> GenericMessageResponse {
+//        let orderRequest: APIOrderRequest = try req.content.decode(APIOrderRequest.self)
+//        let userId = try await sessionController.fetchLoggedUserId(req: req)
+//        let address = try await addressController.fetchAddressByUserId(userId)
+//        
+//        guard let address
+//        else { throw APIResponseError.Common.badRequest }
+//        
+//        return try await database.transaction { database in
+//            try await validateAndProcessOrder(orderRequest, userId: userId)
+//            guard let paymentId = try await cardController.processOrder(orderRequest.payment, userId: userId) else {
+//                throw APIResponseError.Payment.paymentError
+//            }
+//            let order = try await create(from: orderRequest,
+//                                         userId: userId,
+//                                         zipCode: address.zipCode,
+//                                         paymentId: paymentId,
+//                                         addressId: address.requireID())
+//            
+//            for product in orderRequest.products {
+//                guard let prd = try await productController.fetchProduct(with: product.code)
+//                else { throw APIResponseError.Common.internalServerError }
+//                
+//                try await orderItemRepository.create(OrderItem(orderId: order.requireID(),
+//                                                               productId: prd.requireID(), 
+//                                                               quantity: product.quantity,
+//                                                               unitValue: prd.currentPrice,
+//                                                               orderStatus: 1))
+//            }
+//            
+//            return GenericMessageResponse(message: Constants.orderCreated)
+//        }
+//    }
+    
+//    @Sendable
+//    private func update(req: Request) async throws -> GenericMessageResponse {
+//        let model: APIOrderUpdate = try req.content.decode(APIOrderUpdate.self)
+//        let order = try await fetchOrder(by: model.orderNumber)
+//
+//        order.deliveryStatus = model.deliveryStatus.rawValue
+//        order.orderStatus = model.orderStatus.rawValue
+//        order.updatedAt = Date()
+//        try await orderRepository.update(order)
+//        return GenericMessageResponse(message: Constants.orderUpdated)
+//    }
 
     // MARK: - Private Helper Methods
 

@@ -9,7 +9,7 @@ struct SignUpUserRequest: Codable, Content {
     let streetName: String
     let addressNumber: String
     let zipCode: String
-    var addressComplement: String?
+    var addressComplement: String
     let state: String
     let city: String
     let country: String
