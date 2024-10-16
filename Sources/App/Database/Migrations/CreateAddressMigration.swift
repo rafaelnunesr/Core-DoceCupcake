@@ -12,7 +12,7 @@ struct CreateAddressMigration: AsyncMigration {
             .field(AddressDbField.streetName.fieldKey, .string, .required)
             .field(AddressDbField.number.fieldKey, .string, .required)
             .field(AddressDbField.zipCode.fieldKey, .string, .required)
-            .field(AddressDbField.complementary.fieldKey, .string)
+            .field(AddressDbField.complementary.fieldKey, .string, .required)
             .field(AddressDbField.state.fieldKey, .string, .required)
             .field(AddressDbField.city.fieldKey, .string, .required)
             .field(AddressDbField.country.fieldKey, .string, .required)
