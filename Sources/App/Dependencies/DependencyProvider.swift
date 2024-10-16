@@ -61,13 +61,15 @@ final class DependencyProvider: DependencyProviderProtocol {
         let ordersController = OrdersControllerFactory(dependencyProvider: self)
         let deliveryControllerFactory = DeliveryControllerFactory(dependencyProvider: self)
         let addressControllerFactory = AddressControllerFactory(dependencyProvider: self)
+        let packagesControllerFactory = PackagesControllerFactory(dependencyProvider: self)
         
         return ControllerFactory(userControllerFactory: userController,
                                  productControllerFactory: productController,
                                  voucherControllerFactory: voucherController,
                                  ordersControllerFactory: ordersController,
                                  deliveryControllerFactory: deliveryControllerFactory,
-                                 addressControllerFactory: addressControllerFactory)
+                                 addressControllerFactory: addressControllerFactory,
+                                 packagesControllerFactory: packagesControllerFactory)
     }
     
     func getConfigurationServiceInstance() -> ConfigurationServiceProtocol {

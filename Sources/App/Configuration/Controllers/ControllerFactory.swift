@@ -11,19 +11,22 @@ final class ControllerFactory: ControllerFactoryProtocol {
     private let ordersControllerFactory: OrdersControllerFactoryProtocol
     private let deliveryControllerFactory: DeliveryControllerFactoryProtocol
     private let addressControllerFactory: AddressControllerFactoryProtocol
+    private let packagesControllerFactory: PackagesControllerFactoryProtocol
 
     init(userControllerFactory: UserControllerFactoryProtocol,
          productControllerFactory: ProductControllerFactoryProtocol,
          voucherControllerFactory: VoucherControllerFactoryProtocol,
          ordersControllerFactory: OrdersControllerFactoryProtocol,
          deliveryControllerFactory: DeliveryControllerFactoryProtocol,
-         addressControllerFactory: AddressControllerFactoryProtocol) {
+         addressControllerFactory: AddressControllerFactoryProtocol,
+         packagesControllerFactory: PackagesControllerFactoryProtocol) {
         self.userControllerFactory = userControllerFactory
         self.productControllerFactory = productControllerFactory
         self.voucherControllerFactory = voucherControllerFactory
         self.ordersControllerFactory = ordersControllerFactory
         self.deliveryControllerFactory = deliveryControllerFactory
         self.addressControllerFactory = addressControllerFactory
+        self.packagesControllerFactory = packagesControllerFactory
     }
 
     func makeControllers() throws -> [RouteCollection] {
@@ -41,7 +44,9 @@ final class ControllerFactory: ControllerFactoryProtocol {
             
             try deliveryControllerFactory.makeDeliveryController(),
             
-            try addressControllerFactory.makeAddressController()
+            try addressControllerFactory.makeAddressController(),
+            
+            try packagesControllerFactory.makePackagesController()
         ]
     }
 }

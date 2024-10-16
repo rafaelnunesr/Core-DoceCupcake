@@ -13,6 +13,7 @@ final class ProductMigrationService: MigrationServiceProtocol {
         app.migrations.add(CreateVoucherMigration())
         app.migrations.add(CreateProductMigration())
         app.migrations.add(CreateCreditCardMigration())
+        app.migrations.add(CreatePackageMigration())
         //app.migrations.add(CreateReviewMigration())
     }
 }
