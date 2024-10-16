@@ -99,22 +99,22 @@ struct ProductController: ProductControllerProtocol {
         return ProductListResponse(count: products.count,
                                    products: products)
     }
-
+    
     @Sendable
     private func create(req: Request) async throws -> GenericMessageResponse {
-        let model: APIProduct = try convertRequestDataToModel(req: req)
-
-        try await ensureProductDoesNotExist(with: model.code)
-        try await validateProductTags(tags: model.tags.map { $0.code })
-
-        let nutritionalIds = try await createNutricionalInformations(with: model.nutritionalInformations)
-
-        let internalProduct = Product(from: model, nutritionalIds: nutritionalIds)
-        try await productRepository.create(internalProduct)
-            
-        return GenericMessageResponse(message: Constants.productCreated)
+        let models: [APIProduct] = try req.content.decode([APIProduct].self)
+        
+        for model in models {
+            try await ensureProductDoesNotExist(with: model.code)
+            try await validateProductTags(tags: model.tags.map { $0.code })
+            let nutritionalIds = try await createNutricionalInformations(with: model.nutritionalInformations)
+            let internalProduct = Product(from: model, nutritionalIds: nutritionalIds)
+            try await productRepository.create(internalProduct)
+        }
+        
+        return GenericMessageResponse(message: "Tag created")
     }
-
+    
     @Sendable
     private func update(req: Request) async throws -> GenericMessageResponse {
         let model: APIProduct = try convertRequestDataToModel(req: req)
@@ -183,7 +183,11 @@ struct ProductController: ProductControllerProtocol {
     
     private func createNutricionalInformations(with nutritionalInformations: [APINutritionalInformation]) async throws -> [UUID] {
         try await nutritionalInformations.asyncCompactMap { information in
-            try await nutritionalController.save(NutritionalInformation(from: information)).id
+            if let existingInformation = try await nutritionalController.fetchNutritionalByCode(information.code) {
+                return existingInformation.id
+            } else {
+                return try await nutritionalController.save(NutritionalInformation(from: information)).id
+            }
         }
     }
     

@@ -40,19 +40,22 @@ struct PackagingController: PackagingControllerProtocol {
         let packages = result.map { APIPackage(from: $0) }
         return APIPackageList(count: packages.count, package: packages)
     }
-
+    
     @Sendable
     private func createPackage(req: Request) async throws -> GenericMessageResponse {
-        let model: APIPackage = try convertRequestDataToModel(req: req)
-
-        guard try await getPackage(with: model.code) == nil 
-        else { throw APIResponseError.Common.conflict }
-
-        try await repository.create(Package(from: model))
-
-        return GenericMessageResponse(message: Constants.packageCreated)
+        let models: [APIPackage] = try req.content.decode([APIPackage].self)
+        
+        for model in models {
+            guard try await getPackage(with: model.code) == nil else {
+                throw APIResponseError.Common.conflict
+            }
+            
+            try await repository.create(Package(from: model))
+        }
+        
+        return GenericMessageResponse(message: "Package created")
     }
-
+    
     @Sendable
     private func deletePackage(req: Request) async throws -> GenericMessageResponse {
         let model: APIRequestId = try convertRequestDataToModel(req: req)

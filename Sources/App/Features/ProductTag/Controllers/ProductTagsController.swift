@@ -48,18 +48,20 @@ struct ProductTagsController: ProductTagsControllerProtocol {
         let tags = result.map { APIProductTag(from: $0) }
         return ProductTagListResponse(count: tags.count, tags: tags)
     }
-
+    
     @Sendable
     private func create(req: Request) async throws -> GenericMessageResponse {
-        let model: APIProductTag = try convertRequestDataToModel(req: req)
-
-        guard try await fetchTag(with: model.code) == nil else {
-            throw APIResponseError.Common.conflict
+        let models: [APIProductTag] = try req.content.decode([APIProductTag].self)
+        
+        for model in models {
+            guard try await fetchTag(with: model.code) == nil else {
+                throw APIResponseError.Common.conflict
+            }
+            
+            try await repository.create(ProductTag(from: model))
         }
-
-        try await repository.create(ProductTag(from: model))
-
-        return GenericMessageResponse(message: Constants.tagCreated)
+        
+        return GenericMessageResponse(message: "Tag created")
     }
     
     @Sendable

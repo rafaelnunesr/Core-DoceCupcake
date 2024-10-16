@@ -4,6 +4,7 @@ import Vapor
 
 protocol NutritionalControllerProtocol: Sendable {
     func fetchNutritionalByIds(_ idList: [UUID]) async throws -> [NutritionalInformation]
+    func fetchNutritionalByCode(_ code: String) async throws -> NutritionalInformation?
     func save(_ model: NutritionalInformation) async throws -> NutritionalInformation
     func delete(_ model: NutritionalInformation) async throws
 }
@@ -25,6 +26,11 @@ struct NutritionalController: NutritionalControllerProtocol {
         }
 
         return nutritionalList
+    }
+    
+    func fetchNutritionalByCode(_ code: String) async throws -> NutritionalInformation? {
+        let result: NutritionalInformation? = try await repository.fetchModelByCode(code)
+        return result
     }
 
     func save(_ model: NutritionalInformation) async throws -> NutritionalInformation {
