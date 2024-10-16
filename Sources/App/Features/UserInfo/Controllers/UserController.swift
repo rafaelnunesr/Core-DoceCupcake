@@ -1,26 +1,54 @@
-import FluentPostgresDriver
 import Vapor
 
-struct SignUpUserController: RouteCollection, Sendable {
+struct UserController: RouteCollection, Sendable {
     private let repository: UserRepositoryProtocol
-    private let security: SecurityProtocol
     private let addressController: AddressControllerProtocol
+    private let security: SecurityProtocol
+    private let sessionController: SessionControllerProtocol
+    
+    private let sessionValidation: SessionValidationMiddlewareProtocol
 
     init(dependencyProvider: DependencyProviderProtocol,
          repository: UserRepositoryProtocol,
-         addressController: AddressControllerProtocol) {
+         addressController: AddressControllerProtocol,
+         sessionController: SessionControllerProtocol) {
         self.repository = repository
         self.addressController = addressController
+        self.sessionController = sessionController
+        
         security = dependencyProvider.getSecurityInstance()
+        
+        sessionValidation = dependencyProvider.getUserSessionValidationMiddleware()
     }
 
     func boot(routes: RoutesBuilder) throws {
-        let signUpRoutes = routes.grouped(PathRoutes.signup.path)
-        signUpRoutes.post(use: signup)
+        let signUpRoutes = routes.grouped(PathRoutes.userInfo.path)
+        
+        signUpRoutes
+            .grouped(sessionValidation)
+            .get(use: fetchUserInfo)
+        
+        signUpRoutes
+            .grouped(sessionValidation)
+            .put(use: update)
+    }
+    
+    @Sendable
+    func fetchUserInfo(req: Request) async throws -> APIUserInformation {
+        let userId = try await sessionController.fetchLoggedUserId(req: req)
+        let address = try await addressController.fetchAddressByUserId(userId)
+        
+        let user = try await repository.fetchUser(with: userId)
+        
+        guard let user, let address else {
+            throw APIResponseError.Common.internalServerError
+        }
+        
+        return APIUserInformation(from: user, address: address)
     }
 
     @Sendable
-    func signup(req: Request) async throws -> GenericMessageResponse {
+    func update(req: Request) async throws -> GenericMessageResponse {
         var model: SignUpUserRequest = try convertRequestDataToModel(req: req)
 
         try await validateUserUniqueness(email: model.email)
@@ -34,7 +62,7 @@ struct SignUpUserController: RouteCollection, Sendable {
     }
     
     private func validateUserUniqueness(email: String) async throws {
-        guard try await repository.fetchUserId(with: email) == nil 
+        guard try await repository.fetchUserId(with: email) == nil
         else { throw APIResponseError.Signup.conflict }
     }
     

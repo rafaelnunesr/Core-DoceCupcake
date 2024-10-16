@@ -35,6 +35,8 @@ final class ControllerFactory: ControllerFactoryProtocol {
             try userControllerFactory.makeUserSignUpController(),
             try userControllerFactory.makeAdminSignUpController(),
             try userControllerFactory.makeSessionController(),
+            try userControllerFactory.makeUserController(),
+            
             try productControllerFactory.makeProductController(),
             try productControllerFactory.makeProductTagsController(),
             //try productControllerFactory.makeProductReviewController(),

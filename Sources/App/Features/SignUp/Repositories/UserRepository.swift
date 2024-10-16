@@ -1,12 +1,13 @@
 import FluentPostgresDriver
 import Vapor
 
-protocol SignUpUserRepositoryProtocol: Sendable {
+protocol UserRepositoryProtocol: Sendable {
     func fetchUserId(with email: String) async throws -> UUID?
+    func fetchUser(with id: UUID) async throws -> User?
     func create(with user: User) async throws -> UUID
 }
 
-final class SignUpUserRepository: SignUpUserRepositoryProtocol {
+final class UserRepository: UserRepositoryProtocol {
     private let database: Database
 
     init(database: Database) {
@@ -22,5 +23,11 @@ final class SignUpUserRepository: SignUpUserRepositoryProtocol {
     func create(with user: User) async throws -> UUID {
         try await user.create(on: database)
         return try user.requireID()
+    }
+    
+    func fetchUser(with id: UUID) async throws -> User? {
+        try await User.query(on: database)
+            .filter(\.$id == id)
+            .first()
     }
 }

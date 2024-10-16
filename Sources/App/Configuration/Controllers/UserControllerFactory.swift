@@ -3,6 +3,7 @@ protocol UserControllerFactoryProtocol {
     func makeUserSignUpController() throws -> SignUpUserController
     func makeAdminSignUpController() throws -> SignUpAdminController
     func makeSessionController() throws -> SessionController
+    func makeUserController() throws -> UserController
 }
 
 struct UserControllerFactory: UserControllerFactoryProtocol {
@@ -19,7 +20,7 @@ struct UserControllerFactory: UserControllerFactoryProtocol {
 
     func makeUserSignUpController() throws -> SignUpUserController {
         let database = dependencyProvider.getDatabaseInstance()
-        let repository = SignUpUserRepository(database: database)
+        let repository = UserRepository(database: database)
         let sessionRepository = SessionRepository(database: database)
         let sessionController = SessionController(repository: sessionRepository)
         let addressRepository = AddressRepository(database: database)
@@ -39,5 +40,23 @@ struct UserControllerFactory: UserControllerFactoryProtocol {
     func makeSessionController() throws -> SessionController {
         let repository = SessionRepository(database: dependencyProvider.getDatabaseInstance())
         return SessionController(repository: repository)
+    }
+    
+    func makeUserController() throws -> UserController {
+        let database = dependencyProvider.getDatabaseInstance()
+        let repository = UserRepository(database: database)
+        
+        let sessionRepository = SessionRepository(database: database)
+        let sessionController = SessionController(repository: sessionRepository)
+        
+        let addressRepository = AddressRepository(database: database)
+        let addressController = AddressController(repository: addressRepository,
+                                                  sessionValidation: dependencyProvider.getUserSessionValidationMiddleware(),
+                                                  sessionController: sessionController)
+        
+        return UserController(dependencyProvider: dependencyProvider,
+                              repository: repository,
+                              addressController: addressController,
+                              sessionController: sessionController)
     }
 }

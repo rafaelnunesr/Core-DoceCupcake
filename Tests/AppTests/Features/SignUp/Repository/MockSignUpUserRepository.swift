@@ -2,7 +2,7 @@ import Foundation
 
 @testable import App
 
-final class MockSignUpUserRepository: SignUpUserRepositoryProtocol {
+final class MockSignUpUserRepository: UserRepositoryProtocol {
     var user: User?
 
     func fetchUserId(with email: String) async throws -> UUID? {
