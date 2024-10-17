@@ -4,7 +4,9 @@ import Vapor
 protocol UserRepositoryProtocol: Sendable {
     func fetchUserId(with email: String) async throws -> UUID?
     func fetchUser(with id: UUID) async throws -> User?
+    func fetchUser(with email: String) async throws -> User?
     func create(with user: User) async throws -> UUID
+    func update(with user: User) async throws -> UUID
 }
 
 final class UserRepository: UserRepositoryProtocol {
@@ -29,5 +31,16 @@ final class UserRepository: UserRepositoryProtocol {
         try await User.query(on: database)
             .filter(\.$id == id)
             .first()
+    }
+    
+    func fetchUser(with email: String) async throws -> User? {
+        try await User.query(on: database)
+            .filter(\.$email == email)
+            .first()
+    }
+    
+    func update(with user: User) async throws -> UUID {
+        try await user.update(on: database)
+        return try user.requireID()
     }
 }

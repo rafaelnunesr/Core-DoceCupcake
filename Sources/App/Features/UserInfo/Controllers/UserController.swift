@@ -48,17 +48,47 @@ struct UserController: RouteCollection, Sendable {
     }
 
     @Sendable
-    func update(req: Request) async throws -> GenericMessageResponse {
-        var model: SignUpUserRequest = try convertRequestDataToModel(req: req)
+    func update(req: Request) async throws -> APIUserInformation {
+        let model: APIUserInformationRequest = try convertRequestDataToModel(req: req)
 
-        try await validateUserUniqueness(email: model.email)
-        try await validateCredentials(email: model.email, password: model.password)
+        guard let user = try await repository.fetchUser(with: model.email), let userId = user.id
+        else { throw APIResponseError.Common.notFound }
         
-        model.password = try security.hashStringValue(model.password)
-        let userId = try await repository.create(with: User(from: model))
+        guard try security.isHashedValidCorrect(plainValue: model.currentPassword, hashValue: user.password)
+        else { throw APIResponseError.Common.unauthorized }
         
-        try await saveUserAddress(model, userId: userId)
-        return GenericMessageResponse(message: accountCreationMessage(userName: model.userName))
+        guard let address = try await addressController.fetchAddressByUserId(userId)
+        else { throw APIResponseError.Common.internalServerError }
+
+        let newAddress = Address(id: address.id,
+                                 userId: userId,
+                                 streetName: model.streetName,
+                                 number: model.addressNumber,
+                                 zipCode: model.zipCode,
+                                 complementary: model.addressComplement,
+                                 state: model.state,
+                                 city: model.city,
+                                 country: model.country)
+        
+        try await addressController.update(newAddress)
+        
+        var password = user.password
+        
+        if let newPassword = model.newPassword {
+            password = try security.hashStringValue(newPassword)
+        }
+        
+        let newUser = User(id: userId,
+                           createdAt: user.createdAt,
+                           userName: model.userName,
+                           email: model.email,
+                           password: password,
+                           imageUrl: model.imageUrl,
+                           phoneNumber: model.phoneNumber)
+        
+        _ = try await repository.update(with: newUser)
+        
+        return APIUserInformation(from: newUser, address: newAddress)
     }
     
     private func validateUserUniqueness(email: String) async throws {
