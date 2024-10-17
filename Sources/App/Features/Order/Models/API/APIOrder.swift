@@ -1,6 +1,7 @@
 import Vapor
 
 struct APIOrder: Codable, Content {
+    var id: String?
     var number: String
     var createdAt: Date?
     var updatedAt: Date?
@@ -12,7 +13,8 @@ struct APIOrder: Codable, Content {
     var deliveryFee: Double
     
     enum CodingKeys: String, CodingKey {
-        case number = "number"
+        case id
+        case number
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case address
@@ -26,6 +28,7 @@ struct APIOrder: Codable, Content {
 
 extension APIOrder {
     init(from model: Order, address: Address, items: [APIOrderItem]) {
+        id = model.id?.uuidString
         number = model.number
         createdAt = model.createdAt
         updatedAt = model.updatedAt

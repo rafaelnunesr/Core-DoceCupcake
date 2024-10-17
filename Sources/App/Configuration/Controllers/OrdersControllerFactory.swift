@@ -15,8 +15,6 @@ struct OrdersControllerFactory: OrdersControllerFactoryProtocol {
         let database = dependencyProvider.getDatabaseInstance()
         let orderRepository = OrderRepository(database: database)
         let orderItemRepository = OrderItemRepository(database: database)
-        let sessionController = createSessionController()
-        
         let addressController = createAddressController()
         let productController = createProductController()
         let cardController = createCardController()

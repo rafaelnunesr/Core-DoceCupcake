@@ -6,4 +6,12 @@ struct APICreateReview: Codable {
     let rate: Int
     let title: String
     let text: String
+    
+    enum CodingKeys: String, CodingKey {
+        case orderId = "order_id"
+        case productId = "product_id"
+        case rate
+        case title
+        case text
+    }
 }

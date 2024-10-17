@@ -3,7 +3,7 @@ import Fluent
 protocol ProductControllerFactoryProtocol {
     func makeProductController() throws -> ProductController
     func makeProductTagsController() throws -> ProductTagsController
-    //func makeProductReviewController() throws -> ReviewController
+    func makeProductReviewController() throws -> ReviewController
 }
 
 struct ProductControllerFactory: ProductControllerFactoryProtocol {
@@ -33,11 +33,17 @@ struct ProductControllerFactory: ProductControllerFactoryProtocol {
         return ProductTagsController(dependencyProvider: dependencyProvider, repository: repository)
     }
 
-//    func makeProductReviewController() throws -> ReviewController {
-//        let productRepository = ProductRepository(dependencyProvider: dependencyProvider)
-//        let reviewRepository = ReviewRepository(dependencyProvider: dependencyProvider)
-//        return ReviewController(dependencyProvider: dependencyProvider, 
-//                                productRepository: productRepository,
-//                                reviewRepository: reviewRepository)
-//    }
+    func makeProductReviewController() throws -> ReviewController {
+        let database = dependencyProvider.getDatabaseInstance()
+        let productRepository = ProductRepository(database: database)
+        let reviewRepository = ReviewRepository(dependencyProvider: dependencyProvider)
+        
+        let sessionRepository = SessionRepository(database: database)
+        let sessionController = SessionController(repository: sessionRepository)
+        
+        return ReviewController(dependencyProvider: dependencyProvider,
+                                productRepository: productRepository,
+                                reviewRepository: reviewRepository,
+                                sessionController: sessionController)
+    }
 }

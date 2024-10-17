@@ -39,7 +39,7 @@ final class ControllerFactory: ControllerFactoryProtocol {
             
             try productControllerFactory.makeProductController(),
             try productControllerFactory.makeProductTagsController(),
-            //try productControllerFactory.makeProductReviewController(),
+            
             try voucherControllerFactory.makeVoucherController(),
             
             try ordersControllerFactory.makeOrderController(),
@@ -48,7 +48,9 @@ final class ControllerFactory: ControllerFactoryProtocol {
             
             try addressControllerFactory.makeAddressController(),
             
-            try packagesControllerFactory.makePackagesController()
+            try packagesControllerFactory.makePackagesController(),
+            
+            try productControllerFactory.makeProductReviewController()
         ]
     }
 }

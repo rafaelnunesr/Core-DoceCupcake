@@ -2,7 +2,7 @@ import FluentPostgresDriver
 import Foundation
 import Vapor
 
-struct ReviewController: RouteCollection {
+struct ReviewController: RouteCollection, Sendable {
     private let dependencyProvider: DependencyProviderProtocol
     private let productRepository: ProductRepositoryProtocol
     private let reviewRepository: ReviewRepositoryProtocol
