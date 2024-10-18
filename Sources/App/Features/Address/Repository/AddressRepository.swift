@@ -33,7 +33,7 @@ final class AddressRepository: AddressRepositoryProtocol {
     }
 
     func update(_ address: Address) async throws {
-        try await address.create(on: database)
+        try await address.update(on: database)
     }
     
     func delete(_ address: Address) async throws {

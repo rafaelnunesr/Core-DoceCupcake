@@ -59,18 +59,16 @@ struct UserController: RouteCollection, Sendable {
         
         guard let address = try await addressController.fetchAddressByUserId(userId)
         else { throw APIResponseError.Common.internalServerError }
-
-        let newAddress = Address(id: address.id,
-                                 userId: userId,
-                                 streetName: model.streetName,
-                                 number: model.addressNumber,
-                                 zipCode: model.zipCode,
-                                 complementary: model.addressComplement,
-                                 state: model.state,
-                                 city: model.city,
-                                 country: model.country)
         
-        try await addressController.update(newAddress)
+        address.streetName = model.streetName
+        address.number = model.addressNumber
+        address.zipCode = model.zipCode
+        address.complementary = model.addressComplement
+        address.state = model.state
+        address.city = model.city
+        address.country = model.country
+        
+       try await addressController.update(address)
         
         var password = user.password
         
@@ -78,17 +76,14 @@ struct UserController: RouteCollection, Sendable {
             password = try security.hashStringValue(newPassword)
         }
         
-        let newUser = User(id: userId,
-                           createdAt: user.createdAt,
-                           userName: model.userName,
-                           email: model.email,
-                           password: password,
-                           imageUrl: model.imageUrl,
-                           phoneNumber: model.phoneNumber)
+        user.userName = model.userName
+        user.password = password
+        user.imageUrl = model.imageUrl
+        user.phoneNumber = model.phoneNumber
         
-        _ = try await repository.update(with: newUser)
+        _ = try await repository.update(with: user)
         
-        return APIUserInformation(from: newUser, address: newAddress)
+        return APIUserInformation(from: user, address: address)
     }
     
     private func validateUserUniqueness(email: String) async throws {
