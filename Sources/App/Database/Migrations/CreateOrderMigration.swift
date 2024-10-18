@@ -20,7 +20,6 @@ struct CreateOrderMigration: AsyncMigration {
             .field(OrderDbField.deliveryFee.fieldKey, .double, .required)
             .field(OrderDbField.addressId.fieldKey, .uuid, .required,
                    .references(AddressDbField.schema.rawValue, AddressDbField.id.fieldKey))
-            .field(OrderDbField.deliveryStatus.fieldKey, .int, .required)
             .field(OrderDbField.orderStatus.fieldKey, .int, .required)
             .create()
     }

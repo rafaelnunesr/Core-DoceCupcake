@@ -6,9 +6,9 @@ struct APIOrder: Codable, Content {
     var createdAt: Date?
     var updatedAt: Date?
     var address: APIAddress
-    var deliveryStatus: TransportationStatus
     var orderStatus: OrderStatus
     var items: [APIOrderItem]
+    var discount: Double
     var total: Double
     var deliveryFee: Double
     
@@ -18,9 +18,9 @@ struct APIOrder: Codable, Content {
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case address
-        case deliveryStatus = "delivery_status"
         case orderStatus = "order_status"
         case items
+        case discount
         case total
         case deliveryFee = "delivery_fee"
     }
@@ -33,9 +33,9 @@ extension APIOrder {
         createdAt = model.createdAt
         updatedAt = model.updatedAt
         self.address = APIAddress(from: address)
-        deliveryStatus = TransportationStatus(rawValue: model.deliveryStatus) ?? .pending
-        orderStatus = OrderStatus(rawValue: model.orderStatus) ?? .confirmed
+        orderStatus = OrderStatus(rawValue: model.orderStatus) ?? .orderPlaced
         self.items = items
+        self.discount = model.discount
         self.total = model.total
         self.deliveryFee = model.deliveryFee
     }

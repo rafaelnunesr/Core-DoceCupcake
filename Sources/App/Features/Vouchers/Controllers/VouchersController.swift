@@ -2,7 +2,8 @@ import Vapor
 
 protocol VouchersControllerProtocol: RouteCollection, Sendable {
     func getVoucher(with code: String) async throws -> Voucher?
-    func applyVoucher(_ value: Double, voucherCode: String) async throws -> Double
+    func applyVoucher(_ value: Double, voucherCode: String) async throws
+    func calculateVoucherDiscount(_ value: Double, voucher: Voucher) async throws -> Double
 }
 
 struct VouchersController: VouchersControllerProtocol {
@@ -87,20 +88,23 @@ struct VouchersController: VouchersControllerProtocol {
         try await repository.fetchModelByCode(code)
     }
     
-    func applyVoucher(_ value: Double, voucherCode: String) async throws -> Double {
-        if let voucher: Voucher = try await repository.fetchModelByCode(voucherCode) {
-            if let monetaryValue = voucher.monetaryDiscount {
-                try await updateVouchersAvailability(voucher)
-                return monetaryValue
-            }
-            
-            if let percentageDiscount = voucher.percentageDiscount {
-                try await updateVouchersAvailability(voucher)
-                return value * (percentageDiscount / 100)
-            }
+    func calculateVoucherDiscount(_ value: Double, voucher: Voucher) async throws -> Double {
+        if let monetaryValue = voucher.monetaryDiscount {
+            return monetaryValue
+        }
+        
+        if let percentageDiscount = voucher.percentageDiscount {
+            return value * (percentageDiscount / 100)
         }
         
         return .zero
+    }
+    
+    func applyVoucher(_ value: Double, voucherCode: String) async throws {
+        if let voucher: Voucher = try await repository.fetchModelByCode(voucherCode),
+            try await calculateVoucherDiscount(value, voucher: voucher) > 0 {
+                try await updateVouchersAvailability(voucher)
+        }
     }
     
     private func updateVouchersAvailability(_ voucher: Voucher) async throws {

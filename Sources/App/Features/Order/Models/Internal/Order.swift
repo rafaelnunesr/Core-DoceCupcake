@@ -12,10 +12,11 @@ enum OrderDbField: String {
     case userId = "user_id"
     case voucherCode = "voucher_code"
     case paymentId = "payment_id"
-    case total = "total"
+    case total
+    case subtotal
+    case discount
     case deliveryFee = "delivery_fee"
     case addressId = "address_id"
-    case deliveryStatus = "delivery_status"
     case orderStatus = "order_status"
     
     var fieldKey: FieldKey {
@@ -47,17 +48,20 @@ final class Order: Model {
     @Field(key: OrderDbField.paymentId.fieldKey)
     var paymentId: UUID?
     
-    @Field(key: OrderDbField.total.fieldKey)
-    var total: Double
+    @Field(key: OrderDbField.subtotal.fieldKey)
+    var subtotal: Double
     
     @Field(key: OrderDbField.deliveryFee.fieldKey)
     var deliveryFee: Double
     
+    @Field(key: OrderDbField.discount.fieldKey)
+    var discount: Double
+    
+    @Field(key: OrderDbField.total.fieldKey)
+    var total: Double
+    
     @Field(key: OrderDbField.addressId.fieldKey)
     var addressId: UUID
-    
-    @Field(key: OrderDbField.deliveryStatus.fieldKey)
-    var deliveryStatus: Int
     
     @Field(key: OrderDbField.orderStatus.fieldKey)
     var orderStatus: Int
@@ -72,9 +76,10 @@ final class Order: Model {
          voucherCode: String? = nil,
          paymentId: UUID,
          total: Double,
+         discount: Double,
+         subtotal: Double,
          deliveryFee: Double,
          addressId: UUID,
-         deliveryStatus: Int,
          orderStatus: Int) {
         self.id = id
         self.number = number
@@ -84,23 +89,33 @@ final class Order: Model {
         self.voucherCode = voucherCode
         self.paymentId = paymentId
         self.total = total
+        self.discount = discount
+        self.subtotal = subtotal
         self.deliveryFee = deliveryFee
         self.addressId = addressId
-        self.deliveryStatus = deliveryStatus
         self.orderStatus = orderStatus
     }
 }
 
 extension Order {
-    convenience init(from model: APIOrderRequest, number: String, userId: UUID, paymentId: UUID, total: Double, deliveryFee: Double, addressId: UUID) {
+    convenience init(from model: APIOrderRequest,
+                     number: String,
+                     userId: UUID,
+                     paymentId: UUID,
+                     total: Double,
+                     discount: Double,
+                     deliveryFee: Double,
+                     subtotal: Double,
+                     addressId: UUID) {
         self.init(number: number,
                   userId: userId,
                   voucherCode: model.voucherCode,
                   paymentId: paymentId,
                   total: total,
+                  discount: discount,
+                  subtotal: subtotal,
                   deliveryFee: deliveryFee,
                   addressId: addressId,
-                  deliveryStatus: TransportationStatus.confirmed.rawValue,
-                  orderStatus: OrderStatus.confirmed.rawValue)
+                  orderStatus: OrderStatus.orderPlaced.rawValue)
     }
 }

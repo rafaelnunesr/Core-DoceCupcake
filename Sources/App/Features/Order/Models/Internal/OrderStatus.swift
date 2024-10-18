@@ -1,5 +1,8 @@
 enum OrderStatus: Int, Codable {
-    case confirmed = 1
-    case closed
+    case orderPlaced = 1
+    case paymentApproved
+    case preparing
+    case outForDelivery
+    case delivered
     case cancelled
 }

@@ -53,8 +53,8 @@ struct OrderController: RouteCollection, Sendable {
     }
 
     private func setupAdminRoutes(on routes: RoutesBuilder) {
-        routes.get("opened", use: fetchAllOrders(with: .confirmed))
-        routes.get("closed", use: fetchAllOrders(with: .closed))
+        //routes.get("opened", use: fetchAllOrders(with: .confirmed))
+        routes.get("closed", use: fetchAllOrders(with: .delivered))
         routes.get("cancelled", use: fetchAllOrders(with: .cancelled))
         routes.put(use: update)
     }
@@ -125,7 +125,6 @@ struct OrderController: RouteCollection, Sendable {
         let model: APIOrderUpdate = try req.content.decode(APIOrderUpdate.self)
         let order = try await fetchOrder(by: model.orderNumber)
 
-        order.deliveryStatus = model.deliveryStatus.rawValue
         order.orderStatus = model.orderStatus.rawValue
         order.updatedAt = Date()
         try await orderRepository.update(order)
@@ -242,14 +241,25 @@ struct OrderController: RouteCollection, Sendable {
     }
 
     private func create(from model: APIOrderRequest, userId: UUID, zipCode: String, paymentId: UUID, addressId: UUID) async throws -> Order {
+        let subtotal = try await calculateSubtotal(for: model)
         let total = try await calculateTotal(for: model)
         let deliveryFee = deliveryController.calculateDeliveryFee(zipcode: zipCode)
-        let order = Order(from: model, number: getOrderNumber(), userId: userId, paymentId: paymentId, total: total, deliveryFee: deliveryFee, addressId: addressId)
+        let voucher = try await vouchersController.getVoucher(with: model.voucherCode ?? .empty)
+        var discount: Double = 0
+        
+        
+        if let voucher {
+            discount = try await vouchersController.calculateVoucherDiscount(total, voucher: voucher)
+        }
+        
+        let order = Order(from: model, number: getOrderNumber(), userId: userId,
+                          paymentId: paymentId, total: total, discount: discount,
+                          deliveryFee: deliveryFee, subtotal: subtotal, addressId: addressId)
         try await orderRepository.create(order)
         return order
     }
 
-    private func calculateTotal(for model: APIOrderRequest) async throws -> Double {
+    private func calculateSubtotal(for model: APIOrderRequest) async throws -> Double {
         var total: Double = 0
         
         for product in model.products {
@@ -257,10 +267,25 @@ struct OrderController: RouteCollection, Sendable {
             total += prd?.currentPrice ?? 0
         }
         
-        let discount = try await vouchersController.applyVoucher(total, voucherCode: model.voucherCode ?? .empty)
-        if total >= discount {
-            return total - discount
+        return total
+    }
+
+    private func calculateTotal(for model: APIOrderRequest) async throws -> Double {
+        var total = try await calculateSubtotal(for: model)
+        
+        if let voucherCode = model.voucherCode {
+            let voucher = try await vouchersController.getVoucher(with: voucherCode)
+            
+            if let voucher {
+                let discount = try await vouchersController.calculateVoucherDiscount(total, voucher: voucher)
+                try await vouchersController.applyVoucher(total, voucherCode: voucherCode)
+                
+                if total >= discount {
+                    return total - discount
+                }
+            }
         }
+        
         return .zero
     }
 
