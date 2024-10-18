@@ -49,9 +49,11 @@ final class DependencyProvider: DependencyProviderProtocol {
         let userMigrationService = UserMigrationService(app: app)
         let productMigrationService = ProductMigrationService(app: app)
         let ordersMigrationService = OrdersMigrationService(app: app)
+        let reviewMigrationService = ReviewMigrationService(app: app)
         return MigrationService(userMigrationService: userMigrationService,
                                 productMigrationService: productMigrationService,
-                                ordersMigrationService: ordersMigrationService)
+                                ordersMigrationService: ordersMigrationService,
+                                reviewMigrationService: reviewMigrationService)
     }
     
     func getControllerFactory() -> ControllerFactoryProtocol {
