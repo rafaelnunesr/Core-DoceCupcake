@@ -13,6 +13,7 @@ struct CreateReviewMigration: AsyncMigration {
                    .references(UsersDbField.schema.rawValue, UsersDbField.id.fieldKey))
             .field(ReviewDbField.productId.fieldKey, .uuid, .required,
                    .references(ProductDbField.schema.rawValue, ProductDbField.id.fieldKey))
+            .field(ReviewDbField.userName.fieldKey, .string, .required)
             .field(ReviewDbField.rate.fieldKey, .int, .required)
             .field(ReviewDbField.title.fieldKey, .string, .required)
             .field(ReviewDbField.text.fieldKey, .string, .required)

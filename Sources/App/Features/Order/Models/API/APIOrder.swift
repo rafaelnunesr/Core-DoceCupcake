@@ -10,6 +10,7 @@ struct APIOrder: Codable, Content {
     var items: [APIOrderItem]
     var discount: Double
     var total: Double
+    var subtotal: Double
     var deliveryFee: Double
     
     enum CodingKeys: String, CodingKey {
@@ -22,6 +23,7 @@ struct APIOrder: Codable, Content {
         case items
         case discount
         case total
+        case subtotal
         case deliveryFee = "delivery_fee"
     }
 }
@@ -35,8 +37,9 @@ extension APIOrder {
         self.address = APIAddress(from: address)
         orderStatus = OrderStatus(rawValue: model.orderStatus) ?? .orderPlaced
         self.items = items
-        self.discount = model.discount
-        self.total = model.total
-        self.deliveryFee = model.deliveryFee
+        discount = model.discount
+        total = model.total
+        subtotal = model.subtotal
+        deliveryFee = model.deliveryFee
     }
 }

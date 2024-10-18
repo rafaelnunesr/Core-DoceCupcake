@@ -135,55 +135,7 @@ struct OrderController: RouteCollection, Sendable {
         let apiOrder = APIOrder(from: order, address: address, items: items)
         return apiOrder
     }
-
-
-//    @Sendable
-//    private func create(req: Request) async throws -> GenericMessageResponse {
-//        let orderRequest: APIOrderRequest = try req.content.decode(APIOrderRequest.self)
-//        let userId = try await sessionController.fetchLoggedUserId(req: req)
-//        let address = try await addressController.fetchAddressByUserId(userId)
-//        
-//        guard let address
-//        else { throw APIResponseError.Common.badRequest }
-//        
-//        return try await database.transaction { database in
-//            try await validateAndProcessOrder(orderRequest, userId: userId)
-//            guard let paymentId = try await cardController.processOrder(orderRequest.payment, userId: userId) else {
-//                throw APIResponseError.Payment.paymentError
-//            }
-//            let order = try await create(from: orderRequest,
-//                                         userId: userId,
-//                                         zipCode: address.zipCode,
-//                                         paymentId: paymentId,
-//                                         addressId: address.requireID())
-//            
-//            for product in orderRequest.products {
-//                guard let prd = try await productController.fetchProduct(with: product.code)
-//                else { throw APIResponseError.Common.internalServerError }
-//                
-//                try await orderItemRepository.create(OrderItem(orderId: order.requireID(),
-//                                                               productId: prd.requireID(), 
-//                                                               quantity: product.quantity,
-//                                                               unitValue: prd.currentPrice,
-//                                                               orderStatus: 1))
-//            }
-//            
-//            return GenericMessageResponse(message: Constants.orderCreated)
-//        }
-//    }
     
-//    @Sendable
-//    private func update(req: Request) async throws -> GenericMessageResponse {
-//        let model: APIOrderUpdate = try req.content.decode(APIOrderUpdate.self)
-//        let order = try await fetchOrder(by: model.orderNumber)
-//
-//        order.deliveryStatus = model.deliveryStatus.rawValue
-//        order.orderStatus = model.orderStatus.rawValue
-//        order.updatedAt = Date()
-//        try await orderRepository.update(order)
-//        return GenericMessageResponse(message: Constants.orderUpdated)
-//    }
-
     // MARK: - Private Helper Methods
 
     @Sendable
@@ -253,7 +205,7 @@ struct OrderController: RouteCollection, Sendable {
         }
         
         let order = Order(from: model, number: getOrderNumber(), userId: userId,
-                          paymentId: paymentId, total: total, discount: discount,
+                          paymentId: paymentId, total: total + deliveryFee, discount: discount,
                           deliveryFee: deliveryFee, subtotal: subtotal, addressId: addressId)
         try await orderRepository.create(order)
         return order
@@ -264,29 +216,31 @@ struct OrderController: RouteCollection, Sendable {
         
         for product in model.products {
             let prd = try await productController.fetchProduct(with: product.code)
-            total += prd?.currentPrice ?? 0
+            if let currentPrice = prd?.currentPrice {
+                total += currentPrice * product.quantity
+            }
         }
         
         return total
     }
 
     private func calculateTotal(for model: APIOrderRequest) async throws -> Double {
-        var total = try await calculateSubtotal(for: model)
+        let subtotal = try await calculateSubtotal(for: model)
         
         if let voucherCode = model.voucherCode {
             let voucher = try await vouchersController.getVoucher(with: voucherCode)
             
             if let voucher {
-                let discount = try await vouchersController.calculateVoucherDiscount(total, voucher: voucher)
-                try await vouchersController.applyVoucher(total, voucherCode: voucherCode)
+                let discount = try await vouchersController.calculateVoucherDiscount(subtotal, voucher: voucher)
+                try await vouchersController.applyVoucher(subtotal, voucherCode: voucherCode)
                 
-                if total >= discount {
-                    return total - discount
+                if subtotal >= discount {
+                    return subtotal - discount
                 }
             }
         }
         
-        return .zero
+        return subtotal
     }
 
     private func checkProductsAvailability(_ products: [APIProductOrderRequest]) async throws {

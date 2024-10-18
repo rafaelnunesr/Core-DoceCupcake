@@ -55,7 +55,8 @@ struct ReviewController: RouteCollection, Sendable {
         
         let userId = try await sessionController.fetchLoggedUserId(req: req)
 
-        guard try await productRepository.fetchProduct(with: model.productId) != nil else {
+        guard let productId = UUID(uuidString: model.productId),
+              try await productRepository.fetchProduct(with: productId) != nil else {
             throw APIResponseError.Common.notFound
         }
 
@@ -63,7 +64,7 @@ struct ReviewController: RouteCollection, Sendable {
             throw APIResponseError.Common.conflict
         }
 
-        try await reviewRepository.createReview(Review(from: model, userId: userId))
+        try await reviewRepository.createReview(Review(from: model, userId: userId, userName: "John")) // fix this
 
         return GenericMessageResponse(message: Constants.reviewCreated)
     }

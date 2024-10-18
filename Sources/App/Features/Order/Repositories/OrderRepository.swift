@@ -20,12 +20,14 @@ final class OrderRepository: OrderRepositoryProtocol {
     func fetchAllOrdersByStatus(_ status: OrderStatus) async throws -> [Order] {
         try await Order.query(on: database)
             .filter(\.$orderStatus == status.rawValue)
+            .sort(\.$createdAt, .descending)
             .all()
     }
     
     func fetchAllOrdersByUserId(_ userId: UUID) async throws -> [Order] {
         try await Order.query(on: database)
             .filter(\.$userId == userId)
+            .sort(\.$createdAt, .descending)
             .all()
     }
     

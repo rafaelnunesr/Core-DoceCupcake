@@ -7,6 +7,7 @@ enum ReviewDbField: String {
     case createdAt = "created_at"
     case orderId = "order_id"
     case userId = "user_id"
+    case userName = "user_name"
     case productId = "product_id"
     case rate
     case title
@@ -31,6 +32,9 @@ final class Review: Model, Content {
 
     @Field(key: ReviewDbField.userId.fieldKey)
     var userId: UUID
+    
+    @Field(key: ReviewDbField.userName.fieldKey)
+    var userName: String
 
     @Field(key: ReviewDbField.productId.fieldKey)
     var productId: UUID
@@ -50,6 +54,7 @@ final class Review: Model, Content {
          createdAt: Date? = nil,
          orderId: UUID,
          userId: UUID,
+         userName: String,
          productId: UUID,
          rate: Int,
          title: String,
@@ -58,6 +63,7 @@ final class Review: Model, Content {
         self.createdAt = createdAt
         self.orderId = orderId
         self.userId = userId
+        self.userName = userName
         self.productId = productId
         self.rate = rate
         self.title = title
@@ -67,9 +73,10 @@ final class Review: Model, Content {
 }
 
 extension Review {
-    convenience init(from review: APICreateReview, userId: UUID) {
+    convenience init(from review: APICreateReview, userId: UUID, userName: String) {
         self.init(orderId: review.orderId.uuid,
                   userId: userId,
+                  userName: userName,
                   productId: review.productId.uuid,
                   rate: review.rate,
                   title: review.title,
