@@ -18,6 +18,8 @@ struct CreateOrderMigration: AsyncMigration {
                    .references(CreditCardDbField.schema.rawValue, CreditCardDbField.id.fieldKey))
             .field(OrderDbField.total.fieldKey, .double, .required)
             .field(OrderDbField.deliveryFee.fieldKey, .double, .required)
+            .field(OrderDbField.subtotal.fieldKey, .double, .required)
+            .field(OrderDbField.discount.fieldKey, .double, .required)
             .field(OrderDbField.addressId.fieldKey, .uuid, .required,
                    .references(AddressDbField.schema.rawValue, AddressDbField.id.fieldKey))
             .field(OrderDbField.orderStatus.fieldKey, .int, .required)
