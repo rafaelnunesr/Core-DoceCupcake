@@ -6,6 +6,16 @@ struct APIOrderItem: Codable, Content {
     var quantity: Double
     var unitValue: Double
     var orderStatus: OrderStatus
+    var canReviewProduct: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case orderId = "order_id"
+        case product
+        case quantity
+        case unitValue = "unit_value"
+        case orderStatus = "order_status"
+        case canReviewProduct = "can_review_product"
+    }
 }
 
 extension APIOrderItem {
@@ -15,5 +25,6 @@ extension APIOrderItem {
         quantity = model.quantity
         unitValue = model.unitValue
         orderStatus = OrderStatus(rawValue: model.orderStatus) ?? .cancelled
+        canReviewProduct = model.reviewId == nil && orderStatus == .delivered
     }
 }

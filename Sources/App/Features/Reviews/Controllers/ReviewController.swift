@@ -7,6 +7,7 @@ struct ReviewController: RouteCollection, Sendable {
     private let productRepository: ProductRepositoryProtocol
     private let reviewRepository: ReviewRepositoryProtocol
     private let sessionController: SessionControllerProtocol
+    private let orderController: OrderControllerProtocol
     
     private let userSectionValidation: SessionValidationMiddlewareProtocol
     private let adminSectionValidation: AdminValidationMiddlewareProtocol
@@ -14,11 +15,13 @@ struct ReviewController: RouteCollection, Sendable {
     init(dependencyProvider: DependencyProviderProtocol,
          productRepository: ProductRepositoryProtocol,
          reviewRepository: ReviewRepositoryProtocol,
-         sessionController: SessionControllerProtocol) {
+         sessionController: SessionControllerProtocol,
+         orderController: OrderControllerProtocol) {
         self.dependencyProvider = dependencyProvider
         self.productRepository = productRepository
         self.reviewRepository = reviewRepository
         self.sessionController = sessionController
+        self.orderController = orderController
         
         userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
@@ -42,8 +45,10 @@ struct ReviewController: RouteCollection, Sendable {
 
     @Sendable
     private func fetchList(req: Request) async throws -> APIReviewListResponse {
-        let model: APIReview = try convertRequestDataToModel(req: req)
-        let result = try await reviewRepository.getReviewList(productId: model.productId.uuid)
+        guard let value = req.parameters.get("productId"), let productId = UUID(uuidString: value)
+        else { throw APIResponseError.Common.badRequest }
+        
+        let result = try await reviewRepository.getReviewList(productId: productId)
 
         let reviews = result.map { ReviewResponse(from: $0) }
         return APIReviewListResponse(count: result.count, reviews: reviews)
@@ -55,16 +60,22 @@ struct ReviewController: RouteCollection, Sendable {
         
         let userId = try await sessionController.fetchLoggedUserId(req: req)
 
-        guard let productId = UUID(uuidString: model.productId),
-              try await productRepository.fetchProduct(with: productId) != nil else {
+        guard try await productRepository.fetchProduct(with: model.productId.uuid) != nil else {
             throw APIResponseError.Common.notFound
         }
 
-        guard try await reviewRepository.getReview(orderId: model.orderId.uuid) == nil else {
+        guard try await reviewRepository.getReview(orderId: model.orderId.uuid, productId: model.productId.uuid) == nil else {
             throw APIResponseError.Common.conflict
         }
 
         try await reviewRepository.createReview(Review(from: model, userId: userId, userName: "John")) // fix this
+        
+        guard let review = try await reviewRepository.getReview(orderId: model.orderId.uuid, productId: model.productId.uuid)
+        else { throw APIResponseError.Common.internalServerError }
+        
+        try await orderController.updateOrderWithReviewId(review.requireID(),
+                                                          orderId: model.orderId.uuid,
+                                                          productId: model.productId.uuid)
 
         return GenericMessageResponse(message: Constants.reviewCreated)
     }

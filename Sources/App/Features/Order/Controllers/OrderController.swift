@@ -2,7 +2,11 @@ import FluentPostgresDriver
 import Vapor
 import Fluent
 
-struct OrderController: RouteCollection, Sendable {
+protocol OrderControllerProtocol: RouteCollection, Sendable {
+    func updateOrderWithReviewId(_ reviewId: UUID, orderId: UUID, productId: UUID) async throws
+}
+
+struct OrderController: OrderControllerProtocol {
     // MARK: - Dependencies
     private var database: Database
     private let orderRepository: OrderRepositoryProtocol
@@ -57,6 +61,19 @@ struct OrderController: RouteCollection, Sendable {
         routes.get("closed", use: fetchAllOrders(with: .delivered))
         routes.get("cancelled", use: fetchAllOrders(with: .cancelled))
         routes.put(use: update)
+    }
+    
+    func updateOrderWithReviewId(_ reviewId: UUID, orderId: UUID, productId: UUID) async throws {
+        guard let order = try await orderRepository.fetchOrderById(orderId)
+        else { throw APIResponseError.Common.notFound }
+        let items = try await orderItemRepository.fetchOrdersByOrderId(order.requireID())
+        let item = items.first(where: { $0.productId == productId })
+        item?.reviewId = reviewId
+        
+        guard let item
+        else { throw APIResponseError.Common.internalServerError }
+        
+        try await orderItemRepository.update(item)
     }
 
     // MARK: - Handlers
@@ -130,6 +147,15 @@ struct OrderController: RouteCollection, Sendable {
         try await orderRepository.update(order)
         
         let address = try await fetchAddress(for: order)
+        
+        let internalItems = try await orderItemRepository.fetchOrdersByOrderId(order.requireID())
+        
+        for item in internalItems {
+            var copyItem = item
+            copyItem.orderStatus = model.orderStatus.rawValue
+            try await orderItemRepository.update(copyItem)
+        }
+        
         let items = try await fetchOrderItems(for: order)
         
         let apiOrder = APIOrder(from: order, address: address, items: items)

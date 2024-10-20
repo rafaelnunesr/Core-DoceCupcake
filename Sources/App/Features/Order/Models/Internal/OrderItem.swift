@@ -10,6 +10,7 @@ enum OrderItemDbField: String {
     case quantity
     case unitValue = "unit_value"
     case orderStatus = "order_status"
+    case reviewId = "review_id"
     
     var fieldKey: FieldKey {
         return FieldKey(stringLiteral: self.rawValue)
@@ -36,6 +37,9 @@ final class OrderItem: Model {
     
     @Field(key: OrderItemDbField.orderStatus.fieldKey)
     var orderStatus: Int
+    
+    @OptionalField(key: OrderItemDbField.reviewId.fieldKey)
+    var reviewId: UUID?
 
     internal init() { }
 
@@ -44,12 +48,14 @@ final class OrderItem: Model {
          productId: UUID,
          quantity: Double,
          unitValue: Double,
-         orderStatus: Int) {
+         orderStatus: Int,
+         reviewId: UUID? = nil) {
         self.id = id
         self.orderId = orderId
         self.productId = productId
         self.quantity = quantity
         self.unitValue = unitValue
         self.orderStatus = orderStatus
+        self.reviewId = reviewId
     }
 }

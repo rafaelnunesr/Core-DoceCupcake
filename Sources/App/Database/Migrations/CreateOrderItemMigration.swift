@@ -13,6 +13,7 @@ struct CreateOrderItemMigration: AsyncMigration {
             .field(OrderItemDbField.quantity.fieldKey, .double, .required)
             .field(OrderItemDbField.unitValue.fieldKey, .double, .required)
             .field(OrderItemDbField.orderStatus.fieldKey, .int, .required)
+            .field(OrderItemDbField.reviewId.fieldKey, .uuid)
             .create()
     }
     

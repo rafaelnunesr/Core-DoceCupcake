@@ -10,6 +10,7 @@ enum SessionControlAccess {
 protocol SessionControllerProtocol: RouteCollection, Sendable {
     func validateSession(req: Request) async throws -> SessionControlAccess
     func fetchLoggedUserId(req: Request) async throws -> UUID
+    func fetchLoggedUserName(req: Request) async throws -> String
     func create(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel?
     func delete(for userId: UUID) async throws
 }
@@ -51,6 +52,13 @@ struct SessionController: SessionControllerProtocol {
         guard let user = try await repository.fetchSession(for: session.userId)
         else { throw APIResponseError.Common.internalServerError }
         return user.userId
+    }
+    
+    func fetchLoggedUserName(req: Request) async throws -> String {
+        let session = try await req.jwt.verify(as: SessionToken.self)
+        guard let user = try await repository.fetchSession(for: session.userId)
+        else { throw APIResponseError.Common.internalServerError }
+        return "John" // fix this
     }
 
     func create(for userId: UUID, isAdmin: Bool, req: Request) async throws -> InternalSessionModel? {

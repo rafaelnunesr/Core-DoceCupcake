@@ -4,6 +4,7 @@ import Vapor
 enum ReviewDbField: String {
     case schema = "review"
     
+    case id
     case createdAt = "created_at"
     case orderId = "order_id"
     case userId = "user_id"
