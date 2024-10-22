@@ -151,9 +151,8 @@ struct OrderController: OrderControllerProtocol {
         let internalItems = try await orderItemRepository.fetchOrdersByOrderId(order.requireID())
         
         for item in internalItems {
-            var copyItem = item
-            copyItem.orderStatus = model.orderStatus.rawValue
-            try await orderItemRepository.update(copyItem)
+            item.orderStatus = model.orderStatus.rawValue
+            try await orderItemRepository.update(item)
         }
         
         let items = try await fetchOrderItems(for: order)
