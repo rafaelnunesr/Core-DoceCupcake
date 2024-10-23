@@ -21,7 +21,7 @@ Before you begin, ensure you have the following installed on your machine:
 First, clone the repository to your local machine:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/rafaelnunesr/Core-DoceCupcake.git
 cd core
 ```
 
