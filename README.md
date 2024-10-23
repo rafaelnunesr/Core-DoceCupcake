@@ -22,7 +22,7 @@ First, clone the repository to your local machine:
 
 ```bash
 git clone https://github.com/rafaelnunesr/Core-DoceCupcake.git
-cd core
+cd Core-DoceCupcake
 ```
 
 ### 2. Configure PostgreSQL
