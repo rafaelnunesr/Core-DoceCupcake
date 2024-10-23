@@ -118,7 +118,7 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try self.app.test(.PUT, route,
                           beforeRequest: { request in
-            try request.content.encode(requestContent)
+            try request.content.encode(requestContent.first!)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .notFound)
         })
@@ -134,7 +134,7 @@ final class ProductTagsControllerTests: XCTestCase {
         
         try self.app.test(.PUT, route,
                           beforeRequest: { request in
-            try request.content.encode(requestContent)
+            try request.content.encode(requestContent.first!)
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             let bodyResponse = convertBodyToGenericMessageResponse(with: response.body)
@@ -190,8 +190,8 @@ final class ProductTagsControllerTests: XCTestCase {
 }
 
 extension ProductTagsControllerTests {
-    var requestContent: APIProductTag {
-        APIProductTag(code: "A", description: "B")
+    var requestContent: [APIProductTag] {
+        [APIProductTag(code: "A", description: "B")]
     }
     
     var deleteContent: [String: String] {

@@ -13,17 +13,21 @@ struct MockOrder {
                        total: Double = 1,
                        deliveryFee: Double = 1,
                        addressId: UUID = UUID(),
-                       deliveryStatus: Int = 1,
-                       orderStatus: Int = 1) -> Order {
+                       orderStatus: Int = 1,
+                       discount: Double = 1,
+                       subtotal: Double = 1) -> Order {
         Order(id: id,
               number: number,
+              createdAt: createdAt,
+              updatedAt: updatedAt,
               userId: userId,
               voucherCode: voucherCode,
               paymentId: paymentId,
               total: total,
+              discount: discount,
+              subtotal: subtotal,
               deliveryFee: deliveryFee,
               addressId: addressId,
-              deliveryStatus: deliveryStatus,
               orderStatus: orderStatus)
     }
     

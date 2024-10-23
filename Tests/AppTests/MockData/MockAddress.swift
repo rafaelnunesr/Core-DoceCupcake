@@ -9,7 +9,7 @@ struct MockAddress {
                        streetName: String = "Street name",
                        number: String = "1234",
                        zipCode: String = "78945",
-                       complementary: String? = nil,
+                       complementary: String = "complementary",
                        state: String = "CA",
                        city: String = "Anycity",
                        country: String = "USA") -> Address {

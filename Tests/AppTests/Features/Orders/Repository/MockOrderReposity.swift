@@ -22,7 +22,7 @@ final class MockOrderRepository: OrderRepositoryProtocol {
     }
     
     func fetchOrderByNumber(_ number: String) async throws -> Order? {
-        return result
+        result
     }
     
     func create(_ order: Order) async throws {
@@ -35,5 +35,9 @@ final class MockOrderRepository: OrderRepositoryProtocol {
 
     func delete(_ order: Order) async throws {
         result = nil
+    }
+    
+    func fetchOrderById(_ orderId: UUID) async throws -> Order? {
+        result
     }
 }

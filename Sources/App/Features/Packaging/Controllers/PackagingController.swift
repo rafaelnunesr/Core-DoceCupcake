@@ -53,7 +53,7 @@ struct PackagingController: PackagingControllerProtocol {
             try await repository.create(Package(from: model))
         }
         
-        return GenericMessageResponse(message: "Package created")
+        return GenericMessageResponse(message: Constants.packageCreated)
     }
     
     @Sendable

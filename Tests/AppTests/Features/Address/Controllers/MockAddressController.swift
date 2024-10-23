@@ -1,9 +1,12 @@
 import Foundation
+import Vapor
 
 @testable import App
 
 struct MockAddressController: AddressControllerProtocol {
     var address: Address?
+    
+    func boot(routes: RoutesBuilder) throws {}
     
     func fetchAddressById(_ id: UUID) async throws -> Address? {
         address

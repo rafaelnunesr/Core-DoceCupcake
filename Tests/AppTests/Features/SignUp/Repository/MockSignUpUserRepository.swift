@@ -13,4 +13,16 @@ final class MockSignUpUserRepository: UserRepositoryProtocol {
         self.user = user
         return user.id ?? UUID()
     }
+    
+    func fetchUser(with id: UUID) async throws -> User? {
+        user
+    }
+    
+    func fetchUser(with email: String) async throws -> User? {
+        user
+    }
+    
+    func update(with user: App.User) async throws -> UUID {
+        user.id ?? UUID()
+    }
 }

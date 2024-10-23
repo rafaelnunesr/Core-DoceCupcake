@@ -20,4 +20,8 @@ final class MockNutritionalController: NutritionalControllerProtocol {
     func delete(_ model: NutritionalInformation) async throws {
         information = nil
     }
+    
+    func fetchNutritionalByCode(_ code: String) async throws -> NutritionalInformation? {
+        information
+    }
 }

@@ -132,15 +132,15 @@ final class PackagingControllerTests: XCTestCase {
 }
 
 extension PackagingControllerTests {
-    var requestContent: APIPackage {
-        APIPackage(code: "A",
-                   name: .empty,
-                   description: .empty,
-                   width: 0,
-                   height: 0,
-                   depth: 0,
-                   price: 0,
-                   stockCount: 0)
+    var requestContent: [APIPackage] {
+        [APIPackage(code: "A",
+                    name: .empty,
+                    description: .empty,
+                    width: 0,
+                    height: 0,
+                    depth: 0,
+                    price: 0,
+                    stockCount: 0)]
     }
     
     var deleteContent: [String: String] {

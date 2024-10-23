@@ -6,6 +6,7 @@ final class AddressControllerTests: XCTestCase {
     private var app: Application!
     private var sut: AddressController!
     private var mockRepository: MockAdressRepository!
+    private var mockSessionController: MockSessionController!
     private var mockSecurity: MockSecurity!
     private var mockDependencyProvider: MockDependencyProvider!
     
@@ -13,8 +14,10 @@ final class AddressControllerTests: XCTestCase {
         app = try await Application.make(.testing)
         mockRepository = MockAdressRepository()
         mockSecurity = MockSecurity()
+        mockSessionController = MockSessionController()
         mockDependencyProvider = MockDependencyProvider(app: app, security: mockSecurity)
-        sut = AddressController(repository: mockRepository)
+        let mockSessionValidation = mockDependencyProvider.getUserSessionValidationMiddleware()
+        sut = AddressController(repository: mockRepository, sessionValidation: mockSessionValidation, sessionController: mockSessionController)
     }
     
     override func tearDown() async throws {

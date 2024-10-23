@@ -8,12 +8,14 @@ struct MockUser {
                        userName: String = "name",
                        email: String = "email",
                        password: String = "password",
-                       imageUrl: String? = nil) -> User {
+                       imageUrl: String? = nil,
+                       phoneNumber: String = "11 999") -> User {
         User(id: id,
-              createdAt: createdAt,
-              userName: userName,
-              email: email,
-              password: password)
+             createdAt: createdAt,
+             userName: userName,
+             email: email,
+             password: password,
+             phoneNumber: phoneNumber)
     }
     
     var john = create(userName: "John")

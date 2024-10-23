@@ -10,6 +10,12 @@ struct MockVouchersController: VouchersControllerProtocol {
     }
     
     func applyVoucher(_ value: Double, voucherCode: String) async throws -> Double {
-        0
+        .zero
+    }
+    
+    func applyVoucher(_ value: Double, voucherCode: String) async throws {}
+    
+    func calculateVoucherDiscount(_ value: Double, voucher: Voucher) async throws -> Double {
+        .zero
     }
 }
