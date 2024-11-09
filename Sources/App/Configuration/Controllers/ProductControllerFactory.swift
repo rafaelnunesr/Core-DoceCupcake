@@ -41,11 +41,23 @@ struct ProductControllerFactory: ProductControllerFactoryProtocol {
         let sessionRepository = SessionRepository(database: database)
         let sessionController = SessionController(repository: sessionRepository)
         
+        let addressRepository = AddressRepository(database: database)
+        let sessionValidation = dependencyProvider.getUserSessionValidationMiddleware()
+        let addressController = AddressController(repository: addressRepository,
+                                                  sessionValidation: sessionValidation,
+                                                  sessionController: sessionController)
+        let userRepository = UserRepository(database: database)
+        let userController = UserController(dependencyProvider: dependencyProvider,
+                                            repository: userRepository,
+                                            addressController: addressController,
+                                            sessionController: sessionController)
+        
         return ReviewController(dependencyProvider: dependencyProvider,
                                 productRepository: productRepository,
                                 reviewRepository: reviewRepository,
                                 sessionController: sessionController,
-                                orderController: makeOrderController())
+                                orderController: makeOrderController(),
+                                userController: userController)
     }
     
     func makeOrderController() -> OrderController {

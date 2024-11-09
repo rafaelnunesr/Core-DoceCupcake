@@ -1,6 +1,10 @@
 import Vapor
 
-struct UserController: RouteCollection, Sendable {
+protocol UserControllerProtocol: RouteCollection, Sendable {
+    func fetchUserInfo(userId: UUID) async throws -> User?
+}
+
+struct UserController: UserControllerProtocol {
     private let repository: UserRepositoryProtocol
     private let addressController: AddressControllerProtocol
     private let security: SecurityProtocol
@@ -84,6 +88,10 @@ struct UserController: RouteCollection, Sendable {
         _ = try await repository.update(with: user)
         
         return APIUserInformation(from: user, address: address)
+    }
+    
+    func fetchUserInfo(userId: UUID) async throws -> User? {
+        try await repository.fetchUser(with: userId)
     }
     
     private func validateUserUniqueness(email: String) async throws {

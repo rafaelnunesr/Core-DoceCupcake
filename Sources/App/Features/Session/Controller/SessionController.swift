@@ -29,7 +29,7 @@ struct SessionController: SessionControllerProtocol {
     
     @Sendable
     private func validateSessionToken(req: Request) async throws -> Bool {
-        let model: APIRequestCode = try convertRequestDataToModel(req: req)
+        let _: APIRequestCode = try convertRequestDataToModel(req: req)
         return try await validateSession(req: req) != .unowned
     }
     

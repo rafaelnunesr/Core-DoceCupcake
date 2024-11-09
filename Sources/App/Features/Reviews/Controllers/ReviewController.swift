@@ -8,6 +8,7 @@ struct ReviewController: RouteCollection, Sendable {
     private let reviewRepository: ReviewRepositoryProtocol
     private let sessionController: SessionControllerProtocol
     private let orderController: OrderControllerProtocol
+    private let userController: UserControllerProtocol
     
     private let userSectionValidation: SessionValidationMiddlewareProtocol
     private let adminSectionValidation: AdminValidationMiddlewareProtocol
@@ -16,12 +17,14 @@ struct ReviewController: RouteCollection, Sendable {
          productRepository: ProductRepositoryProtocol,
          reviewRepository: ReviewRepositoryProtocol,
          sessionController: SessionControllerProtocol,
-         orderController: OrderControllerProtocol) {
+         orderController: OrderControllerProtocol,
+         userController: UserControllerProtocol) {
         self.dependencyProvider = dependencyProvider
         self.productRepository = productRepository
         self.reviewRepository = reviewRepository
         self.sessionController = sessionController
         self.orderController = orderController
+        self.userController = userController
         
         userSectionValidation = dependencyProvider.getUserSessionValidationMiddleware()
         adminSectionValidation = dependencyProvider.getAdminSessionValidationMiddleware()
@@ -59,6 +62,8 @@ struct ReviewController: RouteCollection, Sendable {
         let model: APICreateReview = try convertRequestDataToModel(req: req)
         
         let userId = try await sessionController.fetchLoggedUserId(req: req)
+        
+        let user = try await userController.fetchUserInfo(userId: userId)
 
         guard try await productRepository.fetchProduct(with: model.productId.uuid) != nil else {
             throw APIResponseError.Common.notFound
@@ -67,8 +72,10 @@ struct ReviewController: RouteCollection, Sendable {
         guard try await reviewRepository.getReview(orderId: model.orderId.uuid, productId: model.productId.uuid) == nil else {
             throw APIResponseError.Common.conflict
         }
+        
+        guard let user else { throw APIResponseError.Common.internalServerError }
 
-        try await reviewRepository.createReview(Review(from: model, userId: userId, userName: "John")) // fix this
+        try await reviewRepository.createReview(Review(from: model, userId: userId, userName: user.userName))
         
         guard let review = try await reviewRepository.getReview(orderId: model.orderId.uuid, productId: model.productId.uuid)
         else { throw APIResponseError.Common.internalServerError }
